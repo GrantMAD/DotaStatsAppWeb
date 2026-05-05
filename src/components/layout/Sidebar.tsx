@@ -10,7 +10,8 @@ import {
   Settings, 
   BarChart2,
   Search,
-  LogIn
+  LogIn,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -27,7 +28,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { user, steamAccountId } = useSupabaseAuth();
+  const { user, steamAccountId, signOut } = useSupabaseAuth();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 glass-card rounded-none border-y-0 border-l-0 z-50 hidden lg:flex flex-col p-6">
@@ -42,7 +43,7 @@ export function Sidebar() {
         {NAV_ITEMS.map((item) => {
           if (item.authRequired && !user) return null;
           
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+          const isActive = pathname === item.href || (item.href !== '/' && (pathname.startsWith(item.href + '/') || pathname === item.href));
           const href = item.href === '/profile' && steamAccountId ? `/profile/${steamAccountId}` : item.href;
 
           return (
@@ -66,7 +67,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto">
+      <div className="mt-auto space-y-4">
         {!user ? (
           <Link
             href="/sign-in"
@@ -76,23 +77,33 @@ export function Sidebar() {
             <span className="font-medium">Sign In</span>
           </Link>
         ) : (
-          <div className="p-4 glass-card bg-white/5 flex items-center gap-3">
-             <div className="w-10 h-10 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden">
-                {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gaming-accent font-bold">
-                    {user.email?.[0].toUpperCase()}
-                  </div>
-                )}
-             </div>
-             <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">
-                  {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                </p>
-                <p className="text-xs text-gray-400 truncate">Online</p>
-             </div>
-          </div>
+          <>
+            <div className="p-4 glass-card bg-white/5 flex items-center gap-3">
+               <div className="w-10 h-10 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden">
+                  {user.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gaming-accent font-bold">
+                      {user.email?.[0].toUpperCase()}
+                    </div>
+                  )}
+               </div>
+               <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-white truncate">
+                    {user.user_metadata?.full_name || user.email?.split('@')[0]}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate">Online</p>
+               </div>
+            </div>
+            
+            <button
+              onClick={() => signOut()}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-all group"
+            >
+              <LogOut className="w-5 h-5 group-hover:animate-pulse" />
+              <span className="font-medium">Log Out</span>
+            </button>
+          </>
         )}
       </div>
     </aside>
