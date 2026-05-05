@@ -18,12 +18,12 @@ import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home },
-  { label: 'Pro Scene', href: '/pro', icon: Trophy },
   { label: 'Search', href: '/search', icon: Search },
-  { label: 'Compare', href: '/compare', icon: BarChart2 },
+  { label: 'Pro Scene', href: '/pro', icon: Trophy },
+  { label: 'Compare', href: '/compare', icon: BarChart2, authRequired: true },
   { label: 'Friends', href: '/friends', icon: Users, authRequired: true },
   { label: 'Profile', href: '/profile', icon: User, authRequired: true },
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Settings', href: '/settings', icon: Settings, authRequired: true },
 ];
 
 export function Sidebar() {
@@ -71,7 +71,7 @@ export function Sidebar() {
         {!user ? (
           <Link
             href="/sign-in"
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white transition-all border border-white/5"
           >
             <LogIn className="w-5 h-5" />
             <span className="font-medium">Sign In</span>
@@ -79,7 +79,7 @@ export function Sidebar() {
         ) : (
           <>
             <div className="p-4 glass-card bg-white/5 flex items-center gap-3">
-               <div className="w-10 h-10 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden">
+               <div className="w-10 h-10 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden shrink-0">
                   {user.user_metadata?.avatar_url ? (
                     <img src={user.user_metadata.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                   ) : (
@@ -98,7 +98,7 @@ export function Sidebar() {
             
             <button
               onClick={() => signOut()}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-all group"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-all group border border-transparent hover:border-red-500/20"
             >
               <LogOut className="w-5 h-5 group-hover:animate-pulse" />
               <span className="font-medium">Log Out</span>

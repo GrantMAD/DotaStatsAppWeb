@@ -151,48 +151,48 @@ export default function HomePage() {
   return (
     <div className="pb-20">
       {/* Hero Section */}
-      <div className="relative mb-12">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-          <div className="flex-1">
-            <h1 className="text-5xl lg:text-7xl font-black text-white mb-4 tracking-tighter">
-              Dota <span className="text-gradient">Intelligence.</span>
-            </h1>
-            <p className="text-gray-400 text-lg lg:text-xl font-medium max-w-xl leading-relaxed">
-              Real-time hero stats, pro match analytics, and performance insights for the modern Dota 2 player.
-            </p>
-          </div>
+      <div className="relative mb-12 pt-12 lg:pt-20">
+        <div className="max-w-none">
+          <h1 className="text-5xl lg:text-8xl font-black text-white mb-6 tracking-tighter uppercase italic">
+            Dota <span className="text-gradient">Intelligence.</span>
+          </h1>
+          <p className="text-gray-400 text-lg lg:text-2xl font-medium leading-relaxed mb-10">
+            Real-time hero stats, pro match analytics, and performance insights for the modern Dota 2 player.
+          </p>
 
-          <div className="w-full lg:w-[400px] space-y-4">
-            {!user ? (
-              <Button onClick={() => router.push('/sign-in')} className="w-full h-14 text-lg">
-                <LogIn className="w-5 h-5" />
-                Get Started
-              </Button>
-            ) : !steamAccountId ? (
-              <Button variant="secondary" onClick={() => router.push('/profile')} className="w-full h-14 border-dashed border-amber-500/50 text-amber-500">
-                <LinkIcon className="w-5 h-5" />
-                Link Steam Account
-              </Button>
-            ) : (
-              <Button variant="secondary" onClick={() => router.push(`/profile/${steamAccountId}`)} className="w-full h-14 border-dashed border-win/50 text-win">
-                <UserIcon className="w-5 h-5" />
-                View My Profile
-              </Button>
-            )}
+          <div className="space-y-6">
+            <div className="space-y-4">
+              {!user ? (
+                <Button onClick={() => router.push('/sign-in')} className="w-full h-16 text-xl font-black uppercase italic tracking-wider">
+                  <LogIn className="w-6 h-6" />
+                  Get Started
+                </Button>
+              ) : !steamAccountId ? (
+                <Button variant="secondary" onClick={() => router.push('/profile')} className="w-full h-16 border-dashed border-amber-500/50 text-amber-500 text-xl font-black uppercase italic tracking-wider">
+                  <LinkIcon className="w-6 h-6" />
+                  Link Steam Account
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={() => router.push(`/profile/${steamAccountId}`)} className="w-full h-16 border-dashed border-win/50 text-win text-xl font-black uppercase italic tracking-wider">
+                  <UserIcon className="w-6 h-6" />
+                  View My Profile
+                </Button>
+              )}
+            </div>
 
             <form onSubmit={handleSearch} className="relative group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                <Search className="w-5 h-5 text-gray-500 group-focus-within:text-gaming-accent transition-colors" />
+              <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                <Search className="w-6 h-6 text-gray-500 group-focus-within:text-gaming-accent transition-colors" />
               </div>
               <input
                 type="text"
                 placeholder="Search players, heroes, matches..."
-                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-white/10 transition-all"
+                className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 text-white text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-white/10 transition-all"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button type="submit" className="absolute right-2 top-2 bottom-2 px-4 bg-gaming-accent text-white rounded-xl font-bold opacity-0 group-focus-within:opacity-100 transition-opacity">
-                <ArrowRight className="w-5 h-5" />
+              <button type="submit" className="absolute right-3 top-3 bottom-3 px-6 bg-gaming-accent text-white rounded-xl font-black uppercase italic tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">
+                Search
               </button>
             </form>
           </div>
