@@ -3,6 +3,7 @@
 import React from 'react';
 import { Trophy, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { getLeagueImageUrl } from '@/services/constants';
 
 interface League {
   leagueid: number;
@@ -17,6 +18,8 @@ interface LeagueCardProps {
 }
 
 export function LeagueCard({ league, onClick }: LeagueCardProps) {
+  const [imageError, setImageError] = React.useState(false);
+
   const getTierColor = (tier: string | null) => {
     switch (tier) {
       case 'premium': return 'text-purple-400 border-purple-400/30 bg-purple-400/10';
@@ -25,16 +28,19 @@ export function LeagueCard({ league, onClick }: LeagueCardProps) {
     }
   };
 
+  const bannerUrl = getLeagueImageUrl(league.banner);
+
   return (
     <div 
       onClick={() => onClick(league.leagueid)}
       className="glass-card overflow-hidden hover:border-gaming-accent/50 transition-all cursor-pointer group flex flex-col h-full"
     >
       <div className="relative aspect-video w-full bg-black/40 overflow-hidden">
-        {league.banner ? (
+        {bannerUrl && !imageError ? (
           <img 
-            src={league.banner} 
+            src={bannerUrl} 
             alt={league.name}
+            onError={() => setImageError(true)}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (

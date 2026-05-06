@@ -10,14 +10,20 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { getHeroImageUrl } from '@/services/constants';
 import { createClient } from '@/utils/supabase/client';
 import { cn } from '@/utils/cn';
+import { useRouter } from 'next/navigation';
+import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
 
 export default function SearchPage() {
+  const router = useRouter();
   const { user, steamAccountId } = useSupabaseAuth();
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
   const [searchMode, setSearchMode] = useState<'global' | 'steam'>('global');
   const [appUsersMap, setAppUsersMap] = useState<Record<number, string>>({});
   
+  const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+
   const { data: globalResults = [], isLoading: searchingGlobal, error } = useSearchPlayers(activeQuery);
   const { data: peers = [], isLoading: loadingPeers } = usePlayerPeers(searchMode === 'steam' ? steamAccountId : null);
   const { data: heroesData = [] } = useHeroStats();
@@ -79,8 +85,20 @@ export default function SearchPage() {
     setActiveQuery(query);
   };
 
+  const handlePlayerClick = (accountId: number) => {
+    setSelectedPlayerId(accountId.toString());
+    setIsPlayerModalOpen(true);
+  };
+
   return (
     <div className="container-custom py-8">
+      <PlayerDetailModal 
+        isOpen={isPlayerModalOpen}
+        onClose={() => setIsPlayerModalOpen(false)}
+        accountId={selectedPlayerId}
+        isCurrentUser={selectedPlayerId === steamAccountId}
+      />
+
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gaming-accent/20 rounded-2xl border border-gaming-accent/50">
@@ -188,7 +206,7 @@ export default function SearchPage() {
                     <div 
                       key={hero.id}
                       className="glass-card p-3 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
-                      onClick={() => console.log('Hero click:', hero.id)}
+                      onClick={() => router.push(`/hero/${hero.id}`)}
                     >
                       <img 
                         src={getHeroImageUrl(hero.id)} 
@@ -211,7 +229,7 @@ export default function SearchPage() {
                 <h2 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4">Match ID</h2>
                 <div 
                   className="glass-card p-4 flex items-center gap-4 border-blue-600/30 hover:border-blue-500 transition-all cursor-pointer group"
-                  onClick={() => console.log('Match click:', matchingMatchId)}
+                  onClick={() => router.push(`/match/${matchingMatchId}`)}
                 >
                   <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center border border-blue-600/30">
                     <Gamepad2 className="w-5 h-5 text-blue-400" />
@@ -240,7 +258,7 @@ export default function SearchPage() {
                       isCurrentUser={steamAccountId === player.account_id.toString()}
                       onFollow={() => followUser(player.account_id.toString())}
                       onUnfollow={() => unfollowUser(player.account_id.toString())}
-                      onClick={() => console.log('Player click:', player.account_id)}
+                      onClick={() => handlePlayerClick(player.account_id)}
                     />
                   ))}
                 </div>

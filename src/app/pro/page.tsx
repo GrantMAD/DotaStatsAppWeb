@@ -13,10 +13,21 @@ import { cn } from '@/utils/cn';
 type TabType = 'Tournaments' | 'Teams' | 'Players';
 type SubTabType = 'Premium' | 'Professional' | 'Amateur';
 
+import { useRouter } from 'next/navigation';
+import { TeamDetailModal } from '@/components/pro/TeamDetailModal';
+import { LeagueDetailModal } from '@/components/pro/LeagueDetailModal';
+import { ProTeam } from '@/services/opendota';
+
 export default function ProPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('Tournaments');
   const [subTab, setSubTab] = useState<SubTabType>('Premium');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const [selectedTeam, setSelectedTeam] = useState<ProTeam | null>(null);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [selectedLeague, setSelectedLeague] = useState<any | null>(null);
+  const [isLeagueModalOpen, setIsLeagueModalOpen] = useState(false);
 
   const { data: leagues = [], isLoading: loadingLeagues } = useLeagues();
   const { data: teams = [], isLoading: loadingTeams } = useProTeams();
@@ -81,12 +92,36 @@ export default function ProPage() {
   }, [players, teams, searchQuery, subTab]);
 
   const handleItemClick = (id: number) => {
-    // Modal logic would go here, for now just log
-    console.log('Clicked item:', id);
+    if (activeTab === 'Players') {
+      router.push(`/profile/${id}`);
+    } else if (activeTab === 'Teams') {
+      const team = teams.find(t => t.team_id === id);
+      if (team) {
+        setSelectedTeam(team);
+        setIsTeamModalOpen(true);
+      }
+    } else if (activeTab === 'Tournaments') {
+      const league = leagues.find(l => l.leagueid === id);
+      if (league) {
+        setSelectedLeague(league);
+        setIsLeagueModalOpen(true);
+      }
+    }
   };
 
   return (
     <div className="container-custom py-8">
+      {/* ... rest of existing return ... */}
+      <TeamDetailModal 
+        isOpen={isTeamModalOpen} 
+        onClose={() => setIsTeamModalOpen(false)} 
+        team={selectedTeam} 
+      />
+      <LeagueDetailModal 
+        isOpen={isLeagueModalOpen} 
+        onClose={() => setIsLeagueModalOpen(false)} 
+        league={selectedLeague} 
+      />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-gaming-accent/20 rounded-2xl border border-gaming-accent/50">

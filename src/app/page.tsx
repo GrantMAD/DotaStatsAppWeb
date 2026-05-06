@@ -29,6 +29,7 @@ import {
 import { useActivityFeed } from '@/hooks/useActivityFeed';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { calculateTierList, getBracketFromRankTier, BRACKET_NAMES } from '@/services/tierList';
+import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
 import { ProMatchCard } from '@/components/ui/ProMatchCard';
 import { LiveGameCard } from '@/components/ui/LiveGameCard';
@@ -88,22 +89,6 @@ function processHeroStats(heroes: any[]) {
     }));
 
   return { topWinRate, mostPicked, proPicks, proBans };
-}
-
-function SectionHeader({ icon: Icon, title, description, color }: { icon: any; title: string; description?: string; color: string }) {
-  return (
-    <div className="mb-6 mt-12 px-2">
-      <div className="flex items-center gap-3">
-        <div className={cn("p-2 rounded-lg bg-white/5", color)}>
-          <Icon className="w-5 h-5" />
-        </div>
-        <h2 className="text-2xl font-black text-white tracking-tight">{title}</h2>
-      </div>
-      {description && (
-        <p className="mt-2 text-gray-500 text-sm font-medium max-w-2xl">{description}</p>
-      )}
-    </div>
-  );
 }
 
 export default function HomePage() {
@@ -274,8 +259,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Trends Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+      {/* Trends Section */}
+      <div className="space-y-8 mt-12">
         {/* Highest Win Rate */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
           <SectionHeader 
@@ -284,9 +269,9 @@ export default function HomePage() {
             description="Heroes with the highest win probability today."
             color="text-amber-500" 
           />
-          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
             {loadingHeroes ? (
-              [1, 2, 3].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
+              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
             ) : (
               topWinRate.map((item, idx) => (
                 <div key={item.id} onClick={() => router.push(`/hero/${item.id}`)} className="cursor-pointer">
@@ -311,9 +296,9 @@ export default function HomePage() {
             description="The most popular heroes in pub matches."
             color="text-loss" 
           />
-          <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
             {loadingHeroes ? (
-              [1, 2, 3].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
+              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
             ) : (
               mostPicked.map((item, idx) => (
                 <div key={item.id} onClick={() => router.push(`/hero/${item.id}`)} className="cursor-pointer">
@@ -446,6 +431,14 @@ export default function HomePage() {
                   record={records.kills} 
                   icon="skull" 
                   color="#ef4444" 
+                  onPress={(id) => router.push(`/match/${id}`)} 
+                />
+                <RecordCard 
+                  title="Most Healing in a Match" 
+                  field="hero_healing" 
+                  record={records.healing} 
+                  icon="heart" 
+                  color="#3b82f6" 
                   onPress={(id) => router.push(`/match/${id}`)} 
                 />
               </div>

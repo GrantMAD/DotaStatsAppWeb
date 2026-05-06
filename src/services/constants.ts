@@ -249,3 +249,22 @@ export function getItemImageUrlByName(itemName: string): string {
   const cleanName = itemName.startsWith("item_") ? itemName.slice(5) : itemName;
   return `${STEAM_CDN_BASE}/apps/dota2/images/dota_react/items/${cleanName}.png`;
 }
+
+/**
+ * Returns the CDN URL for a league banner/image.
+ * Handles relative paths by prefixing with Steam CDN and ensuring .png extension.
+ */
+export function getLeagueImageUrl(banner: string | null): string | null {
+  if (!banner) return null;
+  if (banner.startsWith('http')) return banner;
+  
+  // Many league images from OpenDota are relative paths like /econ/leagues/...
+  let cleanPath = banner.startsWith('/') ? banner.slice(1) : banner;
+  
+  // Ensure extension is present for Steam CDN assets
+  if (!cleanPath.includes('.')) {
+    cleanPath += '.png';
+  }
+  
+  return `${STEAM_CDN_BASE}/apps/dota2/images/${cleanPath}`;
+}

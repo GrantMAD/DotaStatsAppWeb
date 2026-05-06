@@ -11,7 +11,10 @@ import { cn } from '@/utils/cn';
 
 type TabType = 'Friends' | 'Following';
 
+import { useRouter } from 'next/navigation';
+
 export default function FriendsPage() {
+  const router = useRouter();
   const { steamAccountId } = useSupabaseAuth();
   const { friends, following, loading, unfollowUser } = useFriends();
   const [activeTab, setActiveTab] = useState<TabType>('Friends');
@@ -33,7 +36,7 @@ export default function FriendsPage() {
   });
 
   const handleItemClick = (accountId: string) => {
-    console.log('Clicked player:', accountId);
+    router.push(`/profile/${accountId}`);
   };
 
   return (
