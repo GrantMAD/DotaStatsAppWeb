@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { NotificationBell } from './NotificationBell';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home },
@@ -32,11 +33,14 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 glass-card rounded-none border-y-0 border-l-0 z-50 hidden lg:flex flex-col p-6">
-      <div className="mb-10 flex items-center gap-3">
-        <div className="w-10 h-10 bg-gaming-accent rounded-xl flex items-center justify-center shadow-lg shadow-gaming-accent/20">
-          <span className="text-white font-bold text-xl">D</span>
+      <div className="mb-10 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gaming-accent rounded-xl flex items-center justify-center shadow-lg shadow-gaming-accent/20">
+            <span className="text-white font-bold text-xl">D</span>
+          </div>
+          <h1 className="text-xl font-bold text-gradient">DotaApp</h1>
         </div>
-        <h1 className="text-xl font-bold text-gradient">DotaApp</h1>
+        {user && <NotificationBell />}
       </div>
 
       <nav className="flex-1 space-y-2">

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { Suspense, useState } from 'react';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { 
   usePlayerProfile, 
   usePlayerWinLoss, 
@@ -20,11 +20,17 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { ChevronLeft, Plus, BarChart2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 
 function CompareContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const p1 = searchParams.get('p1');
   const p2 = searchParams.get('p2');
+
+  const [isSelectModalOpen, setIsSelectModalOpen] = useState(false);
+  const [selectingFor, setSelectingFor] = useState<'p1' | 'p2' | null>(null);
 
   // Player 1 Data
   const { data: profile1, isLoading: loadingP1 } = usePlayerProfile(p1);
@@ -44,6 +50,21 @@ function CompareContent() {
 
   const isLoading = (p1 && (loadingP1 || loadingTotals1 || loadingRecent1 || loadingPeers1)) || 
                     (p2 && (loadingP2 || loadingTotals2 || loadingRecent2 || loadingPeers2));
+
+  const handleOpenSelect = (target: 'p1' | 'p2') => {
+    setSelectingFor(target);
+    setIsSelectModalOpen(true);
+  };
+
+  const handleSelectPlayer = (accountId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (selectingFor) {
+      params.set(selectingFor, accountId);
+      router.push(`${pathname}?${params.toString()}`);
+    }
+    setIsSelectModalOpen(false);
+    setSelectingFor(null);
+  };
 
   const getWR = (wl: any) => {
     if (!wl || (wl.win + wl.lose) === 0) return 0;
@@ -94,10 +115,13 @@ function CompareContent() {
     };
   };
 
-  const renderPlayerHeader = (profile: any) => {
+  const renderPlayerHeader = (profile: any, target: 'p1' | 'p2') => {
     if (!profile) {
       return (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-white/10 rounded-2xl hover:bg-white/5 transition-colors group cursor-pointer">
+        <div 
+          onClick={() => handleOpenSelect(target)}
+          className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-white/10 rounded-2xl hover:bg-white/5 transition-colors group cursor-pointer"
+        >
            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
               <Plus className="w-8 h-8 text-white/40" />
            </div>
@@ -107,18 +131,21 @@ function CompareContent() {
     }
 
     return (
-      <div className="flex-1 flex flex-col items-center p-6">
+      <div 
+        onClick={() => handleOpenSelect(target)}
+        className="flex-1 flex flex-col items-center p-6 cursor-pointer group"
+      >
         <div className="relative">
           <img 
             src={profile.profile.avatarfull} 
             alt={profile.profile.personaname}
-            className="w-24 h-24 rounded-2xl border-2 border-purple-500/50 shadow-2xl shadow-purple-500/20"
+            className="w-24 h-24 rounded-2xl border-2 border-purple-500/50 shadow-2xl shadow-purple-500/20 group-hover:scale-105 transition-transform"
           />
           <div className="absolute -bottom-4 -right-4 scale-110">
             <RankBadge rankTier={profile.rank_tier} size={60} />
           </div>
         </div>
-        <h2 className="text-xl font-black mt-8 text-center text-white truncate max-w-full px-4">
+        <h2 className="text-xl font-black mt-8 text-center text-white truncate max-w-full px-4 group-hover:text-purple-400 transition-colors">
           {profile.profile.personaname}
         </h2>
       </div>
@@ -127,6 +154,13 @@ function CompareContent() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      <PlayerSelectModal 
+        isOpen={isSelectModalOpen}
+        onClose={() => setIsSelectModalOpen(false)}
+        onSelect={handleSelectPlayer}
+        title={selectingFor === 'p1' ? "Select First Player" : "Select Second Player"}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <Link href="/">
@@ -141,9 +175,9 @@ function CompareContent() {
       {/* Comparison Selector */}
       <GlassCard className="p-2">
         <div className="flex items-center">
-          {renderPlayerHeader(profile1)}
+          {renderPlayerHeader(profile1, 'p1')}
           <div className="w-px h-32 bg-white/10 self-center" />
-          {renderPlayerHeader(profile2)}
+          {renderPlayerHeader(profile2, 'p2')}
         </div>
       </GlassCard>
 

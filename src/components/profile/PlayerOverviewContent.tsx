@@ -386,7 +386,7 @@ export function PlayerOverviewContent({
         )}
 
         {activeTab === 'Social' && (
-           <WordCloud accountId={Number(accountId)} />
+           <WordCloud accountId={Number(accountId)} isPrivate={isPrivate} />
         )}
 
         {activeTab === 'Lifetime' && (

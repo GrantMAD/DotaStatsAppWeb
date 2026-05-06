@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Menu, Bell } from 'lucide-react';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { NotificationBell } from './NotificationBell';
 
 export function MobileHeader() {
   const { user } = useSupabaseAuth();
@@ -17,12 +18,7 @@ export function MobileHeader() {
       </div>
 
       <div className="flex items-center gap-4">
-        {user && (
-          <button className="relative text-gray-400 p-1">
-            <Bell className="w-6 h-6" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-black" />
-          </button>
-        )}
+        {user && <NotificationBell />}
         <div className="w-8 h-8 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden">
           {user?.user_metadata?.avatar_url ? (
             <img src={user.user_metadata.avatar_url} alt="avatar" className="w-full h-full object-cover" />

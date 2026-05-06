@@ -8,6 +8,7 @@ import { cn } from '@/utils/cn';
 
 interface WordCloudProps {
   accountId: number;
+  isPrivate?: boolean;
 }
 
 const COLORS = [
@@ -22,8 +23,8 @@ const COLORS = [
 
 const STOP_WORDS = new Set(['the', 'and', 'for', 'but', 'not', 'you', 'all', 'any', 'can', 'had']);
 
-export function WordCloud({ accountId }: WordCloudProps) {
-  const { data, isLoading } = usePlayerWordCloud(accountId);
+export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
+  const { data, isLoading, error } = usePlayerWordCloud(accountId);
 
   const processedWords = useMemo(() => {
     if (!data?.my_word_counts) return [];
@@ -104,9 +105,13 @@ export function WordCloud({ accountId }: WordCloudProps) {
     return (
       <GlassCard className="flex flex-col items-center justify-center py-16 text-center border-dashed">
         <MessageSquare className="w-12 h-12 text-gray-700 mb-4" />
-        <h3 className="text-white font-black text-xl mb-2 tracking-tight uppercase">Quiet Atmosphere</h3>
+        <h3 className="text-white font-black text-xl mb-2 tracking-tight uppercase">
+          {isPrivate ? 'Data Restricted' : 'Quiet Atmosphere'}
+        </h3>
         <p className="text-gray-500 text-sm max-w-xs font-medium">
-          No significant all-chat history found for this player. They might be a silent warrior!
+          {isPrivate 
+            ? "This profile is private, so we can't analyze their social persona or chat history."
+            : "No significant all-chat history found for this player. They might be a silent warrior!"}
         </p>
       </GlassCard>
     );
