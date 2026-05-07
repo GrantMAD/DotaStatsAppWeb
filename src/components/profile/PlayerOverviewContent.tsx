@@ -9,6 +9,7 @@ import {
 } from '@/services/opendota';
 import { HEROES, getHeroImageUrl, REGIONS } from '@/services/constants';
 import { cn } from '@/utils/cn';
+import Link from 'next/link';
 import { 
   History, 
   Users, 
@@ -25,7 +26,12 @@ import {
   BarChart2,
   GitCompare,
   EyeOff,
-  UserPlus
+  UserPlus,
+  Skull,
+  Shield,
+  Clock,
+  Swords,
+  Heart
 } from 'lucide-react';
 import RankBadge from '../ui/RankBadge';
 import { GlassCard } from '../ui/GlassCard';
@@ -44,7 +50,8 @@ import {
   useHeroStats,
   useEncounterHistory
 } from '@/hooks/useOpenDota';
-import { formatDistanceToNow } from 'date-fns';
+import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { formatDistanceToNow, fromUnixTime } from 'date-fns';
 
 type ProfileTab = 'Recent' | 'Heroes' | 'Network' | 'Social' | 'Lifetime';
 
@@ -67,8 +74,10 @@ export function PlayerOverviewContent({
   followingCount = 0,
   isPrivate = false,
 }: PlayerOverviewContentProps) {
+  const { steamAccountId: currentUserId } = useSupabaseAuth();
   const [activeTab, setActiveTab] = useState<ProfileTab>('Recent');
   const [recentView, setRecentView] = useState<'matches' | 'trends'>('matches');
+  const [networkSubTab, setNetworkSubTab] = useState<'Allies' | 'Opponents'>('Allies');
   const [limit, setLimit] = useState(20);
   const [filters, setFilters] = useState<PlayerMatchFilters>({ limit });
 
@@ -79,6 +88,7 @@ export function PlayerOverviewContent({
   const { data: totals = [], isLoading: totalsLoading } = usePlayerTotals(accountId);
   const { data: countsData, isLoading: countsLoading } = usePlayerCounts(accountId);
   const { data: allHeroStats = [] } = useHeroStats();
+  const peerHistory = useEncounterHistory(currentUserId, accountId);
 
   const trendMatches = (filters.win !== undefined || filters.date !== undefined || filters.game_mode !== undefined)
     ? filteredMatches 
@@ -91,6 +101,20 @@ export function PlayerOverviewContent({
     { id: 'Social', label: 'Social', icon: MessageSquare },
     { id: 'Lifetime', label: 'Record Book', icon: Activity },
   ];
+
+  const sortedPeers = useMemo(() => {
+    return [...peers]
+      .filter(p => networkSubTab === 'Allies' ? p.with_games > 0 : p.against_games > 0)
+      .sort((a, b) => networkSubTab === 'Allies' 
+        ? b.with_games - a.with_games 
+        : b.against_games - a.against_games
+      ).slice(0, 50);
+  }, [peers, networkSubTab]);
+
+  const duo = useMemo(() => [...peers].sort((a, b) => b.with_games - a.with_games)[0], [peers]);
+  const nemesis = useMemo(() => [...peers]
+    .filter(p => p.against_games >= 3)
+    .sort((a, b) => (a.against_win / a.against_games) - (b.against_win / b.against_games))[0], [peers]);
 
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-20">
@@ -176,6 +200,43 @@ export function PlayerOverviewContent({
         </div>
       </GlassCard>
 
+      {!isCurrentUser && peerHistory && (
+        <GlassCard className="p-6 border-gaming-accent/20 bg-gaming-accent/5">
+           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                 <div className="p-3 bg-gaming-accent/20 rounded-2xl text-gaming-accent">
+                    <History size={24} />
+                 </div>
+                 <div>
+                    <h3 className="text-white font-black uppercase tracking-tight">Your History</h3>
+                    <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Shared Matches: {peerHistory.games}</p>
+                 </div>
+              </div>
+
+              <div className="flex gap-8">
+                 <div className="text-center md:text-left">
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">As Ally</p>
+                    <p className="text-white font-black">{peerHistory.with_games} Games</p>
+                    <p className="text-win text-[10px] font-black">{peerHistory.with_win} Wins</p>
+                 </div>
+                 <div className="w-px h-full bg-white/5 hidden md:block" />
+                 <div className="text-center md:text-left">
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">As Opponent</p>
+                    <p className="text-white font-black">{peerHistory.against_games} Games</p>
+                    <p className="text-loss text-[10px] font-black">{peerHistory.against_games - peerHistory.against_win} Losses</p>
+                 </div>
+                 <div className="w-px h-full bg-white/5 hidden md:block" />
+                 <div className="text-center md:text-left">
+                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">Last Played</p>
+                    <p className="text-white font-black text-sm mt-0.5">
+                       {peerHistory.last_played ? formatDistanceToNow(fromUnixTime(peerHistory.last_played), { addSuffix: true }) : 'N/A'}
+                    </p>
+                 </div>
+              </div>
+           </div>
+        </GlassCard>
+      )}
+
       {isPrivate && (
         <div className="bg-amber-500/10 border border-amber-500/30 p-6 rounded-3xl flex items-center gap-6 group">
           <div className="p-3 rounded-2xl bg-amber-500 text-black">
@@ -252,52 +313,57 @@ export function PlayerOverviewContent({
                       const isWin = (isRadiant && match.radiant_win) || (!isRadiant && !match.radiant_win);
                       const hero = HEROES[match.hero_id];
                       return (
-                        <GlassCard 
+                        <Link 
                           key={match.match_id} 
-                          hoverable 
-                          className={cn(
-                            "p-4 border-l-4 group transition-all duration-300",
-                            isWin ? "border-l-win hover:bg-win/5" : "border-l-loss hover:bg-loss/5"
-                          )}
+                          href={`/match/${match.match_id}`}
+                          className="block group"
                         >
-                          <div className="flex items-center gap-6">
-                            <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
-                               <img src={getHeroImageUrl(match.hero_id)} alt="hero" className="w-full h-full object-cover" />
-                            </div>
-                            
-                            <div className="flex-1 min-w-0">
-                               <div className="flex items-center gap-2 mb-0.5">
-                                  <span className={cn("text-xs font-black uppercase tracking-widest", isWin ? "text-win" : "text-loss")}>
-                                    {isWin ? 'Victory' : 'Defeat'}
-                                  </span>
-                                  <span className="text-[10px] font-bold text-gray-700">•</span>
-                                  <span className="text-[10px] font-bold text-gray-500">
-                                    {formatDistanceToNow(new Date(match.start_time * 1000), { addSuffix: true })}
-                                  </span>
-                               </div>
-                               <h4 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
-                                 {hero?.localized_name || 'Unknown Hero'}
-                               </h4>
-                            </div>
+                          <GlassCard 
+                            hoverable 
+                            className={cn(
+                              "p-4 border-l-4 group transition-all duration-300",
+                              isWin ? "border-l-win hover:bg-win/5" : "border-l-loss hover:bg-loss/5"
+                            )}
+                          >
+                            <div className="flex items-center gap-6">
+                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                                 <img src={getHeroImageUrl(match.hero_id)} alt="hero" className="w-full h-full object-cover" />
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                 <div className="flex items-center gap-2 mb-0.5">
+                                    <span className={cn("text-xs font-black uppercase tracking-widest", isWin ? "text-win" : "text-loss")}>
+                                      {isWin ? 'Victory' : 'Defeat'}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-gray-700">•</span>
+                                    <span className="text-[10px] font-bold text-gray-500">
+                                      {formatDistanceToNow(new Date(match.start_time * 1000), { addSuffix: true })}
+                                    </span>
+                                 </div>
+                                 <h4 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+                                   {hero?.localized_name || 'Unknown Hero'}
+                                 </h4>
+                              </div>
 
-                            <div className="text-right shrink-0">
-                               <p className="text-lg font-black text-white leading-none">
-                                 {match.kills}<span className="text-gray-700 text-xs mx-1">/</span>
-                                 <span className="text-loss">{match.deaths}</span>
-                                 <span className="text-gray-700 text-xs mx-1">/</span>
-                                 {match.assists}
-                               </p>
-                               <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter mt-1">K / D / A</p>
-                            </div>
+                              <div className="text-right shrink-0">
+                                 <p className="text-lg font-black text-white leading-none">
+                                   {match.kills}<span className="text-gray-700 text-xs mx-1">/</span>
+                                   <span className="text-loss">{match.deaths}</span>
+                                   <span className="text-gray-700 text-xs mx-1">/</span>
+                                   {match.assists}
+                                 </p>
+                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter mt-1">K / D / A</p>
+                              </div>
 
-                            <div className="hidden md:flex flex-col items-end shrink-0 w-24">
-                               <p className="text-xs font-black text-white uppercase">{Math.floor(match.duration / 60)}:{String(match.duration % 60).padStart(2, '0')}</p>
-                               <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Duration</p>
-                            </div>
+                              <div className="hidden md:flex flex-col items-end shrink-0 w-24">
+                                 <p className="text-xs font-black text-white uppercase">{Math.floor(match.duration / 60)}:{String(match.duration % 60).padStart(2, '0')}</p>
+                                 <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Duration</p>
+                              </div>
 
-                            <ChevronRight size={20} className="text-gray-800 group-hover:text-white transition-colors" />
-                          </div>
-                        </GlassCard>
+                              <ChevronRight size={20} className="text-gray-800 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                            </div>
+                          </GlassCard>
+                        </Link>
                       );
                     })}
 
@@ -359,30 +425,144 @@ export function PlayerOverviewContent({
                 const info = HEROES[Number(hero.hero_id)];
                 const winRate = (hero.win / hero.games) * 100;
                 return (
-                  <GlassCard key={hero.hero_id} hoverable className="p-4 flex items-center gap-6 group">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
-                      <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                  <GlassCard key={hero.hero_id} hoverable className="p-4 flex flex-col gap-4 group">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
+                        <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-lg font-black text-white truncate group-hover:text-gaming-accent transition-colors">
+                          {info?.localized_name || 'Hero'}
+                        </h4>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className={cn(
+                          "text-xl font-black leading-none",
+                          winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-white"
+                        )}>
+                          {winRate.toFixed(1)}%
+                        </p>
+                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-lg font-black text-white truncate group-hover:text-gaming-accent transition-colors">
-                        {info?.localized_name || 'Hero'}
-                      </h4>
-                      <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className={cn(
-                        "text-xl font-black leading-none",
-                        winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-white"
-                      )}>
-                        {winRate.toFixed(1)}%
-                      </p>
-                      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
+
+                    <div className="grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
+                       <div className="text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
+                          <p className="text-xs font-black text-white">{(hero.kda || 0).toFixed(2)}</p>
+                       </div>
+                       <div className="text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Deaths</p>
+                          <p className="text-xs font-black text-loss">{(hero.avg_deaths || 0).toFixed(1)}</p>
+                       </div>
+                       <div className="text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Assists</p>
+                          <p className="text-xs font-black text-white">{(hero.avg_assists || 0).toFixed(1)}</p>
+                       </div>
+                       <div className="text-center">
+                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Last Played</p>
+                          <p className="text-xs font-black text-gray-400">
+                             {hero.last_played ? formatDistanceToNow(fromUnixTime(hero.last_played), { addSuffix: true }) : 'N/A'}
+                          </p>
+                       </div>
                     </div>
                   </GlassCard>
                 );
               })}
             </div>
           </div>
+        )}
+
+        {activeTab === 'Network' && (
+           <div className="space-y-8">
+              {/* Highlights */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 {duo && duo.with_games > 1 && (
+                    <GlassCard className="p-6 border-win/20 bg-win/5">
+                       <div className="flex items-center gap-4">
+                          <div className="p-3 bg-win/20 rounded-2xl text-win">
+                             <Heart size={24} />
+                          </div>
+                          <div>
+                             <h3 className="text-win font-black uppercase tracking-widest text-[10px] mb-1">Dynamic Duo</h3>
+                             <div className="flex items-center gap-3">
+                                <img src={duo.avatar} className="w-10 h-10 rounded-full border border-win/30" alt="duo" />
+                                <span className="text-lg font-black text-white truncate max-w-[150px]">{duo.personaname}</span>
+                             </div>
+                             <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{duo.with_games} Games Shared</p>
+                          </div>
+                       </div>
+                    </GlassCard>
+                 )}
+                 {nemesis && nemesis.against_games >= 3 && (
+                    <GlassCard className="p-6 border-loss/20 bg-loss/5 text-right flex-row-reverse">
+                       <div className="flex items-center gap-4 flex-row-reverse">
+                          <div className="p-3 bg-loss/20 rounded-2xl text-loss">
+                             <Swords size={24} />
+                          </div>
+                          <div>
+                             <h3 className="text-loss font-black uppercase tracking-widest text-[10px] mb-1">Nemesis</h3>
+                             <div className="flex items-center gap-3 flex-row-reverse">
+                                <img src={nemesis.avatar} className="w-10 h-10 rounded-full border border-loss/30" alt="nemesis" />
+                                <span className="text-lg font-black text-white truncate max-w-[150px]">{nemesis.personaname}</span>
+                             </div>
+                             <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{nemesis.against_games} Rivalries</p>
+                          </div>
+                       </div>
+                    </GlassCard>
+                 )}
+              </div>
+
+              {/* Network Tabs */}
+              <div className="flex bg-black/40 p-1 rounded-2xl border border-white/5 w-fit">
+                 {(['Allies', 'Opponents'] as const).map((tab) => (
+                    <button
+                       key={tab}
+                       onClick={() => setNetworkSubTab(tab)}
+                       className={cn(
+                          "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                          networkSubTab === tab ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-white"
+                       )}
+                    >
+                       {tab}
+                    </button>
+                 ))}
+              </div>
+
+              {/* Peers List */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {peersLoading ? (
+                    [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
+                 ) : sortedPeers.map((peer) => {
+                    const games = networkSubTab === 'Allies' ? peer.with_games : peer.against_games;
+                    const wins = networkSubTab === 'Allies' ? peer.with_win : (peer.against_games - peer.against_win);
+                    const winRate = (wins / games) * 100;
+                    return (
+                       <Link key={peer.account_id} href={`/profile/${peer.account_id}`} className="block group">
+                          <GlassCard hoverable className="p-4 flex items-center gap-4 transition-all duration-300">
+                             <img src={peer.avatarfull || peer.avatar} className="w-12 h-12 rounded-full border border-white/10 bg-zinc-900 group-hover:border-gaming-accent transition-colors" alt="avatar" />
+                             <div className="flex-1 min-w-0">
+                                <h4 className="text-sm font-black text-white truncate group-hover:text-gaming-accent transition-colors">{peer.personaname}</h4>
+                                <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
+                                   {games} {networkSubTab === 'Allies' ? 'Matches with' : 'Matches against'}
+                                </p>
+                             </div>
+                             <div className="text-right shrink-0">
+                                <p className={cn(
+                                   "text-lg font-black leading-none",
+                                   winRate >= 50 ? "text-win" : "text-loss"
+                                )}>
+                                   {winRate.toFixed(0)}%
+                                </p>
+                                <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
+                             </div>
+                          </GlassCard>
+                       </Link>
+                    );
+                 })}
+              </div>
+           </div>
         )}
 
         {activeTab === 'Social' && (

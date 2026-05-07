@@ -40,13 +40,19 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
           {/* Time scale */}
           <div className="relative h-10 border-b border-white/5 mb-8">
             <div className="absolute left-48 right-0 h-full">
-              {Array.from({ length: Math.ceil(durationMins / 5) + 1 }).map((_, i) => (
+              {/* Pre-game buffer indicator */}
+              <div className="absolute left-0 top-0 flex flex-col items-center -translate-x-1/2" style={{ left: '5%' }}>
+                <span className="text-[10px] font-black text-gray-700 uppercase">Start</span>
+                <div className="w-px h-2 bg-white/10 mt-1" />
+              </div>
+
+              {Array.from({ length: Math.ceil(durationMins / 5) }).map((_, i) => (
                 <div 
                   key={i} 
                   className="absolute top-0 flex flex-col items-center -translate-x-1/2"
-                  style={{ left: `${(i * 5 / durationMins) * 100}%` }}
+                  style={{ left: `${5 + ((i + 1) * 5 / durationMins) * 95}%` }}
                 >
-                  <span className="text-[10px] font-black text-gray-600">{i * 5}'</span>
+                  <span className="text-[10px] font-black text-gray-600">{(i + 1) * 5}'</span>
                   <div className="w-px h-2 bg-white/10 mt-1" />
                 </div>
               ))}
@@ -69,6 +75,10 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                 p.buyback_log.forEach(bb => events.push({ time: bb.time, type: 'buyback', key: 'buyback' }));
               }
 
+              // Collision handling logic similar to mobile
+              const bucketSize = 12; // pixels roughly
+              const usedPositions: Record<number, number> = {};
+
               return (
                 <div key={pIdx} className="flex items-center gap-4 group">
                   {/* Player Info */}
@@ -86,13 +96,20 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   </div>
 
                   {/* Event Lane */}
-                  <div className="flex-1 h-10 relative bg-white/[0.02] rounded-lg border border-white/[0.02] group-hover:bg-white/[0.05] transition-colors">
+                  <div className="flex-1 h-12 relative bg-white/[0.02] rounded-lg border border-white/[0.02] group-hover:bg-white/[0.05] transition-colors overflow-hidden">
                     {/* Horizontal grid line */}
                     <div className="absolute top-1/2 left-0 right-0 h-px bg-white/5 -translate-y-1/2" />
                     
                     {events.map((event, eIdx) => {
-                      const leftPos = (event.time / 60 / durationMins) * 100;
-                      if (leftPos < 0 || leftPos > 100) return null;
+                      const baseLeft = 5 + (event.time / 60 / durationMins) * 95;
+                      if (baseLeft < 0 || baseLeft > 100) return null;
+
+                      // Bucket-based offsetting
+                      const bucket = Math.round(baseLeft * 20); // 20 buckets per 100%
+                      const offsetCount = usedPositions[bucket] || 0;
+                      usedPositions[bucket] = offsetCount + 1;
+                      
+                      const leftPos = baseLeft + (offsetCount * 0.8); // Offset by 0.8% per item in same bucket
 
                       const buybackIcon = 'https://www.opendota.com/assets/images/dota2/buyback_icon.png';
                       const itemUrl = event.type === 'buyback' ? buybackIcon : getItemImageUrlByName(event.key);
@@ -104,15 +121,15 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                           style={{ left: `${leftPos}%` }}
                         >
                           <div className={cn(
-                            "p-0.5 rounded border transition-transform duration-300 hover:scale-150 hover:z-20",
-                            event.type === 'buyback' ? "bg-orange-500 border-orange-300 shadow-orange-500/20 shadow-lg" : "bg-zinc-800 border-zinc-600"
+                            "p-0.5 rounded border transition-transform duration-300 hover:scale-150 hover:z-20 shadow-xl",
+                            event.type === 'buyback' ? "bg-orange-500 border-orange-300 shadow-orange-500/20" : "bg-zinc-800 border-zinc-600"
                           )}>
                              <img src={itemUrl} className="w-6 h-4 rounded-[1px] object-cover" alt="ev" />
                           </div>
                           
                           {/* Tooltip */}
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover/event:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-30">
-                            <div className="bg-black/90 border border-white/10 px-2 py-1 rounded text-[8px] font-black text-white uppercase tracking-tighter">
+                            <div className="bg-black/90 border border-white/10 px-2 py-1 rounded text-[8px] font-black text-white uppercase tracking-tighter shadow-2xl backdrop-blur-md">
                                {Math.floor(event.time / 60)}:{String(event.time % 60).padStart(2, '0')} • {event.key.replace(/_/g, ' ')}
                             </div>
                           </div>
@@ -128,7 +145,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
       </GlassCard>
       
       <p className="text-center text-[9px] font-bold text-gray-600 uppercase tracking-widest italic">
-        Hover over items to see exact timings and details
+        Hover over items to see exact timings • Events are spaced to prevent overlapping
       </p>
     </div>
   );

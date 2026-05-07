@@ -1,12 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { MatchDetails, PickBan } from '@/services/opendota';
-import { HEROES, getHeroImageUrl, getItemImageUrl } from '@/services/constants';
+import { HEROES, getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
-import { ChevronRight, Shield, User } from 'lucide-react';
+import { ChevronRight, Shield, User, Users } from 'lucide-react';
 import Link from 'next/link';
+import { usePlayerPeers } from '@/hooks/useOpenDota';
+import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 
 interface DraftDisplayProps {
   picksBans: PickBan[];
@@ -95,9 +97,10 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
   );
 }
 
-function ScoreboardRow({ player }: { player: any }) {
+function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] }) {
   const isRadiant = player.player_slot < 128;
   const items = [player.item_0, player.item_1, player.item_2, player.item_3, player.item_4, player.item_5];
+  const peer = player.account_id ? userPeers.find(up => up.account_id === player.account_id) : null;
 
   return (
     <div className="group border-b border-white/5 hover:bg-white/5 transition-all duration-300">
@@ -115,16 +118,24 @@ function ScoreboardRow({ player }: { player: any }) {
             </div>
           </div>
           <div className="min-w-0">
-            {player.account_id ? (
-              <Link 
-                href={`/profile/${player.account_id}`}
-                className="text-sm font-black text-white hover:text-gaming-accent transition-colors truncate block"
-              >
-                {player.personaname}
-              </Link>
-            ) : (
-              <span className="text-sm font-black text-gray-500 italic">Anonymous</span>
-            )}
+            <div className="flex items-center gap-2">
+              {player.account_id ? (
+                <Link 
+                  href={`/profile/${player.account_id}`}
+                  className="text-sm font-black text-white hover:text-gaming-accent transition-colors truncate block"
+                >
+                  {player.personaname}
+                </Link>
+              ) : (
+                <span className="text-sm font-black text-gray-500 italic">Anonymous</span>
+              )}
+              {peer && (
+                <div className="bg-gaming-accent/20 px-1.5 py-0.5 rounded border border-gaming-accent/30 flex items-center gap-1 shrink-0">
+                  <Users size={8} className="text-gaming-accent" />
+                  <span className="text-gaming-accent text-[7px] font-black uppercase">History</span>
+                </div>
+              )}
+            </div>
             <p className="text-[10px] font-bold text-gray-600 uppercase tracking-tighter">
               Slot {player.player_slot}
             </p>
@@ -170,26 +181,66 @@ function ScoreboardRow({ player }: { player: any }) {
             <p className="text-[10px] font-bold text-orange-500/80">
               {player.tower_damage.toLocaleString()} <span className="text-[8px] text-gray-600 uppercase">TD</span>
             </p>
+            {player.hero_healing > 0 && (
+              <p className="text-[10px] font-bold text-blue-500/80">
+                {player.hero_healing.toLocaleString()} <span className="text-[8px] text-gray-600 uppercase">HH</span>
+              </p>
+            )}
           </div>
         </div>
 
         {/* Items Section */}
-        <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-xl border border-white/5">
-          <div className="flex gap-1">
-            {items.map((itemId, i) => (
-              <div key={i} className="w-8 h-6 rounded bg-zinc-900 overflow-hidden border border-white/5">
-                {itemId > 0 && (
-                  <img src={getItemImageUrl(itemId)} className="w-full h-full object-cover" alt="item" />
-                )}
-              </div>
-            ))}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-xl border border-white/5">
+            <div className="flex gap-1">
+              {items.map((itemId, i) => (
+                <div key={i} className="w-8 h-6 rounded bg-zinc-900 overflow-hidden border border-white/5">
+                  {itemId > 0 && (
+                    <img src={getItemImageUrl(itemId)} className="w-full h-full object-cover" alt="item" />
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="w-px h-6 bg-white/10 mx-1" />
+            <div className="w-7 h-7 rounded-full bg-zinc-900 overflow-hidden border border-white/10">
+               {player.item_neutral > 0 && (
+                 <img src={getItemImageUrl(player.item_neutral)} className="w-full h-full object-cover" alt="neutral" />
+               )}
+            </div>
           </div>
-          <div className="w-px h-6 bg-white/10 mx-1" />
-          <div className="w-7 h-7 rounded-full bg-zinc-900 overflow-hidden border border-white/10">
-             {player.item_neutral > 0 && (
-               <img src={getItemImageUrl(player.item_neutral)} className="w-full h-full object-cover" alt="neutral" />
-             )}
-          </div>
+
+          {/* Permanent Buffs */}
+          {player.permanent_buffs && player.permanent_buffs.length > 0 && (
+            <div className="flex items-center gap-1.5">
+              {player.permanent_buffs.map((buff: any, i: number) => {
+                let buffImg = null;
+                if (buff.permanent_buff === 'item_ultimate_scepter' || buff.permanent_buff === 'item_ultimate_scepter_2') {
+                  buffImg = 'ultimate_scepter';
+                } else if (buff.permanent_buff === 'item_aghanims_shard') {
+                  buffImg = 'aghanims_shard';
+                } else if (buff.permanent_buff === 'item_moon_shard') {
+                  buffImg = 'moon_shard';
+                }
+
+                if (!buffImg) return null;
+
+                return (
+                  <div key={i} className="relative group/buff">
+                    <img
+                      src={getItemImageUrlByName(buffImg)}
+                      className="w-5 h-4 rounded-sm border border-white/10 opacity-70 group-hover/buff:opacity-100 transition-opacity"
+                      alt={buffImg}
+                    />
+                    {buff.stack_count > 1 && (
+                      <div className="absolute -bottom-1 -right-1 bg-black/80 px-0.5 rounded border border-white/10">
+                        <span className="text-[6px] text-white font-black">{buff.stack_count}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -197,6 +248,9 @@ function ScoreboardRow({ player }: { player: any }) {
 }
 
 export function MatchScoreboard({ match }: { match: MatchDetails }) {
+  const { steamAccountId } = useSupabaseAuth();
+  const { data: userPeers = [] } = usePlayerPeers(steamAccountId);
+  
   const radiantPlayers = match.players.filter(p => p.player_slot < 128);
   const direPlayers = match.players.filter(p => p.player_slot >= 128);
 
@@ -215,7 +269,7 @@ export function MatchScoreboard({ match }: { match: MatchDetails }) {
           </div>
           <GlassCard className="p-0 overflow-hidden border-white/5">
             {radiantPlayers.map((p, i) => (
-              <ScoreboardRow key={i} player={p} />
+              <ScoreboardRow key={i} player={p} userPeers={userPeers} />
             ))}
           </GlassCard>
         </div>
@@ -228,7 +282,7 @@ export function MatchScoreboard({ match }: { match: MatchDetails }) {
           </div>
           <GlassCard className="p-0 overflow-hidden border-white/5">
             {direPlayers.map((p, i) => (
-              <ScoreboardRow key={i} player={p} />
+              <ScoreboardRow key={i} player={p} userPeers={userPeers} />
             ))}
           </GlassCard>
         </div>
