@@ -37,7 +37,7 @@ export function PlayerListItem({
       onClick={onClick}
       className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
     >
-      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white/5 bg-white/5">
+      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[var(--card-border)] bg-[var(--nav-hover)]">
         {player.avatarfull ? (
           <img 
             src={player.avatarfull} 
@@ -46,13 +46,13 @@ export function PlayerListItem({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <User className="w-6 h-6 text-white/10" />
+            <User className="w-6 h-6 text-foreground/10" />
           </div>
         )}
       </div>
 
       <div className="flex-1 min-w-0">
-        <h3 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+        <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
           {player.personaname}
         </h3>
         <p className="text-gray-500 text-xs mt-1">
@@ -69,7 +69,7 @@ export function PlayerListItem({
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
                 isFollowing 
-                  ? "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white" 
+                  ? "bg-[var(--nav-hover)] text-gray-400 hover:bg-[var(--glass-start)] hover:text-foreground" 
                   : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
               )}
             >

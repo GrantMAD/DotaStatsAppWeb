@@ -38,7 +38,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch }: Activity
       onClick={() => item.details.matchId && onPressMatch(item.details.matchId)}
     >
       <div 
-        className="w-12 h-12 rounded-full overflow-hidden border border-white/10 shrink-0"
+        className="w-12 h-12 rounded-full overflow-hidden border border-[var(--card-border)] shrink-0"
         onClick={(e) => {
           e.stopPropagation();
           onPressPlayer(item.player.account_id);
@@ -54,7 +54,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch }: Activity
             {item.type.replace('_', ' ')}
           </span>
         </div>
-        <p className="text-xs text-white leading-snug line-clamp-2">
+        <p className="text-xs text-foreground leading-snug line-clamp-2">
           <span className="font-bold text-gaming-accent">{item.player.name}</span> {getMessage()}
         </p>
         <p className="text-[10px] text-gray-500 mt-1">

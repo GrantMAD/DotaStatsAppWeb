@@ -4,6 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 
+import { SidebarProvider } from '@/context/SidebarContext'
+import { ThemeProvider } from '@/context/ThemeContext'
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
@@ -20,7 +23,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <SidebarProvider>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </SidebarProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

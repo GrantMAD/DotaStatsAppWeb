@@ -16,7 +16,7 @@ type SubTabType = 'Premium' | 'Professional' | 'Amateur';
 import { useRouter } from 'next/navigation';
 import { TeamDetailModal } from '@/components/pro/TeamDetailModal';
 import { LeagueDetailModal } from '@/components/pro/LeagueDetailModal';
-import { ProTeam } from '@/services/opendota';
+import { ProTeam, ProPlayer } from '@/services/opendota';
 
 export default function ProPage() {
   const router = useRouter();
@@ -128,7 +128,7 @@ export default function ProPage() {
             <Trophy className="w-8 h-8 text-gaming-accent" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-white italic uppercase tracking-wider">
+            <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Pro <span className="text-gaming-accent">Scene</span>
             </h1>
             <p className="text-gray-400">Track professional matches and player performances</p>
@@ -137,7 +137,7 @@ export default function ProPage() {
 
         <div className="flex flex-col gap-4">
           {/* Main Tabs */}
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 self-start md:self-end">
+          <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)] self-start md:self-end">
             {(['Tournaments', 'Teams', 'Players'] as TabType[]).map((tab) => (
               <button
                 key={tab}
@@ -149,7 +149,7 @@ export default function ProPage() {
                   "px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
                   activeTab === tab 
                     ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                    : "text-gray-500 hover:text-white"
+                    : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
                 )}
               >
                 {tab}
@@ -161,7 +161,7 @@ export default function ProPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 mb-8">
         {/* Sub Tabs */}
-        <div className="flex gap-2 bg-white/5 p-1 rounded-full border border-white/10 self-start">
+        <div className="flex gap-2 bg-[var(--nav-hover)] p-1 rounded-full border border-[var(--card-border)] self-start">
           {(['Premium', 'Professional', 'Amateur'] as SubTabType[]).map((tab) => (
             <button
               key={tab}
@@ -173,7 +173,7 @@ export default function ProPage() {
                 "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
                 subTab === tab 
                   ? "bg-gaming-accent text-white" 
-                  : "text-gray-500 hover:text-white"
+                  : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
               )}
             >
               {tab}
@@ -189,12 +189,12 @@ export default function ProPage() {
             placeholder={`Search ${subTab} ${activeTab.toLowerCase()}...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 transition-all"
+            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl py-3 pl-12 pr-12 text-foreground placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-[var(--card-bg)] transition-all"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
             >
               <X className="w-4 h-4 text-gray-500" />
             </button>
@@ -254,10 +254,10 @@ export default function ProPage() {
         (activeTab === 'Players' && filteredPlayers.length === 0)
       ) && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+          <div className="w-20 h-20 bg-[var(--nav-hover)] rounded-full flex items-center justify-center mb-6 border border-[var(--card-border)]">
             <Search className="w-10 h-10 text-gray-700" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">No results found</h3>
+          <h3 className="text-xl font-bold text-foreground mb-2">No results found</h3>
           <p className="text-gray-500 max-w-xs">
             We couldn't find any {activeTab.toLowerCase()} matching "{searchQuery}" in the {subTab} tier.
           </p>

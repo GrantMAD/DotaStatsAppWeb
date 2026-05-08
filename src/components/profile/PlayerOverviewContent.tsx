@@ -119,16 +119,16 @@ export function PlayerOverviewContent({
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-20">
       {/* Premium Header */}
-      <GlassCard className="p-8 border-white/20 relative overflow-hidden group">
+      <GlassCard className="p-8 border-[var(--card-border)] relative overflow-hidden group">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,var(--color-gaming-accent)_0%,transparent_50%)]" />
         
         <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
           <div className="relative">
-            <div className="w-32 h-32 rounded-full border-4 border-gaming-accent/50 p-1 bg-black/40 overflow-hidden shadow-2xl">
+            <div className="w-32 h-32 rounded-full border-4 border-gaming-accent/50 p-1 bg-[var(--nav-hover)] overflow-hidden shadow-2xl">
               {profile?.profile?.avatarfull ? (
                 <img src={profile.profile.avatarfull} alt="avatar" className="w-full h-full rounded-full object-cover" />
               ) : (
-                <div className="w-full h-full rounded-full bg-zinc-800 animate-pulse" />
+                <div className="w-full h-full rounded-full bg-[var(--nav-hover)] animate-pulse" />
               )}
             </div>
             <div className="absolute -bottom-2 -right-2 scale-125">
@@ -142,7 +142,7 @@ export function PlayerOverviewContent({
           </div>
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl font-black text-white mb-2 tracking-tight group-hover:text-gradient transition-all duration-500">
+            <h1 className="text-4xl font-black text-foreground mb-2 tracking-tight group-hover:text-gradient transition-all duration-500">
               {profile?.profile?.personaname || 'Loading...'}
             </h1>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-500 font-bold uppercase text-xs tracking-widest">
@@ -160,20 +160,20 @@ export function PlayerOverviewContent({
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
-                 <p className="text-white font-black">{friendsCount}</p>
+                 <p className="text-foreground font-black">{friendsCount}</p>
               </div>
-              <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
-                 <p className="text-white font-black">{followingCount}</p>
+                 <p className="text-foreground font-black">{followingCount}</p>
               </div>
               {!isCurrentUser && (
                 <Button size="sm" className="h-10 px-6">
                   <UserPlus size={16} /> Follow
                 </Button>
               )}
-              <Button variant="secondary" size="sm" className="h-10 px-6 border-purple-500/20 text-purple-400">
+              <Button variant="secondary" size="sm" className="h-10 px-6 border-[var(--card-border)] text-purple-400">
                 <GitCompare size={16} /> Compare
               </Button>
             </div>
@@ -191,7 +191,7 @@ export function PlayerOverviewContent({
                 </p>
                 <div className="flex gap-2 mt-1 justify-center md:justify-end text-[10px] font-black">
                   <span className="text-win">{wl.win}W</span>
-                  <span className="text-gray-700">/</span>
+                  <span className="text-foreground/20">/</span>
                   <span className="text-loss">{wl.lose}L</span>
                 </div>
               </div>
@@ -208,7 +208,7 @@ export function PlayerOverviewContent({
                     <History size={24} />
                  </div>
                  <div>
-                    <h3 className="text-white font-black uppercase tracking-tight">Your History</h3>
+                    <h3 className="text-foreground font-black uppercase tracking-tight">Your History</h3>
                     <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Shared Matches: {peerHistory.games}</p>
                  </div>
               </div>
@@ -216,19 +216,19 @@ export function PlayerOverviewContent({
               <div className="flex gap-8">
                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">As Ally</p>
-                    <p className="text-white font-black">{peerHistory.with_games} Games</p>
+                    <p className="text-foreground font-black">{peerHistory.with_games} Games</p>
                     <p className="text-win text-[10px] font-black">{peerHistory.with_win} Wins</p>
                  </div>
-                 <div className="w-px h-full bg-white/5 hidden md:block" />
+                 <div className="w-px h-full bg-[var(--card-border)] hidden md:block" />
                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">As Opponent</p>
-                    <p className="text-white font-black">{peerHistory.against_games} Games</p>
+                    <p className="text-foreground font-black">{peerHistory.against_games} Games</p>
                     <p className="text-loss text-[10px] font-black">{peerHistory.against_games - peerHistory.against_win} Losses</p>
                  </div>
-                 <div className="w-px h-full bg-white/5 hidden md:block" />
+                 <div className="w-px h-full bg-[var(--card-border)] hidden md:block" />
                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">Last Played</p>
-                    <p className="text-white font-black text-sm mt-0.5">
+                    <p className="text-foreground font-black text-sm mt-0.5">
                        {peerHistory.last_played ? formatDistanceToNow(fromUnixTime(peerHistory.last_played), { addSuffix: true }) : 'N/A'}
                     </p>
                  </div>
@@ -252,7 +252,7 @@ export function PlayerOverviewContent({
       )}
 
       {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-black/40 backdrop-blur-xl border border-white/5 rounded-2xl sticky top-4 z-40 shadow-2xl">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--card-border)] sticky top-4 z-40 shadow-2xl rounded-2xl">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -264,7 +264,7 @@ export function PlayerOverviewContent({
                 "flex-1 min-w-[120px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-[0.1em]",
                 isActive 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]" 
-                  : "text-gray-500 hover:text-white hover:bg-white/5"
+                  : "text-gray-500 hover:text-foreground hover:bg-[var(--nav-hover)]"
               )}
             >
               <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
@@ -280,12 +280,12 @@ export function PlayerOverviewContent({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex bg-black/40 p-1 rounded-xl border border-white/5">
+                <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)]">
                   <button 
                     onClick={() => setRecentView('matches')}
                     className={cn(
                       "px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all",
-                      recentView === 'matches' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-white"
+                      recentView === 'matches' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
                     )}
                   >
                     History
@@ -294,7 +294,7 @@ export function PlayerOverviewContent({
                     onClick={() => setRecentView('trends')}
                     className={cn(
                       "px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all",
-                      recentView === 'trends' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-white"
+                      recentView === 'trends' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
                     )}
                   >
                     Analysis
@@ -326,7 +326,7 @@ export function PlayerOverviewContent({
                             )}
                           >
                             <div className="flex items-center gap-6">
-                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-[var(--card-border)] shrink-0">
                                  <img src={getHeroImageUrl(match.hero_id)} alt="hero" className="w-full h-full object-cover" />
                               </div>
                               
@@ -335,32 +335,32 @@ export function PlayerOverviewContent({
                                     <span className={cn("text-xs font-black uppercase tracking-widest", isWin ? "text-win" : "text-loss")}>
                                       {isWin ? 'Victory' : 'Defeat'}
                                     </span>
-                                    <span className="text-[10px] font-bold text-gray-700">•</span>
+                                    <span className="text-[10px] font-bold text-foreground/20">•</span>
                                     <span className="text-[10px] font-bold text-gray-500">
                                       {formatDistanceToNow(new Date(match.start_time * 1000), { addSuffix: true })}
                                     </span>
                                  </div>
-                                 <h4 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+                                 <h4 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
                                    {hero?.localized_name || 'Unknown Hero'}
                                  </h4>
                               </div>
 
                               <div className="text-right shrink-0">
-                                 <p className="text-lg font-black text-white leading-none">
-                                   {match.kills}<span className="text-gray-700 text-xs mx-1">/</span>
+                                 <p className="text-lg font-black text-foreground leading-none">
+                                   {match.kills}<span className="text-foreground/20 text-xs mx-1">/</span>
                                    <span className="text-loss">{match.deaths}</span>
-                                   <span className="text-gray-700 text-xs mx-1">/</span>
+                                   <span className="text-foreground/20 text-xs mx-1">/</span>
                                    {match.assists}
                                  </p>
                                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter mt-1">K / D / A</p>
                               </div>
 
                               <div className="hidden md:flex flex-col items-end shrink-0 w-24">
-                                 <p className="text-xs font-black text-white uppercase">{Math.floor(match.duration / 60)}:{String(match.duration % 60).padStart(2, '0')}</p>
-                                 <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Duration</p>
+                                 <p className="text-xs font-black text-foreground uppercase">{Math.floor(match.duration / 60)}:{String(match.duration % 60).padStart(2, '0')}</p>
+                                 <p className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Duration</p>
                               </div>
 
-                              <ChevronRight size={20} className="text-gray-800 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                              <ChevronRight size={20} className="text-foreground/20 group-hover:text-foreground group-hover:translate-x-1 transition-all" />
                             </div>
                           </GlassCard>
                         </Link>
@@ -392,7 +392,7 @@ export function PlayerOverviewContent({
             <div className="space-y-8">
                {/* Quick Stats sidebar? */}
                <GlassCard className="p-6">
-                 <h3 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                 <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
                    <LayoutGrid size={16} className="text-gaming-accent" /> Match Breakdown
                  </h3>
                  <div className="space-y-6">
@@ -401,9 +401,9 @@ export function PlayerOverviewContent({
                        <div className="flex items-center justify-between mb-2">
                           <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ranked vs. Unranked</span>
                        </div>
-                       <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden flex">
+                       <div className="h-2 w-full bg-[var(--nav-hover)] rounded-full overflow-hidden flex">
                           <div className="h-full bg-gaming-accent" style={{ width: '60%' }} />
-                          <div className="h-full bg-white/10" style={{ width: '40%' }} />
+                          <div className="h-full bg-[var(--card-border)]" style={{ width: '40%' }} />
                        </div>
                     </div>
                  </div>
@@ -415,7 +415,7 @@ export function PlayerOverviewContent({
         {activeTab === 'Heroes' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between mb-2 px-4">
-              <h2 className="text-xl font-black text-white uppercase tracking-tight">Most Played Heroes</h2>
+              <h2 className="text-xl font-black text-foreground uppercase tracking-tight">Most Played Heroes</h2>
               <p className="text-xs font-bold text-gray-500">Showing top 50 by match count</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -427,11 +427,11 @@ export function PlayerOverviewContent({
                 return (
                   <GlassCard key={hero.hero_id} hoverable className="p-4 flex flex-col gap-4 group">
                     <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-white/10 shrink-0 shadow-lg">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-[var(--card-border)] shrink-0 shadow-lg">
                         <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-black text-white truncate group-hover:text-gaming-accent transition-colors">
+                        <h4 className="text-lg font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">
                           {info?.localized_name || 'Hero'}
                         </h4>
                         <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
@@ -439,7 +439,7 @@ export function PlayerOverviewContent({
                       <div className="text-right shrink-0">
                         <p className={cn(
                           "text-xl font-black leading-none",
-                          winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-white"
+                           winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-foreground"
                         )}>
                           {winRate.toFixed(1)}%
                         </p>
@@ -447,10 +447,10 @@ export function PlayerOverviewContent({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-2 pt-4 border-t border-white/5">
+                    <div className="grid grid-cols-4 gap-2 pt-4 border-t border-[var(--card-border)]">
                        <div className="text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
-                          <p className="text-xs font-black text-white">{(hero.kda || 0).toFixed(2)}</p>
+                          <p className="text-xs font-black text-foreground">{(hero.kda || 0).toFixed(2)}</p>
                        </div>
                        <div className="text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Deaths</p>
@@ -458,7 +458,7 @@ export function PlayerOverviewContent({
                        </div>
                        <div className="text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Assists</p>
-                          <p className="text-xs font-black text-white">{(hero.avg_assists || 0).toFixed(1)}</p>
+                          <p className="text-xs font-black text-foreground">{(hero.avg_assists || 0).toFixed(1)}</p>
                        </div>
                        <div className="text-center">
                           <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Last Played</p>
@@ -488,7 +488,7 @@ export function PlayerOverviewContent({
                              <h3 className="text-win font-black uppercase tracking-widest text-[10px] mb-1">Dynamic Duo</h3>
                              <div className="flex items-center gap-3">
                                 <img src={duo.avatar} className="w-10 h-10 rounded-full border border-win/30" alt="duo" />
-                                <span className="text-lg font-black text-white truncate max-w-[150px]">{duo.personaname}</span>
+                                <span className="text-lg font-black text-foreground truncate max-w-[150px]">{duo.personaname}</span>
                              </div>
                              <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{duo.with_games} Games Shared</p>
                           </div>
@@ -505,7 +505,7 @@ export function PlayerOverviewContent({
                              <h3 className="text-loss font-black uppercase tracking-widest text-[10px] mb-1">Nemesis</h3>
                              <div className="flex items-center gap-3 flex-row-reverse">
                                 <img src={nemesis.avatar} className="w-10 h-10 rounded-full border border-loss/30" alt="nemesis" />
-                                <span className="text-lg font-black text-white truncate max-w-[150px]">{nemesis.personaname}</span>
+                                <span className="text-lg font-black text-foreground truncate max-w-[150px]">{nemesis.personaname}</span>
                              </div>
                              <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{nemesis.against_games} Rivalries</p>
                           </div>
@@ -515,14 +515,14 @@ export function PlayerOverviewContent({
               </div>
 
               {/* Network Tabs */}
-              <div className="flex bg-black/40 p-1 rounded-2xl border border-white/5 w-fit">
+              <div className="flex bg-[var(--nav-hover)] p-1 rounded-2xl border border-[var(--card-border)] w-fit">
                  {(['Allies', 'Opponents'] as const).map((tab) => (
                     <button
                        key={tab}
                        onClick={() => setNetworkSubTab(tab)}
                        className={cn(
                           "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                          networkSubTab === tab ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-white"
+                          networkSubTab === tab ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
                        )}
                     >
                        {tab}
@@ -541,9 +541,9 @@ export function PlayerOverviewContent({
                     return (
                        <Link key={peer.account_id} href={`/profile/${peer.account_id}`} className="block group">
                           <GlassCard hoverable className="p-4 flex items-center gap-4 transition-all duration-300">
-                             <img src={peer.avatarfull || peer.avatar} className="w-12 h-12 rounded-full border border-white/10 bg-zinc-900 group-hover:border-gaming-accent transition-colors" alt="avatar" />
+                             <img src={peer.avatarfull || peer.avatar} className="w-12 h-12 rounded-full border border-[var(--card-border)] bg-[var(--nav-hover)] group-hover:border-gaming-accent transition-colors" alt="avatar" />
                              <div className="flex-1 min-w-0">
-                                <h4 className="text-sm font-black text-white truncate group-hover:text-gaming-accent transition-colors">{peer.personaname}</h4>
+                                <h4 className="text-sm font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">{peer.personaname}</h4>
                                 <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
                                    {games} {networkSubTab === 'Allies' ? 'Matches with' : 'Matches against'}
                                 </p>
@@ -576,10 +576,10 @@ export function PlayerOverviewContent({
               ) : totals.map((total) => (
                 <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
-                   <h3 className="text-4xl font-black text-white mb-2 group-hover:scale-110 transition-transform duration-500">
+                   <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
                      {Math.round(total.sum / total.n).toLocaleString()}
                    </h3>
-                   <p className="text-xs font-bold text-gray-600 uppercase italic">Lifetime Average</p>
+                   <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
                 </GlassCard>
               ))}
            </div>

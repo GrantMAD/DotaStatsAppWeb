@@ -20,8 +20,8 @@ export function Button({
 }: ButtonProps) {
   const variants = {
     primary: 'bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20 hover:brightness-110',
-    secondary: 'bg-white/5 text-white hover:bg-white/10 border border-white/10',
-    ghost: 'text-gray-400 hover:text-white hover:bg-white/5',
+    secondary: 'bg-[var(--nav-hover)] text-foreground hover:bg-[var(--glass-start)] border border-[var(--card-border)]',
+    ghost: 'text-gray-400 hover:text-foreground hover:bg-[var(--nav-hover)]',
     danger: 'bg-loss text-white shadow-lg shadow-loss/20 hover:brightness-110',
   };
 

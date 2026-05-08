@@ -26,7 +26,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent }: UserLis
       className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
     >
       <div className="relative">
-        <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 bg-white/5">
+        <div className="w-12 h-12 rounded-full overflow-hidden border border-[var(--card-border)] bg-[var(--nav-hover)]">
           {avatarUrl ? (
             <img 
               src={avatarUrl} 
@@ -38,7 +38,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent }: UserLis
               {isLoading ? (
                 <div className="w-4 h-4 border-2 border-gaming-accent border-t-transparent rounded-full animate-spin" />
               ) : (
-                <User className="w-6 h-6 text-white/10" />
+                <User className="w-6 h-6 text-foreground/10" />
               )}
             </div>
           )}
@@ -46,7 +46,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent }: UserLis
       </div>
 
       <div className="flex-1 min-w-0">
-        <h3 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+        <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
           {appUser.steam_name || profile?.profile?.personaname || (isLoading ? 'Loading...' : 'Unknown Player')}
         </h3>
         <p className="text-gray-500 text-xs mt-1">

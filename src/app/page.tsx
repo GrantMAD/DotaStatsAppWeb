@@ -8,7 +8,6 @@ import {
   Star, 
   Ban, 
   Radio, 
-  Medal, 
   Search,
   Users,
   ChevronRight,
@@ -23,7 +22,6 @@ import {
   useHeroStats, 
   useProMatches, 
   useLiveGames, 
-  useGlobalRecordsMulti, 
   usePlayerProfile 
 } from '@/hooks/useOpenDota';
 import { useActivityFeed } from '@/hooks/useActivityFeed';
@@ -33,7 +31,6 @@ import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
 import { ProMatchCard } from '@/components/ui/ProMatchCard';
 import { LiveGameCard } from '@/components/ui/LiveGameCard';
-import { RecordCard } from '@/components/ui/RecordCard';
 import { ActivityFeedItem } from '@/components/ui/ActivityFeedItem';
 import { Button } from '@/components/ui/Button';
 import { GlassCard } from '@/components/ui/GlassCard';
@@ -99,7 +96,6 @@ export default function HomePage() {
   const { data: heroesData = [], isLoading: loadingHeroes } = useHeroStats();
   const { data: proMatchesData = [], isLoading: loadingMatches } = useProMatches(10);
   const { data: liveGames = [] } = useLiveGames();
-  const { data: multiRecords = {} } = useGlobalRecordsMulti(['gold_per_min', 'kills', 'hero_healing']);
   const { activities, isLoading: loadingActivity } = useActivityFeed();
 
   const { data: userProfile } = usePlayerProfile(steamAccountId || null);
@@ -127,18 +123,14 @@ export default function HomePage() {
     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
 
-  const records = {
-    gpm: multiRecords.gold_per_min?.[0] || null,
-    kills: multiRecords.kills?.[0] || null,
-    healing: multiRecords.hero_healing?.[0] || null
-  };
+
 
   return (
     <div className="pb-20">
       {/* Hero Section */}
       <div className="relative mb-12 pt-12 lg:pt-20">
         <div className="max-w-none">
-          <h1 className="text-5xl lg:text-8xl font-black text-white mb-6 tracking-tighter uppercase italic">
+          <h1 className="text-5xl lg:text-8xl font-black text-foreground mb-6 tracking-tighter uppercase italic">
             Dota <span className="text-gradient">Intelligence.</span>
           </h1>
           <p className="text-gray-400 text-lg lg:text-2xl font-medium leading-relaxed mb-10">
@@ -172,7 +164,7 @@ export default function HomePage() {
               <input
                 type="text"
                 placeholder="Search players, heroes, matches..."
-                className="w-full h-16 bg-white/5 border border-white/10 rounded-2xl pl-16 pr-6 text-white text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-white/10 transition-all"
+                className="w-full h-16 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-[var(--glass-start)] transition-all"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -232,7 +224,7 @@ export default function HomePage() {
                 "px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all",
                 activeBracket === Number(b) 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                  : "bg-white/5 text-gray-500 hover:bg-white/10 hover:text-white"
+                  : "bg-[var(--nav-hover)] text-gray-500 hover:bg-[var(--glass-start)] hover:text-foreground"
               )}
             >
               {name}
@@ -352,10 +344,10 @@ export default function HomePage() {
         <div className="lg:col-span-1">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-white/5 text-loss">
+              <div className="p-2 rounded-lg bg-[var(--nav-hover)] text-loss">
                 <Ban className="w-5 h-5" />
               </div>
-              <h3 className="text-xl font-black text-white">Top Pro Bans</h3>
+              <h3 className="text-xl font-black text-foreground">Top Pro Bans</h3>
             </div>
           </div>
           <div className="space-y-2">
@@ -367,10 +359,10 @@ export default function HomePage() {
                 onClick={() => router.push(`/hero/${hero.id}`)}
               >
                 <span className="w-6 text-sm font-black text-loss italic">{idx + 1}</span>
-                <div className="w-12 h-7 rounded overflow-hidden bg-white/5">
+                <div className="w-12 h-7 rounded overflow-hidden bg-[var(--nav-hover)]">
                   <img src={`${STEAM_CDN_BASE}${hero.img}`} alt={hero.name} className="w-full h-full object-cover" />
                 </div>
-                <span className="flex-1 text-sm font-bold text-white truncate">{hero.name}</span>
+                <span className="flex-1 text-sm font-bold text-foreground truncate">{hero.name}</span>
                 <span className="text-xs font-black text-loss bg-loss/10 px-2 py-1 rounded-lg">
                   {hero.picks}
                 </span>
@@ -378,7 +370,7 @@ export default function HomePage() {
             ))}
             <button 
               onClick={() => setIsBansExpanded(!isBansExpanded)}
-              className="w-full py-3 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-white transition-colors"
+              className="w-full py-3 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-foreground transition-colors"
             >
               {isBansExpanded ? <><ChevronUp className="inline w-4 h-4 mr-1" /> Show Less</> : <><ChevronDown className="inline w-4 h-4 mr-1" /> Show All Bans</>}
             </button>
@@ -391,10 +383,10 @@ export default function HomePage() {
            {liveGames.length > 0 && (
              <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-white/5 text-loss">
+                  <div className="p-2 rounded-lg bg-[var(--nav-hover)] text-loss">
                     <Radio className="w-5 h-5 animate-pulse" />
                   </div>
-                  <h3 className="text-xl font-black text-white">Live High-MMR</h3>
+                  <h3 className="text-xl font-black text-foreground">Live High-MMR</h3>
                 </div>
                 <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
                   {liveGames.map((game) => (
@@ -408,41 +400,7 @@ export default function HomePage() {
              </div>
            )}
 
-           {/* Global Records */}
-           <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-white/5 text-amber-500">
-                  <Medal className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-black text-white">All-Time Records</h3>
-              </div>
-              <div className="space-y-4">
-                <RecordCard 
-                  title="Highest GPM Ever" 
-                  field="gold_per_min" 
-                  record={records.gpm} 
-                  icon="cash" 
-                  color="#eab308" 
-                  onPress={(id) => router.push(`/match/${id}`)} 
-                />
-                <RecordCard 
-                  title="Most Kills in a Match" 
-                  field="kills" 
-                  record={records.kills} 
-                  icon="skull" 
-                  color="#ef4444" 
-                  onPress={(id) => router.push(`/match/${id}`)} 
-                />
-                <RecordCard 
-                  title="Most Healing in a Match" 
-                  field="hero_healing" 
-                  record={records.healing} 
-                  icon="heart" 
-                  color="#3b82f6" 
-                  onPress={(id) => router.push(`/match/${id}`)} 
-                />
-              </div>
-           </div>
+
         </div>
       </div>
     </div>

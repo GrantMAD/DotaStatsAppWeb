@@ -49,7 +49,7 @@ function WinRateBar({ picks, wins, label, colorClass }: { picks: number; wins: n
           {wr.toFixed(1)}% <span className="mx-1">·</span> {(picks / 1000).toFixed(1)}k matches
         </span>
       </div>
-      <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+      <div className="h-2 bg-[var(--nav-hover)] rounded-full overflow-hidden border border-[var(--card-border)]">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${barWidth}%` }}
@@ -73,7 +73,7 @@ function StatBox({ label, value, subValue, icon: Icon, color }: { label: string;
           {Icon && <Icon className={cn("w-4 h-4", color || "text-gray-600")} />}
         </div>
         <div className="flex items-baseline gap-2">
-          <p className={cn("text-3xl font-black italic tracking-tighter", color || "text-white")}>{value}</p>
+          <p className={cn("text-3xl font-black italic tracking-tighter", color || "text-foreground")}>{value}</p>
           {subValue && <p className="text-xs font-bold text-gray-500 uppercase">{subValue}</p>}
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function HeroDetailPage() {
   if (!hero) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <h1 className="text-4xl font-black text-white mb-4">Hero Not Found</h1>
+        <h1 className="text-4xl font-black text-foreground mb-4">Hero Not Found</h1>
         <button onClick={() => router.back()} className="text-gaming-accent font-bold hover:underline">
           Go Back
         </button>
@@ -144,16 +144,16 @@ export default function HeroDetailPage() {
       {/* Back Button */}
       <button 
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-8 group"
+        className="flex items-center gap-2 text-gray-500 hover:text-foreground transition-colors mb-8 group"
       >
-        <div className="p-2 rounded-lg bg-white/5 group-hover:bg-gaming-accent group-hover:text-white transition-all">
+        <div className="p-2 rounded-lg bg-[var(--nav-hover)] group-hover:bg-gaming-accent group-hover:text-white transition-all">
           <ArrowLeft className="w-4 h-4" />
         </div>
         <span className="text-xs font-black uppercase tracking-widest">Back to Meta</span>
       </button>
 
       {/* Hero Header */}
-      <div className="relative rounded-[2rem] overflow-hidden border border-white/10 mb-12 shadow-2xl shadow-black/50">
+      <div className="relative rounded-[2rem] overflow-hidden border border-[var(--card-border)] mb-12 shadow-2xl shadow-black/50">
         <div className="aspect-[21/9] md:aspect-[3/1] relative">
           <img 
             src={`${STEAM_CDN_BASE}${hero.img}`} 
@@ -168,23 +168,23 @@ export default function HeroDetailPage() {
                 <div className={cn("px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", attrColors[hero.primary_attr])}>
                   {attrNames[hero.primary_attr]}
                 </div>
-                <div className="px-4 py-1 rounded-full bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/10">
+                <div className="px-4 py-1 rounded-full bg-[var(--nav-hover)] text-foreground text-[10px] font-black uppercase tracking-widest border border-[var(--card-border)]">
                   {hero.attack_type}
                 </div>
               </div>
-              <h1 className="text-6xl md:text-8xl font-black text-white italic tracking-tighter uppercase">
+              <h1 className="text-6xl md:text-8xl font-black text-foreground italic tracking-tighter uppercase">
                 {hero.localized_name}
               </h1>
               <div className="flex flex-wrap gap-2 mt-6">
                 {hero.roles.map(role => (
-                  <span key={role} className="px-3 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                  <span key={role} className="px-3 py-1 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-lg text-[10px] font-bold text-gray-400 uppercase tracking-wider">
                     {role}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-6 min-w-[200px]">
+            <div className="bg-[var(--glass-start)] backdrop-blur-xl border border-[var(--card-border)] rounded-3xl p-6 min-w-[200px]">
               <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 italic">Global Pub Win Rate</p>
               <div className="flex items-baseline gap-2">
                 <span className={cn("text-5xl font-black italic tracking-tighter", pubWinRate >= 50 ? "text-win" : "text-loss")}>
@@ -324,7 +324,7 @@ export default function HeroDetailPage() {
               })}
             </div>
             
-            <div className="mt-8 p-4 rounded-2xl bg-white/5 border border-white/5">
+            <div className="mt-8 p-4 rounded-2xl bg-[var(--nav-hover)] border border-[var(--card-border)]">
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
                 Win rates are calculated using data from the last 30 days of public matchmaking. Brackets with fewer than 1,000 games may show higher variance.
               </p>

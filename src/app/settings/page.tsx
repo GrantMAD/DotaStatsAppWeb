@@ -15,9 +15,13 @@ import {
   AlertTriangle,
   Database,
   RefreshCw,
-  HardDrive
+  HardDrive,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { useTheme } from '@/context/ThemeContext';
 import { useSteamAuth } from '@/hooks/useSteamAuth';
 import { createClient } from '@/utils/supabase/client';
 import { Modal } from '@/components/ui/Modal';
@@ -39,19 +43,19 @@ function SettingsItem({ icon: Icon, label, value, onClick, type = 'link', color 
     <div 
       onClick={onClick}
       className={cn(
-        "flex items-center gap-4 p-4 border-b border-white/5 last:border-0 transition-colors",
-        onClick ? "cursor-pointer hover:bg-white/5" : ""
+        "flex items-center gap-4 p-4 border-b border-[var(--card-border)] last:border-0 transition-colors",
+        onClick ? "cursor-pointer hover:bg-[var(--nav-hover)]" : ""
       )}
     >
       <div className={cn(
         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-        type === 'danger' ? "bg-red-500/10" : "bg-white/5"
+        type === 'danger' ? "bg-red-500/10" : "bg-[var(--nav-hover)]"
       )}>
         <Icon className={cn("w-5 h-5", type === 'danger' ? "text-red-500" : color)} />
       </div>
       
       <div className="flex-1 min-w-0">
-        <h3 className={cn("font-bold", type === 'danger' ? "text-red-500" : "text-white")}>{label}</h3>
+        <h3 className={cn("font-bold", type === 'danger' ? "text-red-500" : "text-foreground")}>{label}</h3>
         {sublabel && <p className="text-gray-500 text-xs mt-0.5">{sublabel}</p>}
       </div>
 
@@ -60,7 +64,7 @@ function SettingsItem({ icon: Icon, label, value, onClick, type = 'link', color 
         {type === 'toggle' && (
           <div className={cn(
             "w-10 h-5 rounded-full relative transition-colors",
-            value ? "bg-gaming-accent" : "bg-white/10"
+            value ? "bg-gaming-accent" : "bg-[var(--nav-hover)] border border-[var(--card-border)]"
           )}>
             <div className={cn(
               "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
@@ -90,8 +94,10 @@ export default function SettingsPage() {
     signOut, 
     refreshProfile 
   } = useSupabaseAuth();
-  const { login: steamLogin, isLoading: steamLoading } = useSteamAuth();
+  const { theme, setTheme } = useTheme();
+  const { signInWithSteam: steamLogin } = useSteamAuth();
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isSteamModalOpen, setIsSteamModalOpen] = useState(false);
   const [storageSize, setStorageSize] = useState('0 KB');
 
@@ -173,7 +179,7 @@ export default function SettingsPage() {
           <Settings className="w-8 h-8 text-gaming-accent" />
         </div>
         <div>
-          <h1 className="text-4xl font-black text-white italic uppercase tracking-wider">
+          <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
             App <span className="text-gaming-accent">Settings</span>
           </h1>
           <p className="text-gray-400">Customize your experience and manage your account</p>
@@ -201,6 +207,13 @@ export default function SettingsPage() {
 
         <SectionLabel label="Preferences" />
         <div className="glass-card overflow-hidden">
+          <SettingsItem 
+            icon={theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor} 
+            label="App Theme" 
+            value={theme.charAt(0).toUpperCase() + theme.slice(1)}
+            type="text"
+            onClick={() => setIsThemeModalOpen(true)}
+          />
           <SettingsItem 
             icon={List} 
             label="Match History Limit" 
@@ -284,11 +297,45 @@ export default function SettingsPage() {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-[10px] font-black text-white/10 uppercase tracking-[0.4em]">
+          <p className="text-[10px] font-black text-foreground/10 uppercase tracking-[0.4em]">
             Made by Dota fans for Dota fans
           </p>
         </div>
       </div>
+
+      {/* Theme Modal */}
+      <Modal 
+        isOpen={isThemeModalOpen} 
+        onClose={() => setIsThemeModalOpen(false)}
+        title="App Theme"
+      >
+        <div className="space-y-3">
+          <p className="text-gray-400 text-sm mb-6">Choose how DotaApp looks on your device.</p>
+          {(['light', 'dark', 'system'] as const).map((option) => (
+            <button
+              key={option}
+              onClick={() => {
+                setTheme(option);
+                setIsThemeModalOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
+                theme === option 
+                  ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
+                  : "bg-[var(--nav-hover)] border-[var(--card-border)] text-gray-500 hover:border-foreground/20 hover:text-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                {option === 'light' && <Sun className="w-5 h-5" />}
+                {option === 'dark' && <Moon className="w-5 h-5" />}
+                {option === 'system' && <Monitor className="w-5 h-5" />}
+                <span className="font-bold capitalize">{option}</span>
+              </div>
+              {theme === option && <CheckCircle2 className="w-5 h-5 text-gaming-accent" />}
+            </button>
+          ))}
+        </div>
+      </Modal>
 
       {/* Match Limit Modal */}
       <Modal 
@@ -316,8 +363,8 @@ export default function SettingsPage() {
               className={cn(
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
                 matchLimit === option 
-                  ? "bg-gaming-accent/10 border-gaming-accent text-white" 
-                  : "bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white"
+                  ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
+                  : "bg-[var(--nav-hover)] border-[var(--card-border)] text-gray-500 hover:border-foreground/20 hover:text-foreground"
               )}
             >
               <span className="font-bold">{option} Matches</span>
@@ -337,7 +384,7 @@ export default function SettingsPage() {
           <div className="w-20 h-20 bg-green-500/10 rounded-3xl flex items-center justify-center mb-6 border border-green-500/20 shadow-lg shadow-green-500/10">
             <Trophy className="w-10 h-10 text-green-500" />
           </div>
-          <h3 className="text-2xl font-black text-white mb-2 italic">ACCOUNT CONNECTED</h3>
+          <h3 className="text-2xl font-black text-foreground mb-2 italic">ACCOUNT CONNECTED</h3>
           <p className="text-gray-400 mb-8 max-w-xs">Your Steam account (ID: {steamAccountId}) is successfully linked to your DotaApp profile.</p>
           
           <div className="w-full space-y-3">
@@ -346,7 +393,7 @@ export default function SettingsPage() {
                 setIsSteamModalOpen(false);
                 steamLogin();
               }}
-              className="w-full py-4 bg-white/5 border border-white/10 rounded-xl font-bold text-white hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl font-bold text-foreground hover:bg-[var(--glass-start)] transition-all flex items-center justify-center gap-2"
             >
               Change Account
             </button>

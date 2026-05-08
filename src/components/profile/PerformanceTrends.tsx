@@ -112,7 +112,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
 
   if (!matches || matches.length < 3) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[var(--card-border)] rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
           Not enough match data to calculate trends. Play more matches or clear filters!
@@ -132,7 +132,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
       <GlassCard className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn("p-1.5 rounded-lg bg-white/5", colorClass)}>
+            <div className={cn("p-1.5 rounded-lg bg-[var(--nav-hover)]", colorClass)}>
               <Icon size={16} />
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span>
@@ -149,7 +149,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
         
         <div className="flex items-baseline justify-between mt-auto">
           <div>
-            <h4 className="text-3xl font-black text-white leading-none">
+            <h4 className="text-3xl font-black text-foreground leading-none">
               {isInteger ? Math.round(recent).toLocaleString() : recent.toFixed(1)}
             </h4>
             <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">Recent Avg</p>
@@ -169,7 +169,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-white tracking-tight uppercase">Form Analysis</h2>
+          <h2 className="text-2xl font-black text-foreground tracking-tight uppercase">Form Analysis</h2>
           <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Performance trend over last 20 matches</p>
         </div>
         <div className="p-3 bg-gaming-accent/10 text-gaming-accent rounded-2xl">
@@ -184,11 +184,11 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
           </div>
           <div className="flex-1">
             <h3 className="text-orange-400 font-black uppercase tracking-widest text-sm mb-1">On Fire</h3>
-            <p className="text-white/90 font-bold text-sm leading-snug">
+            <p className="text-foreground font-bold text-sm leading-snug">
               Your current performance is significantly above your lifetime average! Keep the momentum going.
             </p>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/5 to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-foreground/5 to-transparent pointer-events-none" />
         </div>
       )}
 
@@ -204,10 +204,10 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
           <GlassCard className="h-[300px] flex flex-col p-6">
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">KDA Momentum</h3>
+                <h3 className="text-sm font-black text-foreground uppercase tracking-widest">KDA Momentum</h3>
                 <p className="text-gray-500 text-[10px] font-bold mt-1">Match by match trajectory</p>
               </div>
-              <div className="bg-white/5 px-3 py-1 rounded-lg text-gaming-accent text-[10px] font-black uppercase">
+              <div className="bg-[var(--nav-hover)] px-3 py-1 rounded-lg text-gaming-accent text-[10px] font-black uppercase">
                 Trend Visualizer
               </div>
             </div>
@@ -234,9 +234,9 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="glass-card bg-black/80 p-2 border-white/10 shadow-2xl">
+                          <div className="glass-card bg-[var(--card-bg)] p-2 border-[var(--card-border)] shadow-2xl">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
-                            <p className="text-xl font-black text-white">{payload[0].value} KDA</p>
+                            <p className="text-xl font-black text-foreground">{payload[0].value} KDA</p>
                           </div>
                         );
                       }
@@ -256,7 +256,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
                 <Users size={16} className="text-blue-500" />
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Diversity</span>
              </div>
-             <h4 className="text-2xl font-black text-white">{trends.uniqueHeroes} Heroes</h4>
+             <h4 className="text-2xl font-black text-foreground">{trends.uniqueHeroes} Heroes</h4>
              <div className="bg-blue-500/10 px-2 py-1 rounded-lg self-start">
                <span className="text-blue-500 text-[9px] font-black uppercase tracking-tighter">
                  {((trends.uniqueHeroes / 20) * 100).toFixed(0)}% Flex Rate
@@ -269,7 +269,7 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
                 <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Current Role</span>
                 <Map size={16} className="text-gaming-accent" />
              </div>
-             <h4 className="text-2xl font-black text-white">
+             <h4 className="text-2xl font-black text-foreground">
                 {trends.topLane === 1 ? 'Safelane' : 
                  trends.topLane === 2 ? 'Midlane' : 
                  trends.topLane === 3 ? 'Offlane' : 

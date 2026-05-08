@@ -30,8 +30,8 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
     <Modal isOpen={isOpen} onClose={onClose} title="Team Details" size="xl">
       <div className="space-y-8 max-h-[80vh] overflow-y-auto pr-2 no-scrollbar">
         {/* Team Hero Section */}
-        <div className="flex flex-col items-center text-center p-6 bg-white/5 rounded-3xl border border-white/10">
-          <div className="w-24 h-24 rounded-2xl bg-black/40 flex items-center justify-center border border-white/10 shadow-2xl mb-6">
+        <div className="flex flex-col items-center text-center p-6 bg-[var(--nav-hover)] rounded-3xl border border-[var(--card-border)]">
+          <div className="w-24 h-24 rounded-2xl bg-[var(--card-bg)] flex items-center justify-center border border-[var(--card-border)] shadow-2xl mb-6">
             {team.logo_url ? (
               <img src={team.logo_url} alt={team.name} className="w-16 h-16 object-contain" />
             ) : (
@@ -39,7 +39,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
             )}
           </div>
           
-          <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">
+          <h2 className="text-3xl font-black text-foreground italic uppercase tracking-tighter mb-2">
             {team.name}
           </h2>
           <div className="flex items-center gap-3 text-gaming-accent font-black uppercase text-xs tracking-widest">
@@ -51,11 +51,11 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
           </div>
           
           <div className="flex gap-4 mt-8">
-            <div className="bg-black/40 border border-white/5 px-6 py-3 rounded-2xl text-center">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-6 py-3 rounded-2xl text-center">
               <p className="text-win text-2xl font-black italic">{team.wins}</p>
               <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Wins</p>
             </div>
-            <div className="bg-black/40 border border-white/5 px-6 py-3 rounded-2xl text-center">
+            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-6 py-3 rounded-2xl text-center">
               <p className="text-loss text-2xl font-black italic">{team.losses}</p>
               <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Losses</p>
             </div>
@@ -74,7 +74,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
             {/* Roster Section */}
             {roster.length > 0 && (
               <div>
-                <h3 className="text-lg font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
+                <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-6 flex items-center gap-2">
                   <Shield size={20} className="text-gaming-accent" /> Current Roster
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,7 +95,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
             {/* Recent Matches Section */}
             {matches.length > 0 && (
               <div>
-                <h3 className="text-lg font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
+                <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-6 flex items-center gap-2">
                   <Trophy size={20} className="text-amber-500" /> Recent Pro Matches
                 </h3>
                 <div className="grid grid-cols-1 gap-4">

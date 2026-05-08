@@ -94,7 +94,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
 
   if (isLoading) {
     return (
-      <div className="h-64 flex flex-col items-center justify-center border border-white/5 rounded-3xl">
+      <div className="h-64 flex flex-col items-center justify-center border border-[var(--card-border)] rounded-3xl bg-[var(--nav-hover)]">
         <div className="w-8 h-8 border-2 border-gaming-accent border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Analyzing chat history...</p>
       </div>
@@ -105,7 +105,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
     return (
       <GlassCard className="flex flex-col items-center justify-center py-16 text-center border-dashed">
         <MessageSquare className="w-12 h-12 text-gray-700 mb-4" />
-        <h3 className="text-white font-black text-xl mb-2 tracking-tight uppercase">
+        <h3 className="text-foreground font-black text-xl mb-2 tracking-tight uppercase">
           {isPrivate ? 'Data Restricted' : 'Quiet Atmosphere'}
         </h3>
         <p className="text-gray-500 text-sm max-w-xs font-medium">
@@ -122,19 +122,19 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {persona && (
-        <GlassCard className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 border-white/20">
-          <div className={cn("p-4 rounded-2xl bg-white/5", persona.color)}>
+        <GlassCard className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 border-[var(--card-border)]">
+          <div className={cn("p-4 rounded-2xl bg-[var(--nav-hover)]", persona.color)}>
             <Icon size={32} />
           </div>
           <div className="flex-1">
             <h4 className="text-xs font-black text-gaming-accent uppercase tracking-[0.2em] mb-1">Social Persona</h4>
-            <h3 className="text-2xl font-black text-white tracking-tight mb-2 uppercase">{persona.title}</h3>
+            <h3 className="text-2xl font-black text-foreground tracking-tight mb-2 uppercase">{persona.title}</h3>
             <p className="text-gray-400 font-medium">{persona.description}</p>
           </div>
         </GlassCard>
       )}
 
-      <GlassCard className="h-[400px] flex flex-col items-center justify-center relative overflow-hidden bg-black/40">
+      <GlassCard className="h-[400px] flex flex-col items-center justify-center relative overflow-hidden bg-[var(--nav-hover)]">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--color-gaming-accent)_0%,transparent_70%)]" />
         
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 max-w-4xl p-10 relative z-10">

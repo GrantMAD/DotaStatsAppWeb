@@ -17,8 +17,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { ChevronLeft, Plus, BarChart2 } from 'lucide-react';
-import Link from 'next/link';
+import { Plus, BarChart2 } from 'lucide-react';
 import Image from 'next/image';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 
@@ -120,12 +119,12 @@ function CompareContent() {
       return (
         <div 
           onClick={() => handleOpenSelect(target)}
-          className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-white/10 rounded-2xl hover:bg-white/5 transition-colors group cursor-pointer"
+          className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-[var(--card-border)] rounded-2xl hover:bg-[var(--nav-hover)] transition-colors group cursor-pointer"
         >
-           <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Plus className="w-8 h-8 text-white/40" />
+           <div className="w-16 h-16 rounded-full bg-[var(--nav-hover)] flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Plus className="w-8 h-8 text-foreground/40" />
            </div>
-           <p className="mt-4 text-xs font-black uppercase text-white/40 tracking-widest">Select Player</p>
+           <p className="mt-4 text-xs font-black uppercase text-foreground/40 tracking-widest">Select Player</p>
         </div>
       );
     }
@@ -145,7 +144,7 @@ function CompareContent() {
             <RankBadge rankTier={profile.rank_tier} size={60} />
           </div>
         </div>
-        <h2 className="text-xl font-black mt-8 text-center text-white truncate max-w-full px-4 group-hover:text-purple-400 transition-colors">
+        <h2 className="text-xl font-black mt-8 text-center text-foreground truncate max-w-full px-4 group-hover:text-purple-400 transition-colors">
           {profile.profile.personaname}
         </h2>
       </div>
@@ -153,7 +152,7 @@ function CompareContent() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto py-8 space-y-8">
       <PlayerSelectModal 
         isOpen={isSelectModalOpen}
         onClose={() => setIsSelectModalOpen(false)}
@@ -162,21 +161,25 @@ function CompareContent() {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <Link href="/">
-          <Button variant="ghost" className="gap-2">
-            <ChevronLeft className="w-4 h-4" /> Back to Dashboard
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-black italic uppercase tracking-tighter">Compare Players</h1>
-        <div className="w-32" /> {/* Spacer */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-gaming-accent/20 rounded-2xl border border-gaming-accent/50">
+            <BarChart2 className="w-8 h-8 text-gaming-accent" />
+          </div>
+          <div>
+            <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
+              Player <span className="text-gaming-accent">Comparison</span>
+            </h1>
+            <p className="text-gray-400">Compare statistics and head-to-head performance</p>
+          </div>
+        </div>
       </div>
 
       {/* Comparison Selector */}
       <GlassCard className="p-2">
         <div className="flex items-center">
           {renderPlayerHeader(profile1, 'p1')}
-          <div className="w-px h-32 bg-white/10 self-center" />
+          <div className="w-px h-32 bg-[var(--card-border)] self-center" />
           {renderPlayerHeader(profile2, 'p2')}
         </div>
       </GlassCard>
@@ -184,7 +187,7 @@ function CompareContent() {
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-white/50 font-bold animate-pulse">Calculating Stats...</p>
+          <p className="text-foreground/50 font-bold animate-pulse">Calculating Stats...</p>
         </div>
       ) : profile1 && profile2 ? (
         <div className="space-y-12">
@@ -242,17 +245,17 @@ function CompareContent() {
               
               <div className="flex justify-around items-center">
                 <div className="text-center">
-                  <p className="text-white/40 text-[10px] uppercase font-black mb-2 tracking-widest">As Allies</p>
+                  <p className="text-foreground/40 text-[10px] uppercase font-black mb-2 tracking-widest">As Allies</p>
                   <p className="text-3xl font-black italic">{getMatchup(peers1 || [], p2)?.with}</p>
                 </div>
-                <div className="w-px h-12 bg-white/10" />
+                <div className="w-px h-12 bg-[var(--card-border)]" />
                 <div className="text-center">
-                  <p className="text-white/40 text-[10px] uppercase font-black mb-2 tracking-widest">As Opponents</p>
+                  <p className="text-foreground/40 text-[10px] uppercase font-black mb-2 tracking-widest">As Opponents</p>
                   <p className="text-3xl font-black italic">{getMatchup(peers1 || [], p2)?.against}</p>
                 </div>
               </div>
               
-              <p className="text-white/30 text-[10px] text-center mt-8 italic">
+              <p className="text-foreground/30 text-[10px] text-center mt-8 italic">
                 *History from {profile1?.profile.personaname}&apos;s perspective
               </p>
             </GlassCard>
@@ -267,19 +270,19 @@ function CompareContent() {
                 const h2 = heroes2?.sort((a, b) => b.games - a.games)[idx];
                 
                 return (
-                  <GlassCard key={idx} className="p-6 flex items-center justify-between group hover:bg-white/5 transition-all">
+                  <GlassCard key={idx} className="p-6 flex items-center justify-between group hover:bg-[var(--nav-hover)] transition-all">
                     {/* Hero 1 */}
                     <div className="flex-1 flex items-center gap-4">
                       {h1 ? (
                         <>
                           <img 
                             src={getHeroImageUrl(Number(h1.hero_id))} 
-                            className="w-16 h-16 rounded-xl border-2 border-white/10 group-hover:border-purple-500/50 transition-colors"
+                            className="w-16 h-16 rounded-xl border-2 border-[var(--card-border)] group-hover:border-purple-500/50 transition-colors"
                             alt="Hero"
                           />
                           <div>
                             <p className="text-xl font-black italic">{(h1.win / h1.games * 100).toFixed(0)}% WR</p>
-                            <p className="text-white/40 text-xs font-bold">{h1.games} games</p>
+                            <p className="text-foreground/40 text-xs font-bold">{h1.games} games</p>
                           </div>
                         </>
                       ) : (
@@ -287,7 +290,7 @@ function CompareContent() {
                       )}
                     </div>
 
-                    <div className="px-8 text-white/20 font-black text-2xl italic">#{idx + 1}</div>
+                    <div className="px-8 text-foreground/20 font-black text-2xl italic">#{idx + 1}</div>
 
                     {/* Hero 2 */}
                     <div className="flex-1 flex items-center justify-end gap-4 text-right">
@@ -295,16 +298,16 @@ function CompareContent() {
                         <>
                           <div>
                             <p className="text-xl font-black italic">{(h2.win / h2.games * 100).toFixed(0)}% WR</p>
-                            <p className="text-white/40 text-xs font-bold">{h2.games} games</p>
+                            <p className="text-foreground/40 text-xs font-bold">{h2.games} games</p>
                           </div>
                           <img 
                             src={getHeroImageUrl(Number(h2.hero_id))} 
-                            className="w-16 h-16 rounded-xl border-2 border-white/10 group-hover:border-purple-500/50 transition-colors"
+                            className="w-16 h-16 rounded-xl border-2 border-[var(--card-border)] group-hover:border-purple-500/50 transition-colors"
                             alt="Hero"
                           />
                         </>
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-white/5" />
+                        <div className="w-16 h-16 rounded-xl bg-[var(--nav-hover)]" />
                       )}
                     </div>
                   </GlassCard>
@@ -315,12 +318,12 @@ function CompareContent() {
         </div>
       ) : (
         <div className="py-32 flex flex-col items-center justify-center text-center space-y-8">
-          <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center">
-            <BarChart2 className="w-12 h-12 text-white/20" />
+          <div className="w-24 h-24 rounded-full bg-[var(--nav-hover)] flex items-center justify-center">
+            <BarChart2 className="w-12 h-12 text-foreground/20" />
           </div>
           <div className="max-w-md space-y-2">
             <h3 className="text-2xl font-black uppercase italic">Ready to Compare?</h3>
-            <p className="text-white/40 font-bold">Select two players from your friends list or search to see how they stack up against each other.</p>
+            <p className="text-foreground/40 font-bold">Select two players from your friends list or search to see how they stack up against each other.</p>
           </div>
           <Button 
             onClick={() => handleOpenSelect('p1')}

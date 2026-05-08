@@ -47,14 +47,14 @@ export default function FriendsPage() {
             <Users className="w-8 h-8 text-gaming-accent" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-white italic uppercase tracking-wider">
+            <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Community <span className="text-gaming-accent">Network</span>
             </h1>
             <p className="text-gray-400">Manage your friends and followed players</p>
           </div>
         </div>
 
-        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 self-start md:self-end">
+        <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)] self-start md:self-end">
           <button
             onClick={() => {
               setActiveTab('Friends');
@@ -64,7 +64,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Friends' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-white"
+                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
             )}
           >
             <UserCheck className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Following' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-white"
+                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
             )}
           >
             <UserPlus className="w-4 h-4" />
@@ -97,12 +97,12 @@ export default function FriendsPage() {
             placeholder={activeTab === 'Friends' ? "Search by name or ID..." : "Search by ID..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-12 text-white placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 transition-all"
+            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl py-3 pl-12 pr-12 text-foreground placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-[var(--card-bg)] transition-all"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-white/10 rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
             >
               <X className="w-4 h-4 text-gray-500" />
             </button>
@@ -133,10 +133,10 @@ export default function FriendsPage() {
                     steamAccountId && steamAccountId !== friend.users.steam_account_id ? (
                       <Link
                         href={`/compare?p1=${steamAccountId}&p2=${friend.users.steam_account_id}`}
-                        className="p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg text-purple-400 hover:bg-purple-500 hover:text-white transition-all shadow-lg shadow-purple-500/10"
+                        className="p-2.5 bg-gaming-accent/10 border border-gaming-accent/20 rounded-xl text-gaming-accent hover:bg-gaming-accent hover:text-white transition-all shadow-lg shadow-gaming-accent/10 hover:shadow-gaming-accent/20 group/compare"
                         title="Compare Stats"
                       >
-                        <GitCompare className="w-4 h-4" />
+                        <GitCompare className="w-4 h-4 group-hover/compare:rotate-12 transition-transform" />
                       </Link>
                     ) : undefined
                   }
@@ -157,15 +157,15 @@ export default function FriendsPage() {
                       {steamAccountId && steamAccountId !== follow.followed_steam_id && (
                         <Link
                           href={`/compare?p1=${steamAccountId}&p2=${follow.followed_steam_id}`}
-                          className="p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg text-purple-400 hover:bg-purple-500 hover:text-white transition-all shadow-lg shadow-purple-500/10"
+                          className="p-2.5 bg-gaming-accent/10 border border-gaming-accent/20 rounded-xl text-gaming-accent hover:bg-gaming-accent hover:text-white transition-all shadow-lg shadow-gaming-accent/10 hover:shadow-gaming-accent/20 group/compare"
                           title="Compare Stats"
                         >
-                          <GitCompare className="w-4 h-4" />
+                          <GitCompare className="w-4 h-4 group-hover/compare:rotate-12 transition-transform" />
                         </Link>
                       )}
                       <button
                         onClick={() => unfollowUser(follow.followed_steam_id)}
-                        className="px-3 py-1.5 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
+                        className="px-3 py-1.5 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
                       >
                         Unfollow
                       </button>
@@ -182,10 +182,10 @@ export default function FriendsPage() {
           (activeTab === 'Following' && filteredFollowing.length === 0)
         ) && (
           <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+            <div className="w-24 h-24 bg-[var(--nav-hover)] rounded-full flex items-center justify-center mb-6 border border-[var(--card-border)]">
               <Users className="w-12 h-12 text-gray-500" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2">
+            <h3 className="text-2xl font-bold text-foreground mb-2">
               {searchQuery 
                 ? `No matches found for "${searchQuery}"`
                 : (activeTab === 'Friends' 

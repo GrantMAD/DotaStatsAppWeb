@@ -4,24 +4,7 @@ import React from 'react';
 import { User } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-interface ProPlayer {
-  account_id: number;
-  steamid: string;
-  avatar: string;
-  avatarmedium: string;
-  avatarfull: string;
-  personaname: string;
-  last_match_time: string;
-  full_name: string;
-  name: string;
-  country_code: string;
-  team_id: number;
-  team_name: string;
-  team_tag: string;
-  is_locked: boolean;
-  is_pro: boolean;
-  locked_until: number;
-}
+import { ProPlayer } from '@/services/opendota';
 
 interface ProPlayerItemProps {
   player: ProPlayer;
@@ -53,12 +36,12 @@ export function ProPlayerItem({ player, onClick }: ProPlayerItemProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <User className="w-6 h-6 text-white/10" />
+            <User className="w-6 h-6 text-foreground/10" />
             </div>
           )}
         </div>
         {player.country_code && (
-          <div className="absolute -bottom-1 -right-1 bg-black/80 rounded px-1 text-xs border border-white/10 leading-none py-0.5">
+          <div className="absolute -bottom-1 -right-1 bg-[var(--card-bg)] rounded px-1 text-xs border border-[var(--card-border)] leading-none py-0.5">
             {getFlagEmoji(player.country_code)}
           </div>
         )}
@@ -66,7 +49,7 @@ export function ProPlayerItem({ player, onClick }: ProPlayerItemProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
             {player.personaname}
           </h3>
         </div>

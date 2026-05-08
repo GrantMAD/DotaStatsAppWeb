@@ -28,7 +28,7 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
     <Modal isOpen={isOpen} onClose={onClose} title="Tournament Details" size="xl">
       <div className="space-y-8 max-h-[80vh] overflow-y-auto pr-2 no-scrollbar">
         {/* League Hero Section */}
-        <div className="relative rounded-3xl overflow-hidden border border-white/10 group">
+        <div className="relative rounded-3xl overflow-hidden border border-[var(--card-border)] group">
           {bannerUrl && !imageError ? (
             <img 
               src={bannerUrl} 
@@ -37,8 +37,8 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
               className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700" 
             />
           ) : (
-            <div className="h-48 bg-black/40 flex items-center justify-center">
-              <Trophy className="w-20 h-20 text-white/5" />
+            <div className="h-48 bg-[var(--nav-hover)] flex items-center justify-center">
+              <Trophy className="w-20 h-20 text-foreground/5" />
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
@@ -54,22 +54,22 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-white/5 text-gray-500">
+           <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
                  <Info size={16} />
               </div>
               <div>
                  <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">League ID</p>
-                 <p className="text-white font-bold">{league.leagueid}</p>
+                 <p className="text-foreground font-bold">{league.leagueid}</p>
               </div>
            </div>
-           <div className="bg-white/5 border border-white/10 p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-white/5 text-gray-500">
+           <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
                  <Map size={16} />
               </div>
               <div>
                  <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Region</p>
-                 <p className="text-white font-bold uppercase">{league.region || 'International'}</p>
+                 <p className="text-foreground font-bold uppercase">{league.region || 'International'}</p>
               </div>
            </div>
         </div>
@@ -83,7 +83,7 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
           </div>
         ) : (
           <div className="space-y-6">
-            <h3 className="text-lg font-black text-white uppercase tracking-tight mb-6 flex items-center gap-2">
+            <h3 className="text-lg font-black text-foreground uppercase tracking-tight mb-6 flex items-center gap-2">
               <Calendar size={20} className="text-gaming-accent" /> Recent Match Results
             </h3>
             
@@ -112,7 +112,7 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--nav-hover)] rounded-3xl border border-dashed border-[var(--card-border)]">
                  <Calendar className="w-12 h-12 text-gray-700 mb-4" />
                  <p className="text-gray-500 font-bold italic">No recent match data available for this tournament</p>
               </div>

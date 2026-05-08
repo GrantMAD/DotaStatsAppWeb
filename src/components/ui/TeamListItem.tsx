@@ -3,16 +3,7 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
 
-interface ProTeam {
-  team_id: number;
-  rating: number;
-  wins: number;
-  losses: number;
-  last_match_time: number;
-  name: string;
-  tag: string;
-  logo_url: string;
-}
+import { ProTeam } from '@/services/opendota';
 
 interface TeamListItemProps {
   team: ProTeam;
@@ -39,7 +30,7 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
         </span>
       </div>
 
-      <div className="w-14 h-14 bg-black/40 rounded-xl border border-white/5 p-2 flex items-center justify-center overflow-hidden">
+      <div className="w-14 h-14 bg-[var(--nav-hover)] rounded-xl border border-[var(--card-border)] p-2 flex items-center justify-center overflow-hidden">
         {team.logo_url ? (
           <img 
             src={team.logo_url} 
@@ -47,13 +38,13 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
             className="w-full h-full object-contain"
           />
         ) : (
-          <Shield className="w-6 h-6 text-white/10" />
+          <Shield className="w-6 h-6 text-foreground/10" />
         )}
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="text-white font-bold truncate group-hover:text-gaming-accent transition-colors">
+          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
             {team.name}
           </h3>
           {team.tag && (

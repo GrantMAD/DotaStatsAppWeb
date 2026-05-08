@@ -427,12 +427,19 @@ export interface ProPlayer {
   account_id: number;
   steamid: string;
   avatar: string;
+  avatarmedium?: string;
+  avatarfull?: string;
   personaname: string;
   full_name: string;
+  name?: string;
+  last_match_time?: string;
   team_id: number;
   team_name: string;
   team_tag: string;
   country_code: string;
+  is_locked?: boolean;
+  is_pro?: boolean;
+  locked_until?: number;
 }
 
 export interface ProTeam {

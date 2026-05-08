@@ -59,7 +59,7 @@ export function LeagueCard({ league, onClick }: LeagueCardProps) {
       </div>
 
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="text-white font-bold text-lg line-clamp-2 mb-4 group-hover:text-gaming-accent transition-colors">
+        <h3 className="text-foreground font-bold text-lg line-clamp-2 mb-4 group-hover:text-gaming-accent transition-colors">
           {league.name}
         </h3>
         

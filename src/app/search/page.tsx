@@ -105,21 +105,21 @@ export default function SearchPage() {
             <Search className="w-8 h-8 text-gaming-accent" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-white italic uppercase tracking-wider">
+            <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Player <span className="text-gaming-accent">Search</span>
             </h1>
             <p className="text-gray-400">Find players, heroes, or match IDs from the archives</p>
           </div>
         </div>
 
-        <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 self-start md:self-end">
+        <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)] self-start md:self-end">
           <button
             onClick={() => setSearchMode('global')}
             className={cn(
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'global' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-white"
+                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
             )}
           >
             <Globe className="w-4 h-4" />
@@ -131,7 +131,7 @@ export default function SearchPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'steam' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-white"
+                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
             )}
           >
             <Users className="w-4 h-4" />
@@ -151,14 +151,14 @@ export default function SearchPage() {
               setQuery(e.target.value);
               if (searchMode === 'steam') setActiveQuery(e.target.value);
             }}
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-32 text-white text-lg placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 transition-all shadow-xl"
+            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-2xl py-4 pl-14 pr-32 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-[var(--card-bg)] transition-all shadow-xl"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {query && (
               <button 
                 type="button"
                 onClick={() => setQuery('')}
-                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -213,7 +213,7 @@ export default function SearchPage() {
                         alt={hero.localized_name}
                         className="w-12 h-7 object-cover rounded shadow-lg"
                       />
-                      <span className="text-white font-bold group-hover:text-gaming-accent transition-colors">
+                      <span className="text-foreground font-bold group-hover:text-gaming-accent transition-colors">
                         {hero.localized_name}
                       </span>
                       <ChevronRight className="w-4 h-4 text-gray-700 ml-auto group-hover:text-gaming-accent" />
@@ -235,7 +235,7 @@ export default function SearchPage() {
                     <Gamepad2 className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
-                    <h3 className="text-white font-bold">Match {matchingMatchId}</h3>
+                    <h3 className="text-foreground font-bold">Match {matchingMatchId}</h3>
                     <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">View Details</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-blue-600 ml-auto group-hover:translate-x-1 transition-transform" />
@@ -267,10 +267,10 @@ export default function SearchPage() {
 
             {!results.length && !searching && !matchingHeroes.length && !matchingMatchId && (
               <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
+                <div className="w-24 h-24 bg-[var(--nav-hover)] rounded-full flex items-center justify-center mb-6 border border-[var(--card-border)]">
                   <Search className="w-12 h-12 text-gray-500" />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">
+                <h3 className="text-2xl font-bold text-foreground mb-2">
                   {searchMode === 'global' ? "Who are you looking for?" : "No Friends Found"}
                 </h3>
                 <p className="text-gray-500 max-w-xs mx-auto">
@@ -292,7 +292,7 @@ export default function SearchPage() {
             </div>
             <button 
               onClick={() => handleSearch()}
-              className="bg-white/5 hover:bg-white/10 text-white px-6 py-2 rounded-xl text-sm font-bold transition-all"
+              className="bg-[var(--nav-hover)] hover:bg-[var(--glass-start)] text-foreground px-6 py-2 rounded-xl text-sm font-bold transition-all border border-[var(--card-border)]"
             >
               Try Again
             </button>
