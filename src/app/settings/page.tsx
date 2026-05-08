@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Settings, 
   Mail, 
@@ -12,13 +12,17 @@ import {
   LogOut, 
   Trash2,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Database,
+  RefreshCw,
+  HardDrive
 } from 'lucide-react';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useSteamAuth } from '@/hooks/useSteamAuth';
 import { createClient } from '@/utils/supabase/client';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/utils/cn';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface SettingsItemProps {
   icon: React.ElementType;
@@ -89,8 +93,63 @@ export default function SettingsPage() {
   const { login: steamLogin, isLoading: steamLoading } = useSteamAuth();
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [isSteamModalOpen, setIsSteamModalOpen] = useState(false);
+  const [storageSize, setStorageSize] = useState('0 KB');
 
+  const queryClient = useQueryClient();
   const supabase = createClient();
+
+  useEffect(() => {
+    calculateStorage();
+  }, []);
+
+  const calculateStorage = () => {
+    let total = 0;
+    if (typeof window !== 'undefined') {
+      for (const key in localStorage) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
+          total += (localStorage[key].length + key.length) * 2;
+        }
+      }
+      for (const key in sessionStorage) {
+        if (Object.prototype.hasOwnProperty.call(sessionStorage, key)) {
+          total += (sessionStorage[key].length + key.length) * 2;
+        }
+      }
+    }
+    setStorageSize(total < 1024 * 1024 
+      ? `${(total / 1024).toFixed(1)} KB` 
+      : `${(total / (1024 * 1024)).toFixed(1)} MB`
+    );
+  };
+
+  const handleClearCache = (type: 'all' | 'matches' | 'profiles') => {
+    switch (type) {
+      case 'all':
+        queryClient.clear();
+        break;
+      case 'matches':
+        queryClient.invalidateQueries({ queryKey: ['recentMatches'] });
+        queryClient.invalidateQueries({ queryKey: ['matchDetails'] });
+        queryClient.invalidateQueries({ queryKey: ['playerMatches'] });
+        break;
+      case 'profiles':
+        queryClient.invalidateQueries({ queryKey: ['playerProfile'] });
+        queryClient.invalidateQueries({ queryKey: ['playerHeroesV2'] });
+        queryClient.invalidateQueries({ queryKey: ['playerTotals'] });
+        queryClient.invalidateQueries({ queryKey: ['playerPeersV2'] });
+        break;
+    }
+    alert(`${type.charAt(0).toUpperCase() + type.slice(1)} cache cleared and scheduled for refetch.`);
+    calculateStorage();
+  };
+
+  const handleFullReset = () => {
+    if (confirm("WARNING: This will clear ALL local data and log you out. Are you sure?")) {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/';
+    }
+  };
 
   const handleUnlinkSteam = async () => {
     if (!user) return;
@@ -121,7 +180,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto pb-20">
         <SectionLabel label="Account" />
         <div className="glass-card overflow-hidden">
           <SettingsItem 
@@ -158,13 +217,49 @@ export default function SettingsPage() {
           />
         </div>
 
+        <SectionLabel label="Data Management" />
+        <div className="glass-card overflow-hidden">
+          <SettingsItem 
+            icon={HardDrive} 
+            label="Local Storage Usage" 
+            value={storageSize}
+            type="text" 
+            sublabel="Estimated size of local app data"
+          />
+          <SettingsItem 
+            icon={RefreshCw} 
+            label="Clear Matches Cache" 
+            onClick={() => handleClearCache('matches')}
+            sublabel="Force refresh of match history and details"
+          />
+          <SettingsItem 
+            icon={Database} 
+            label="Clear Profiles Cache" 
+            onClick={() => handleClearCache('profiles')}
+            sublabel="Force refresh of player and hero statistics"
+          />
+          <SettingsItem 
+            icon={Trash2} 
+            label="Full Cache Purge" 
+            onClick={() => handleClearCache('all')}
+            sublabel="Clear all temporary application data"
+          />
+          <SettingsItem 
+            icon={AlertTriangle} 
+            label="Reset Application Data" 
+            type="danger"
+            onClick={handleFullReset}
+            sublabel="Clear all settings and sessions (logs you out)"
+          />
+        </div>
+
         <SectionLabel label="Support" />
         <div className="glass-card overflow-hidden">
           <SettingsItem 
             icon={Info} 
             label="App Version" 
             value="v1.0.4-beta"
-            type="text"
+            type="text" 
           />
           <SettingsItem 
             icon={List} 

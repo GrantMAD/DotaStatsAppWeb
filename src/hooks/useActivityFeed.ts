@@ -1,9 +1,11 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useFriends } from './useFriends';
 import { openDotaApi } from '../services/opendota';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
+import { useSupabaseAuth } from '../context/SupabaseAuthContext';
+import { createClient } from '@/utils/supabase/client';
 
 export interface ActivityItem {
   id: string;
@@ -27,6 +29,9 @@ export interface ActivityItem {
 
 export const useActivityFeed = () => {
   const { following, friends, loading: friendsLoading } = useFriends();
+  const { user } = useSupabaseAuth();
+  const queryClient = useQueryClient();
+  const { current: instanceId } = useRef(Math.random().toString(36).substring(7));
 
   const playerIds = useMemo(() => {
     const ids = new Set<string>();
@@ -156,6 +161,34 @@ export const useActivityFeed = () => {
     enabled: playerIds.length > 0 && !friendsLoading,
     staleTime: 1000 * 60 * 5,
   });
+
+  useEffect(() => {
+    if (!user) return;
+
+    const supabase = createClient();
+    const channelName = `activity_feed_sync_${user.id}_${instanceId}`;
+    const channel = supabase.channel(channelName);
+    
+    channel
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          // New notification might mean a friend's match was parsed or milestone hit
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, refetch, instanceId]);
 
   return {
     activities,

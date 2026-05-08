@@ -322,11 +322,13 @@ function CompareContent() {
             <h3 className="text-2xl font-black uppercase italic">Ready to Compare?</h3>
             <p className="text-white/40 font-bold">Select two players from your friends list or search to see how they stack up against each other.</p>
           </div>
-          <Link href="/profile">
-            <Button size="lg" className="px-12 py-6 text-lg font-black italic uppercase tracking-widest bg-purple-600 hover:bg-purple-500 shadow-xl shadow-purple-500/20">
-              Browse Players
-            </Button>
-          </Link>
+          <Button 
+            onClick={() => handleOpenSelect('p1')}
+            size="lg" 
+            className="px-12 py-6 text-lg font-black italic uppercase tracking-widest bg-purple-600 hover:bg-purple-500 shadow-xl shadow-purple-500/20"
+          >
+            Browse Players
+          </Button>
         </div>
       )}
     </div>

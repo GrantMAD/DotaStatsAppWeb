@@ -42,6 +42,7 @@ export const useFriends = () => {
   const { user } = useSupabaseAuth();
   const queryClient = useQueryClient();
   const supabase = createClient();
+  const { current: instanceId } = useRef(Math.random().toString(36).substring(7));
 
   const { data: friends = [], isLoading: friendsLoading } = useQuery({
     queryKey: ['friends', user?.id],
@@ -77,6 +78,44 @@ export const useFriends = () => {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    if (!user) return;
+
+    const channelName = `friends_updates_${user.id}_${instanceId}`;
+    const channel = supabase.channel(channelName);
+    
+    channel
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'friendships',
+          filter: `or(requester_id.eq.${user.id},addressee_id.eq.${user.id})`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'follows',
+          filter: `follower_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['following', user?.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient, instanceId, supabase]);
+
   const followMutation = useMutation({
     mutationFn: async (steamAccountId: string) => {
       if (!user) throw new Error('Not logged in');
@@ -105,6 +144,19 @@ export const useFriends = () => {
     },
   });
 
+  const sendFriendRequestMutation = useMutation({
+    mutationFn: async (addresseeId: string) => {
+      if (!user) throw new Error('Not logged in');
+      const { error } = await supabase
+        .from('friendships')
+        .insert({ requester_id: user.id, addressee_id: addresseeId, status: 'pending' });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+    },
+  });
+
   const isFollowing = (steamAccountId: string) => {
     return following.some(f => f.followed_steam_id === steamAccountId.toString());
   };
@@ -119,6 +171,7 @@ export const useFriends = () => {
     loading: friendsLoading || followingLoading, 
     followUser: followMutation.mutate,
     unfollowUser: unfollowMutation.mutate,
+    sendFriendRequest: sendFriendRequestMutation.mutate,
     isFollowing,
     isFriend
   };
@@ -137,7 +190,6 @@ export const useNotifications = () => {
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -172,7 +224,7 @@ export const useNotifications = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, instanceId]);
+  }, [user?.id, queryClient, instanceId, supabase]);
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
@@ -187,10 +239,59 @@ export const useNotifications = () => {
     }
   });
 
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+    }
+  });
+
+  const handleFriendRequestMutation = useMutation({
+    mutationFn: async ({ notification, accept }: { notification: AppNotification, accept: boolean }) => {
+      if (!user || !notification.related_user_id) return;
+      
+      const newStatus = accept ? 'accepted' : 'declined';
+      const { error: fError } = await supabase
+        .from('friendships')
+        .update({ status: newStatus })
+        .eq('requester_id', notification.related_user_id)
+        .eq('addressee_id', user.id)
+        .eq('status', 'pending');
+
+      if (fError) throw fError;
+
+      const { error: nError } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', notification.id);
+      
+      if (nError) throw nError;
+
+      return { accept };
+    },
+    onSuccess: (data) => {
+      if (data?.accept) {
+        queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+    }
+  });
+
   return { 
     notifications, 
     unreadCount, 
     loading: isLoading,
     markAsRead: markAsReadMutation.mutate, 
+    markAllAsRead: markAllAsReadMutation.mutate,
+    handleFriendRequest: (notification: AppNotification, accept: boolean) => 
+      handleFriendRequestMutation.mutate({ notification, accept }),
   };
 };
