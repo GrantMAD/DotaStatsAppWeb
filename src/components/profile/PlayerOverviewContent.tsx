@@ -10,6 +10,7 @@ import {
 import { HEROES, getHeroImageUrl, REGIONS } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { 
   History, 
   Users, 
@@ -83,6 +84,7 @@ export function PlayerOverviewContent({
   followingCount = 0,
   isPrivate = false,
 }: PlayerOverviewContentProps) {
+  const router = useRouter();
   const { steamAccountId: currentUserId } = useSupabaseAuth();
   const [activeTab, setActiveTab] = useState<ProfileTab>('Recent');
   const [recentView, setRecentView] = useState<'matches' | 'trends'>('matches');
@@ -244,20 +246,39 @@ export function PlayerOverviewContent({
             </div>
 
             <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
-                 <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
-                 <p className="text-foreground font-black">{friendsCount}</p>
-              </div>
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
-                 <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
-                 <p className="text-foreground font-black">{followingCount}</p>
-              </div>
+              {isCurrentUser ? (
+                <Link href="/friends" className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
+                   <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
+                   <p className="text-foreground font-black">{friendsCount}</p>
+                </Link>
+              ) : (
+                <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
+                   <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
+                   <p className="text-foreground font-black">{friendsCount}</p>
+                </div>
+              )}
+              {isCurrentUser ? (
+                <Link href="/friends" className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
+                   <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
+                   <p className="text-foreground font-black">{followingCount}</p>
+                </Link>
+              ) : (
+                <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
+                   <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
+                   <p className="text-foreground font-black">{followingCount}</p>
+                </div>
+              )}
               {!isCurrentUser && (
                 <Button size="sm" className="h-10 px-6">
                   <UserPlus size={16} /> Follow
                 </Button>
               )}
-              <Button variant="secondary" size="sm" className="h-10 px-6 border-[var(--card-border)] text-purple-400">
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="h-10 px-6 border-[var(--card-border)] text-purple-400"
+                onClick={() => router.push(`/compare?p1=${accountId}`)}
+              >
                 <GitCompare size={16} /> Compare
               </Button>
             </div>
@@ -509,49 +530,51 @@ export function PlayerOverviewContent({
                 const info = HEROES[Number(hero.hero_id)];
                 const winRate = (hero.win / hero.games) * 100;
                 return (
-                  <GlassCard key={hero.hero_id} hoverable className="p-4 flex flex-col gap-4 group">
-                    <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-[var(--card-border)] shrink-0 shadow-lg">
-                        <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-lg font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">
-                          {info?.localized_name || 'Hero'}
-                        </h4>
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className={cn(
-                          "text-xl font-black leading-none",
-                           winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-foreground"
-                        )}>
-                          {winRate.toFixed(1)}%
-                        </p>
-                        <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-4 gap-2 pt-4 border-t border-[var(--card-border)]">
-                       <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
-                          <p className="text-xs font-black text-foreground">{(hero.kda || 0).toFixed(2)}</p>
-                       </div>
-                       <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Deaths</p>
-                          <p className="text-xs font-black text-loss">{(hero.avg_deaths || 0).toFixed(1)}</p>
-                       </div>
-                       <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Assists</p>
-                          <p className="text-xs font-black text-foreground">{(hero.avg_assists || 0).toFixed(1)}</p>
-                       </div>
-                       <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Last Played</p>
-                          <p className="text-xs font-black text-gray-400">
-                             {hero.last_played ? formatDistanceToNow(fromUnixTime(hero.last_played), { addSuffix: true }) : 'N/A'}
+                  <Link key={hero.hero_id} href={`/hero/${hero.hero_id}`} className="block group">
+                    <GlassCard hoverable className="p-4 flex flex-col gap-4">
+                      <div className="flex items-center gap-6">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-[var(--card-border)] shrink-0 shadow-lg">
+                          <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="text-lg font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">
+                            {info?.localized_name || 'Hero'}
+                          </h4>
+                          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <p className={cn(
+                            "text-xl font-black leading-none",
+                             winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-foreground"
+                          )}>
+                            {winRate.toFixed(1)}%
                           </p>
-                       </div>
-                    </div>
-                  </GlassCard>
+                          <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-2 pt-4 border-t border-[var(--card-border)]">
+                         <div className="text-center">
+                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
+                            <p className="text-xs font-black text-foreground">{(hero.kda || 0).toFixed(2)}</p>
+                         </div>
+                         <div className="text-center">
+                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Deaths</p>
+                            <p className="text-xs font-black text-loss">{(hero.avg_deaths || 0).toFixed(1)}</p>
+                         </div>
+                         <div className="text-center">
+                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Assists</p>
+                            <p className="text-xs font-black text-foreground">{(hero.avg_assists || 0).toFixed(1)}</p>
+                         </div>
+                         <div className="text-center">
+                            <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Last Played</p>
+                            <p className="text-xs font-black text-gray-400">
+                               {hero.last_played ? formatDistanceToNow(fromUnixTime(hero.last_played), { addSuffix: true }) : 'N/A'}
+                            </p>
+                         </div>
+                      </div>
+                    </GlassCard>
+                  </Link>
                 );
               })}
             </div>
