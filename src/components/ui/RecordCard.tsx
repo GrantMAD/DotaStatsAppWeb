@@ -44,7 +44,7 @@ export function RecordCard({ title, record, icon, color, onPress }: RecordCardPr
         <div className="flex-1">
           <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{title}</p>
           <div className="flex items-baseline gap-2">
-            <h3 className="text-3xl font-black text-white leading-none">
+            <h3 className="text-3xl font-black text-foreground leading-none">
               {record.score.toLocaleString()}
             </h3>
             <span className="text-xs font-bold text-gray-500">
@@ -55,13 +55,13 @@ export function RecordCard({ title, record, icon, color, onPress }: RecordCardPr
 
         <div className="text-right">
           <p className="text-xs font-bold text-gray-500 mb-2">Match ID</p>
-          <p className="text-sm font-black text-white bg-white/5 px-3 py-1 rounded-lg border border-white/10 group-hover:border-gaming-accent transition-colors">
+          <p className="text-sm font-black text-foreground bg-[var(--overlay-medium)] px-3 py-1 rounded-lg border border-[var(--overlay-border)] group-hover:border-gaming-accent transition-colors">
             {record.match_id}
           </p>
         </div>
       </div>
 
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/5 to-transparent -translate-y-16 translate-x-16 rotate-45 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--overlay-light)] to-transparent -translate-y-16 translate-x-16 rotate-45 pointer-events-none" />
     </GlassCard>
   );
 }

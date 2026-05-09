@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Settings, 
   Mail, 
@@ -18,7 +19,8 @@ import {
   HardDrive,
   Sun,
   Moon,
-  Monitor
+  Monitor,
+  Loader2
 } from 'lucide-react';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -27,6 +29,7 @@ import { createClient } from '@/utils/supabase/client';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/utils/cn';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
 interface SettingsItemProps {
   icon: React.ElementType;
@@ -36,15 +39,25 @@ interface SettingsItemProps {
   type?: 'toggle' | 'link' | 'text' | 'danger';
   color?: string;
   sublabel?: string;
+  loading?: boolean;
 }
 
-function SettingsItem({ icon: Icon, label, value, onClick, type = 'link', color = 'text-gaming-accent', sublabel }: SettingsItemProps) {
+function SettingsItem({ 
+  icon: Icon, 
+  label, 
+  value, 
+  onClick, 
+  type = 'link', 
+  color = 'text-gaming-accent', 
+  sublabel,
+  loading
+}: SettingsItemProps) {
   return (
     <div 
-      onClick={onClick}
+      onClick={loading ? undefined : onClick}
       className={cn(
         "flex items-center gap-4 p-4 border-b border-[var(--card-border)] last:border-0 transition-colors",
-        onClick ? "cursor-pointer hover:bg-[var(--nav-hover)]" : ""
+        (onClick && !loading) ? "cursor-pointer hover:bg-[var(--nav-hover)]" : ""
       )}
     >
       <div className={cn(
@@ -60,19 +73,25 @@ function SettingsItem({ icon: Icon, label, value, onClick, type = 'link', color 
       </div>
 
       <div className="flex items-center gap-3">
-        {type === 'text' && <span className="text-gray-500 text-sm font-medium">{value}</span>}
-        {type === 'toggle' && (
-          <div className={cn(
-            "w-10 h-5 rounded-full relative transition-colors",
-            value ? "bg-gaming-accent" : "bg-[var(--nav-hover)] border border-[var(--card-border)]"
-          )}>
-            <div className={cn(
-              "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
-              value ? "right-1" : "left-1"
-            )} />
-          </div>
+        {loading ? (
+          <Loader2 className="w-5 h-5 text-gaming-accent animate-spin" />
+        ) : (
+          <>
+            {type === 'text' && <span className="text-gray-500 text-sm font-medium">{value}</span>}
+            {type === 'toggle' && (
+              <div className={cn(
+                "w-10 h-5 rounded-full relative transition-colors",
+                value ? "bg-gaming-accent" : "bg-[var(--nav-hover)] border border-[var(--card-border)]"
+              )}>
+                <div className={cn(
+                  "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
+                  value ? "right-1" : "left-1"
+                )} />
+              </div>
+            )}
+            {type === 'link' && <ChevronRight className="w-5 h-5 text-gray-700" />}
+          </>
         )}
-        {type === 'link' && <ChevronRight className="w-5 h-5 text-gray-700" />}
       </div>
     </div>
   );
@@ -87,6 +106,8 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { 
     user, 
     steamAccountId, 
@@ -95,10 +116,11 @@ export default function SettingsPage() {
     refreshProfile 
   } = useSupabaseAuth();
   const { theme, setTheme } = useTheme();
-  const { signInWithSteam: steamLogin } = useSteamAuth();
+  const { login: steamLogin, logout: steamLogout, isLoading: isSteamLoading } = useSteamAuth();
   const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isSteamModalOpen, setIsSteamModalOpen] = useState(false);
+  const [isUnlinkConfirmModalOpen, setIsUnlinkConfirmModalOpen] = useState(false);
   const [storageSize, setStorageSize] = useState('0 KB');
 
   const queryClient = useQueryClient();
@@ -145,7 +167,7 @@ export default function SettingsPage() {
         queryClient.invalidateQueries({ queryKey: ['playerPeersV2'] });
         break;
     }
-    alert(`${type.charAt(0).toUpperCase() + type.slice(1)} cache cleared and scheduled for refetch.`);
+    toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} cache cleared`);
     calculateStorage();
   };
 
@@ -158,18 +180,9 @@ export default function SettingsPage() {
   };
 
   const handleUnlinkSteam = async () => {
-    if (!user) return;
-    if (confirm("Are you sure you want to unlink your Steam account? You will need to link it again to view your stats.")) {
-      const { error } = await supabase
-        .from('users')
-        .update({ steam_account_id: null, steam_name: null })
-        .eq('id', user.id);
-        
-      if (!error) {
-        await refreshProfile();
-        setIsSteamModalOpen(false);
-      }
-    }
+    await steamLogout();
+    setIsUnlinkConfirmModalOpen(false);
+    setIsSteamModalOpen(false);
   };
 
   return (
@@ -198,9 +211,10 @@ export default function SettingsPage() {
           <SettingsItem 
             icon={Trophy} 
             label="Steam Connection" 
-            sublabel={steamAccountId ? "Your account is linked" : "Link your account to track stats"}
-            value={steamAccountId ? `ID: ${steamAccountId}` : 'Not Linked'}
-            color={steamAccountId ? 'text-green-500' : 'text-gray-600'}
+            sublabel={isSteamLoading ? "Finalizing connection..." : (steamAccountId ? "Your account is linked" : "Link your account to track stats")}
+            value={isSteamLoading ? "Processing..." : (steamAccountId ? `ID: ${steamAccountId}` : 'Not Linked')}
+            color={isSteamLoading ? 'text-amber-500' : (steamAccountId ? 'text-green-500' : 'text-gray-600')}
+            loading={isSteamLoading}
             onClick={() => steamAccountId ? setIsSteamModalOpen(true) : steamLogin()}
           />
         </div>
@@ -398,11 +412,43 @@ export default function SettingsPage() {
               Change Account
             </button>
             <button
-              onClick={handleUnlinkSteam}
+              onClick={() => setIsUnlinkConfirmModalOpen(true)}
               className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-xl font-bold text-red-500 hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"
             >
               <Trash2 className="w-4 h-4" />
               Unlink Account
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Unlink Confirmation Modal */}
+      <Modal 
+        isOpen={isUnlinkConfirmModalOpen} 
+        onClose={() => setIsUnlinkConfirmModalOpen(false)}
+        title="Unlink Account"
+      >
+        <div className="flex flex-col items-center text-center p-4">
+          <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mb-6 border border-red-500/20">
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+          </div>
+          <h3 className="text-xl font-black text-foreground mb-2 italic uppercase">ARE YOU SURE?</h3>
+          <p className="text-gray-400 mb-8 max-w-xs text-sm">
+            Unlinking your Steam account will prevent you from tracking your match history and personalized stats until you link it again.
+          </p>
+          
+          <div className="w-full grid grid-cols-2 gap-3">
+            <button
+              onClick={() => setIsUnlinkConfirmModalOpen(false)}
+              className="py-3 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl font-bold text-foreground hover:bg-[var(--glass-start)] transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleUnlinkSteam}
+              className="py-3 bg-red-500 border border-red-600 rounded-xl font-bold text-white hover:bg-red-600 transition-all shadow-lg shadow-red-500/20"
+            >
+              Unlink Now
             </button>
           </div>
         </div>

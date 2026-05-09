@@ -79,13 +79,13 @@ export function ProMatchCard({
       <div className="mt-auto pt-4 border-t border-[var(--card-border)] flex items-center justify-between">
          <div className={cn(
            "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
-           radiantWin ? "bg-win/20 text-win" : "bg-[var(--nav-hover)] text-foreground/40"
+           radiantWin ? "bg-win/20 text-win" : "bg-[var(--overlay-medium)] text-muted-foreground"
          )}>
            {radiantWin ? "Winner" : "Radiant"}
          </div>
          <div className={cn(
            "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
-           radiantWin === false ? "bg-win/20 text-win" : "bg-[var(--nav-hover)] text-foreground/40"
+           radiantWin === false ? "bg-win/20 text-win" : "bg-[var(--overlay-medium)] text-muted-foreground"
          )}>
            {radiantWin === false ? "Winner" : "Dire"}
          </div>

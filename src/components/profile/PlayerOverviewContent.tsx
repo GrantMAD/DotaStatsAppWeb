@@ -19,6 +19,7 @@ import {
   Globe, 
   Gamepad2, 
   Map as MapIcon,
+  Navigation,
   ChevronRight,
   TrendingUp,
   LayoutGrid,
@@ -52,6 +53,7 @@ import {
 } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type ProfileTab = 'Recent' | 'Heroes' | 'Network' | 'Social' | 'Lifetime';
 
@@ -63,6 +65,13 @@ interface PlayerOverviewContentProps {
   friendsCount?: number;
   followingCount?: number;
   isPrivate?: boolean;
+}
+
+interface CategoryStats {
+  label: string;
+  win: number;
+  lose: number;
+  total: number;
 }
 
 export function PlayerOverviewContent({
@@ -89,6 +98,81 @@ export function PlayerOverviewContent({
   const { data: countsData, isLoading: countsLoading } = usePlayerCounts(accountId);
   const { data: allHeroStats = [] } = useHeroStats();
   const peerHistory = useEncounterHistory(currentUserId, accountId);
+
+  // Compute lifetime stats helpers
+  const createStatFromCount = (label: string, countObj?: { games: number; win: number }) => ({
+    label,
+    win: countObj?.win || 0,
+    lose: (countObj?.games || 0) - (countObj?.win || 0),
+    total: countObj?.games || 0
+  });
+
+  const lobbyStats = useMemo(() => [
+    createStatFromCount('Normal MM', countsData?.lobby_type?.['0']),
+    createStatFromCount('Ranked MM', countsData?.lobby_type?.['7'])
+  ], [countsData]);
+
+  const modeStats = useMemo(() => [
+    createStatFromCount('All Pick', countsData?.game_mode?.['1']),
+    createStatFromCount('Turbo', countsData?.game_mode?.['23'])
+  ], [countsData]);
+
+  const sideStats = useMemo(() => [
+    createStatFromCount('Radiant', countsData?.is_radiant?.['1']),
+    createStatFromCount('Dire', countsData?.is_radiant?.['0'])
+  ], [countsData]);
+
+  const regionStats = useMemo(() => {
+    if (!countsData?.region) return [];
+    return Object.entries(countsData.region)
+      .map(([id, data]) => ({
+        label: REGIONS[Number(id)] || `Region ${id}`,
+        win: data.win,
+        lose: data.games - data.win,
+        total: data.games
+      }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5);
+  }, [countsData]);
+
+  const renderStatSection = (title: string, Icon: any, stats: CategoryStats[]) => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl overflow-hidden shadow-xl"
+    >
+      <div className="flex items-center gap-3 bg-[var(--nav-hover)] p-4 border-b border-[var(--card-border)]">
+        <div className="p-2 bg-gaming-accent/20 rounded-xl text-gaming-accent">
+          <Icon size={18} />
+        </div>
+        <h3 className="text-foreground font-black uppercase tracking-widest text-[10px]">{title}</h3>
+      </div>
+      <div className="p-4 space-y-4">
+        {stats.map((stat, i) => (
+          <div key={i} className={cn(
+            "flex items-center justify-between pb-4 border-b border-[var(--card-border)] last:border-0 last:pb-0",
+            stat.total === 0 && "opacity-40 grayscale"
+          )}>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-black text-foreground truncate">{stat.label}</p>
+              <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
+                {stat.total} Matches <span className="mx-1 text-foreground/10">•</span> {stat.win}W - {stat.lose}L
+              </p>
+            </div>
+            <div className="text-right">
+              <p className={cn(
+                "text-lg font-black italic leading-none",
+                stat.win / stat.total >= 0.5 ? "text-win" : "text-loss"
+              )}>
+                {stat.total > 0 ? ((stat.win / stat.total) * 100).toFixed(1) : '0.0'}%
+              </p>
+              <p className="text-[8px] font-black text-gray-600 uppercase tracking-tighter mt-1">Win Rate</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
 
   const trendMatches = (filters.win !== undefined || filters.date !== undefined || filters.game_mode !== undefined)
     ? filteredMatches 
@@ -570,18 +654,41 @@ export function PlayerOverviewContent({
         )}
 
         {activeTab === 'Lifetime' && (
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {totalsLoading ? (
-                [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-3xl" />)
-              ) : totals.map((total) => (
-                <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
-                   <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
-                   <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
-                     {Math.round(total.sum / total.n).toLocaleString()}
-                   </h3>
-                   <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
-                </GlassCard>
-              ))}
+           <div className="space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 {totalsLoading ? (
+                   [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-3xl" />)
+                 ) : totals.map((total) => (
+                   <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
+                      <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
+                        {Math.round(total.sum / total.n).toLocaleString()}
+                      </h3>
+                      <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
+                   </GlassCard>
+                 ))}
+              </div>
+
+              <div className="space-y-8">
+                 <div className="flex items-center gap-4">
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                    <h2 className="text-xs font-black text-gray-600 uppercase tracking-[0.4em]">Match Distribution</h2>
+                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                 </div>
+
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {countsLoading ? (
+                       [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 w-full rounded-3xl" />)
+                    ) : (
+                       <>
+                          {renderStatSection('Lobby Type', Globe, lobbyStats)}
+                          {renderStatSection('Game Mode', Gamepad2, modeStats)}
+                          {renderStatSection('Region', Navigation, regionStats)}
+                          {renderStatSection('Side of Map', MapIcon, sideStats)}
+                       </>
+                    )}
+                 </div>
+              </div>
            </div>
         )}
       </div>

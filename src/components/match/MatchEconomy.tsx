@@ -15,11 +15,14 @@ import {
 import { GlassCard } from '../ui/GlassCard';
 import { TrendingUp, Zap, Activity } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useTheme } from '@/context/ThemeContext';
 
 export function MatchEconomy({ match }: { match: MatchDetails }) {
+  const { resolvedTheme } = useTheme();
+
   if (!match.radiant_gold_adv || !match.radiant_xp_adv) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border border-white/5 rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border border-[var(--overlay-border)] rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">No parsed economy data available</p>
       </div>
@@ -65,9 +68,9 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
         </GlassCard>
       </div>
 
-      <GlassCard className="h-[400px] p-8 bg-black/40">
+      <GlassCard className="h-[400px] p-8 bg-[var(--tech-bg)] border-[var(--overlay-border)]">
         <div className="flex items-center justify-between mb-10">
-           <h3 className="text-sm font-black text-white uppercase tracking-widest">Advantage Momentum</h3>
+           <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Advantage Momentum</h3>
            <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                  <div className="w-3 h-3 rounded-full bg-amber-500" />
@@ -92,7 +95,7 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
                 <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={resolvedTheme === 'dark' ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"} vertical={false} />
             <XAxis 
               dataKey="time" 
               stroke="#4b5563" 
@@ -109,12 +112,18 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
               tickLine={false}
             />
             <Tooltip 
-              contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)' }}
+              contentStyle={{ 
+                backgroundColor: resolvedTheme === 'dark' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)', 
+                borderRadius: '12px', 
+                border: resolvedTheme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)', 
+                backdropFilter: 'blur(8px)',
+                color: resolvedTheme === 'dark' ? '#fff' : '#000'
+              }}
               itemStyle={{ fontSize: '10px', fontWeight: 'bold', textTransform: 'uppercase' }}
               labelStyle={{ color: '#9ca3af', fontSize: '10px', marginBottom: '4px' }}
               labelFormatter={(t) => `${t} minutes`}
             />
-            <ReferenceLine y={0} stroke="#333" strokeWidth={2} />
+            <ReferenceLine y={0} stroke={resolvedTheme === 'dark' ? "#333" : "#ccc"} strokeWidth={2} />
             <Area 
               type="monotone" 
               dataKey="gold" 

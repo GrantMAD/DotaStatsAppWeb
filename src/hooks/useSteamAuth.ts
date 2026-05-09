@@ -1,17 +1,12 @@
 'use client';
 
-import { createClient } from '@/utils/supabase/client';
+import { useContext } from 'react';
+import { SteamAuthContext } from '../context/SteamAuthContext';
 
 export const useSteamAuth = () => {
-  const supabase = createClient();
-
-  const signInWithSteam = async () => {
-    // This will be implemented with the actual Steam OpenID flow
-    // For now, we use Supabase's built-in providers or a custom function
-    console.log('Steam sign-in not yet fully implemented');
-  };
-
-  return {
-    signInWithSteam,
-  };
+  const context = useContext(SteamAuthContext);
+  if (context === undefined) {
+    throw new Error('useSteamAuth must be used within a SteamAuthProvider');
+  }
+  return context;
 };

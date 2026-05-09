@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GAME_MODES, requestMatchParse } from '@/services/opendota';
 import { cn } from '@/utils/cn';
-import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, ArrowLeft, Radio, Users, CloudUpload, CheckCircle } from 'lucide-react';
+import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 type MatchTab = 'Scoreboard' | 'Highlights' | 'Economy' | 'Timeline' | 'Chat';
@@ -62,13 +62,6 @@ export default function MatchPage() {
   if (!match && liveGame) {
     return (
       <div className="max-w-6xl mx-auto space-y-8 pb-20">
-        <button 
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-500 hover:text-foreground transition-colors font-black uppercase text-[10px] tracking-widest"
-        >
-          <ArrowLeft size={14} /> Back to previous
-        </button>
-
         <GlassCard className="p-12 border-red-500/20 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--color-loss)_0%,transparent_70%)]" />
           <div className="relative z-10 flex flex-col items-center text-center space-y-8">
@@ -177,35 +170,6 @@ export default function MatchPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center justify-between">
-        <button 
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-500 hover:text-foreground transition-colors font-black uppercase text-[10px] tracking-widest"
-        >
-          <ArrowLeft size={14} /> Back to previous
-        </button>
-
-        {!match.version && (
-          <div className="flex items-center gap-4">
-            {parseRequested ? (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-win/10 border border-win/20 text-win text-[10px] font-black uppercase tracking-widest animate-in fade-in zoom-in duration-300">
-                <CheckCircle size={14} /> Parse Requested
-              </div>
-            ) : (
-              <Button 
-                onClick={handleRequestParse} 
-                disabled={isParsing}
-                size="sm"
-                className="h-9 px-4 text-[10px] font-black uppercase tracking-widest gap-2 bg-gaming-accent hover:bg-gaming-accent/80"
-              >
-                {isParsing ? <Skeleton className="w-4 h-4 rounded-full" /> : <CloudUpload size={14} />}
-                Request Match Parse
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-
       {/* Match Hero Header */}
       <GlassCard className="p-0 overflow-hidden border-[var(--card-border)] relative">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--color-gaming-accent)_0%,transparent_70%)]" />

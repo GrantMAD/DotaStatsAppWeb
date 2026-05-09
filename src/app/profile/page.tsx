@@ -11,7 +11,7 @@ import { useSteamAuth } from '@/hooks/useSteamAuth';
 export default function MyProfilePage() {
   const router = useRouter();
   const { user, steamAccountId, isLoading } = useSupabaseAuth();
-  const { signInWithSteam } = useSteamAuth();
+  const { login: signInWithSteam } = useSteamAuth();
 
   useEffect(() => {
     if (!isLoading && steamAccountId) {

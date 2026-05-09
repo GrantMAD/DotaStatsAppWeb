@@ -10,7 +10,7 @@ import { Activity, Timer, Zap } from 'lucide-react';
 export function MatchTimeline({ match }: { match: MatchDetails }) {
   if (!match.version) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border border-white/5 rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border border-[var(--overlay-border)] rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Parsed data required for timeline</p>
       </div>
@@ -22,7 +22,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
-         <h3 className="text-sm font-black text-white uppercase tracking-widest">Event Trajectory</h3>
+         <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Event Trajectory</h3>
          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
                <div className="w-2 h-2 rounded-full bg-gaming-accent" />
@@ -35,15 +35,15 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
          </div>
       </div>
 
-      <GlassCard className="p-0 overflow-x-auto no-scrollbar bg-black/40 border-white/5">
+      <GlassCard className="p-0 overflow-x-auto no-scrollbar bg-[var(--tech-bg)] border-[var(--overlay-border)]">
         <div className="min-w-[1200px] p-6">
           {/* Time scale */}
-          <div className="relative h-10 border-b border-white/5 mb-8">
+          <div className="relative h-10 border-b border-[var(--overlay-border)] mb-8">
             <div className="absolute left-48 right-0 h-full">
               {/* Pre-game buffer indicator */}
               <div className="absolute left-0 top-0 flex flex-col items-center -translate-x-1/2" style={{ left: '5%' }}>
                 <span className="text-[10px] font-black text-gray-700 uppercase">Start</span>
-                <div className="w-px h-2 bg-white/10 mt-1" />
+                <div className="w-px h-2 bg-[var(--overlay-border)] mt-1" />
               </div>
 
               {Array.from({ length: Math.ceil(durationMins / 5) }).map((_, i) => (
@@ -53,7 +53,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   style={{ left: `${5 + ((i + 1) * 5 / durationMins) * 95}%` }}
                 >
                   <span className="text-[10px] font-black text-gray-600">{(i + 1) * 5}'</span>
-                  <div className="w-px h-2 bg-white/10 mt-1" />
+                  <div className="w-px h-2 bg-[var(--overlay-border)] mt-1" />
                 </div>
               ))}
             </div>
@@ -84,21 +84,21 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   {/* Player Info */}
                   <div className="w-48 flex items-center gap-3 shrink-0">
                     <div className="relative shrink-0">
-                       <img src={getHeroImageUrl(p.hero_id)} className="w-12 h-7 rounded border border-white/10" alt="hero" />
+                       <img src={getHeroImageUrl(p.hero_id)} className="w-12 h-7 rounded border border-[var(--overlay-border)]" alt="hero" />
                        {p.avatar && (
                          <img src={p.avatar} className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-black shadow-lg" alt="av" />
                        )}
                     </div>
                     <div className="min-w-0">
-                       <p className="text-[10px] font-black text-white truncate leading-tight">{p.personaname || 'Anonymous'}</p>
+                       <p className="text-[10px] font-black text-foreground truncate leading-tight">{p.personaname || 'Anonymous'}</p>
                        <p className="text-[8px] font-bold text-gray-600 uppercase">Slot {p.player_slot}</p>
                     </div>
                   </div>
 
                   {/* Event Lane */}
-                  <div className="flex-1 h-12 relative bg-white/[0.02] rounded-lg border border-white/[0.02] group-hover:bg-white/[0.05] transition-colors overflow-hidden">
+                  <div className="flex-1 h-12 relative bg-[var(--overlay-light)] rounded-lg border border-[var(--overlay-light)] group-hover:bg-[var(--overlay-medium)] transition-colors overflow-hidden">
                     {/* Horizontal grid line */}
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-white/5 -translate-y-1/2" />
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-[var(--overlay-medium)] -translate-y-1/2" />
                     
                     {events.map((event, eIdx) => {
                       const baseLeft = 5 + (event.time / 60 / durationMins) * 95;

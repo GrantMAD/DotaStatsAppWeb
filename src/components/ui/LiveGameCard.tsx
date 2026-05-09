@@ -42,7 +42,7 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
 
       <div className="grid grid-cols-5 gap-1 mb-3">
         {game.players.slice(0, 5).map((p, idx) => (
-          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-white/5 border border-white/10">
+          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-[var(--overlay-medium)] border border-[var(--overlay-border)]">
             {getHeroImg(p.hero_id) && (
               <img src={getHeroImg(p.hero_id)!} alt="hero" className="w-full h-full object-cover" />
             )}
@@ -51,14 +51,14 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
       </div>
 
       <div className="flex items-center justify-center gap-2 mb-3">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-white/10" />
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--overlay-border)]" />
         <span className="text-[10px] font-black text-gray-600 uppercase">VS</span>
-        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-white/10" />
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--overlay-border)]" />
       </div>
 
       <div className="grid grid-cols-5 gap-1 mb-4">
         {game.players.slice(5, 10).map((p, idx) => (
-          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-white/5 border border-white/10">
+          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-[var(--overlay-medium)] border border-[var(--overlay-border)]">
             {getHeroImg(p.hero_id) && (
               <img src={getHeroImg(p.hero_id)!} alt="hero" className="w-full h-full object-cover" />
             )}

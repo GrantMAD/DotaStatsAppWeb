@@ -26,7 +26,7 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
   const isStructuredDraft = gameMode === 2 || gameMode === 16;
 
   return (
-    <GlassCard className="p-6 border-white/5 bg-black/40">
+    <GlassCard className="p-6 border-[var(--overlay-border)] bg-[var(--tech-bg)]">
       <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] text-center mb-8">Draft Phase Analysis</h3>
       
       <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-8 items-center">
@@ -48,14 +48,14 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
               <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest mb-2">Radiant Bans</p>
               <div className="flex flex-wrap justify-center gap-1.5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
                 {radiantBans.map((b, i) => (
-                  <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-8 h-5 rounded border border-white/10" alt="ban" />
+                  <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-8 h-5 rounded border border-[var(--overlay-border)]" alt="ban" />
                 ))}
               </div>
             </div>
           )}
         </div>
 
-        <div className="hidden md:block w-px h-full bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+        <div className="hidden md:block w-px h-full bg-gradient-to-b from-transparent via-[var(--overlay-border)] to-transparent" />
 
         {/* Dire Side */}
         <div className="space-y-6">
@@ -75,7 +75,7 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
               <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest mb-2">Dire Bans</p>
               <div className="flex flex-wrap justify-center gap-1.5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
                 {direBans.map((b, i) => (
-                  <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-8 h-5 rounded border border-white/10" alt="ban" />
+                  <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-8 h-5 rounded border border-[var(--overlay-border)]" alt="ban" />
                 ))}
               </div>
             </div>
@@ -84,11 +84,11 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
       </div>
 
       {!isStructuredDraft && allBans.length > 0 && (
-        <div className="mt-8 pt-6 border-t border-white/5 text-center">
+        <div className="mt-8 pt-6 border-t border-[var(--overlay-border)] text-center">
           <p className="text-gray-600 text-[10px] font-black uppercase tracking-widest mb-4">Strategic Bans</p>
           <div className="flex flex-wrap justify-center gap-2 opacity-40 grayscale">
             {allBans.map((b, i) => (
-              <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-9 h-5 rounded border border-white/10" alt="ban" />
+              <img key={i} src={getHeroImageUrl(b.hero_id)} className="w-9 h-5 rounded border border-[var(--overlay-border)]" alt="ban" />
             ))}
           </div>
         </div>
@@ -103,17 +103,17 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
   const peer = player.account_id ? userPeers.find(up => up.account_id === player.account_id) : null;
 
   return (
-    <div className="group border-b border-white/5 hover:bg-white/5 transition-all duration-300">
+    <div className="group border-b border-[var(--overlay-border)] hover:bg-[var(--overlay-medium)] transition-all duration-300">
       <div className="flex flex-wrap items-center gap-4 p-4">
         {/* Hero & Level */}
         <div className="flex items-center gap-4 w-56 shrink-0">
           <div className="relative shrink-0">
             <img 
               src={getHeroImageUrl(player.hero_id)} 
-              className="w-14 h-8 rounded shadow-lg border border-white/10" 
+              className="w-14 h-8 rounded shadow-lg border border-[var(--overlay-border)]" 
               alt="hero" 
             />
-            <div className="absolute -bottom-1 -right-1 bg-black/90 text-[8px] font-black text-white px-1 rounded border border-white/10">
+            <div className="absolute -bottom-1 -right-1 bg-black/90 text-[8px] font-black text-white px-1 rounded border border-[var(--overlay-border)]">
               {player.level}
             </div>
           </div>
@@ -122,7 +122,7 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
               {player.account_id ? (
                 <Link 
                   href={`/profile/${player.account_id}`}
-                  className="text-sm font-black text-white hover:text-gaming-accent transition-colors truncate block"
+                  className="text-sm font-black text-foreground hover:text-gaming-accent transition-colors truncate block"
                 >
                   {player.personaname}
                 </Link>
@@ -146,7 +146,7 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
         <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
           {/* KDA */}
           <div className="text-center md:text-left">
-            <p className="text-lg font-black text-white">
+            <p className="text-lg font-black text-foreground">
               {player.kills}<span className="text-gray-700 text-xs mx-1">/</span>
               <span className="text-loss">{player.deaths}</span>
               <span className="text-gray-700 text-xs mx-1">/</span>
@@ -157,7 +157,7 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
 
           {/* LH/D */}
           <div className="hidden md:block">
-            <p className="text-sm font-black text-gray-300">
+            <p className="text-sm font-black text-gray-500 dark:text-gray-300">
               {player.last_hits}<span className="text-gray-700 text-[10px] mx-1">/</span>{player.denies}
             </p>
             <p className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Last Hits / Denies</p>
@@ -191,18 +191,18 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
 
         {/* Items Section */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-black/20 p-1.5 rounded-xl border border-white/5">
+          <div className="flex items-center gap-2 bg-[var(--tech-bg)] p-1.5 rounded-xl border border-[var(--overlay-border)]">
             <div className="flex gap-1">
               {items.map((itemId, i) => (
-                <div key={i} className="w-8 h-6 rounded bg-zinc-900 overflow-hidden border border-white/5">
+                <div key={i} className="w-8 h-6 rounded bg-zinc-900/50 overflow-hidden border border-[var(--overlay-border)]">
                   {itemId > 0 && (
                     <img src={getItemImageUrl(itemId)} className="w-full h-full object-cover" alt="item" />
                   )}
                 </div>
               ))}
             </div>
-            <div className="w-px h-6 bg-white/10 mx-1" />
-            <div className="w-7 h-7 rounded-full bg-zinc-900 overflow-hidden border border-white/10">
+            <div className="w-px h-6 bg-[var(--overlay-border)] mx-1" />
+            <div className="w-7 h-7 rounded-full bg-zinc-900/50 overflow-hidden border border-[var(--overlay-border)]">
                {player.item_neutral > 0 && (
                  <img src={getItemImageUrl(player.item_neutral)} className="w-full h-full object-cover" alt="neutral" />
                )}
@@ -228,11 +228,11 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
                   <div key={i} className="relative group/buff">
                     <img
                       src={getItemImageUrlByName(buffImg)}
-                      className="w-5 h-4 rounded-sm border border-white/10 opacity-70 group-hover/buff:opacity-100 transition-opacity"
+                      className="w-5 h-4 rounded-sm border border-[var(--overlay-border)] opacity-70 group-hover/buff:opacity-100 transition-opacity"
                       alt={buffImg}
                     />
                     {buff.stack_count > 1 && (
-                      <div className="absolute -bottom-1 -right-1 bg-black/80 px-0.5 rounded border border-white/10">
+                      <div className="absolute -bottom-1 -right-1 bg-black/80 px-0.5 rounded border border-[var(--overlay-border)]">
                         <span className="text-[6px] text-white font-black">{buff.stack_count}</span>
                       </div>
                     )}
@@ -267,7 +267,7 @@ export function MatchScoreboard({ match }: { match: MatchDetails }) {
             <div className="w-10 h-1 rounded-full bg-win" />
             <h3 className="text-sm font-black text-win uppercase tracking-[0.2em]">Radiant Forces</h3>
           </div>
-          <GlassCard className="p-0 overflow-hidden border-white/5">
+          <GlassCard className="p-0 overflow-hidden border-[var(--overlay-border)]">
             {radiantPlayers.map((p, i) => (
               <ScoreboardRow key={i} player={p} userPeers={userPeers} />
             ))}
@@ -280,7 +280,7 @@ export function MatchScoreboard({ match }: { match: MatchDetails }) {
             <h3 className="text-sm font-black text-loss uppercase tracking-[0.2em]">Dire Forces</h3>
             <div className="w-10 h-1 rounded-full bg-loss" />
           </div>
-          <GlassCard className="p-0 overflow-hidden border-white/5">
+          <GlassCard className="p-0 overflow-hidden border-[var(--overlay-border)]">
             {direPlayers.map((p, i) => (
               <ScoreboardRow key={i} player={p} userPeers={userPeers} />
             ))}

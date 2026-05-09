@@ -44,7 +44,7 @@ export function PlayerDetailModal({
         ) : profileError || !profile ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <AlertCircle className="w-16 h-16 text-loss mb-6" />
-            <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Player Not Found</h2>
+            <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Player Not Found</h2>
             <p className="text-gray-500 font-medium max-w-xs mx-auto">
               We couldn't retrieve profile details for this account ID.
             </p>
