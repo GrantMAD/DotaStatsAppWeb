@@ -14,7 +14,9 @@ import {
   Activity,
   User as UserIcon,
   TrendingUp,
-  BarChart2
+  BarChart2,
+  Swords,
+  ShoppingCart
 } from 'lucide-react';
 import { useHeroStats, usePlayerHeroes } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -25,6 +27,9 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 import { BRACKET_NAMES } from '@/services/tierList';
 import { motion } from 'framer-motion';
+import { HeroMatchups } from '@/components/hero/HeroMatchups';
+import { HeroPowerSpikes } from '@/components/hero/HeroPowerSpikes';
+import { HeroItemBuilds } from '@/components/hero/HeroItemBuilds';
 
 const RANK_COLORS: Record<string, string> = {
   '1': 'text-[#8d8d8d]',
@@ -294,42 +299,76 @@ export default function HeroDetailPage() {
               />
             </div>
           </div>
+
+          {/* Deep Analytics: Matchups */}
+          <div className="space-y-6">
+            <SectionHeader 
+              icon={Swords} 
+              title="Hero Matchups" 
+              description="Strategic counters and synergies based on global win rates."
+              color="text-win" 
+            />
+            <HeroMatchups heroId={heroId} />
+          </div>
+
+          {/* Deep Analytics: Item Builds */}
+          <div className="space-y-6">
+            <SectionHeader 
+              icon={ShoppingCart} 
+              title="Optimal Item Builds" 
+              description="Most frequent item progressions in high-skill brackets."
+              color="text-amber-500" 
+            />
+            <HeroItemBuilds heroId={heroId} />
+          </div>
         </div>
 
-        {/* Right Column: Rank Breakdown */}
-        <div className="lg:col-span-1">
-          <SectionHeader 
-            icon={Shield} 
-            title="Rank Breakdown" 
-            description="Win rates by MMR bracket."
-            color="text-amber-500" 
-          />
-          
-          <GlassCard className="p-8">
-            <div className="space-y-2">
-              {['1', '2', '3', '4', '5', '6', '7', '8'].map(rank => {
-                const picks = (hero as any)[`${rank}_pick`];
-                const wins = (hero as any)[`${rank}_win`];
-                if (!picks) return null;
-                
-                return (
-                  <WinRateBar 
-                    key={rank}
-                    label={BRACKET_NAMES[Number(rank)]}
-                    picks={picks}
-                    wins={wins}
-                    colorClass={RANK_COLORS[rank]}
-                  />
-                );
-              })}
-            </div>
+        {/* Right Column: Rank Breakdown & Power Spikes */}
+        <div className="lg:col-span-1 space-y-8">
+          <div>
+            <SectionHeader 
+              icon={Shield} 
+              title="Rank Breakdown" 
+              description="Win rates by MMR bracket."
+              color="text-amber-500" 
+            />
             
-            <div className="mt-8 p-4 rounded-2xl bg-[var(--nav-hover)] border border-[var(--card-border)]">
-              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
-                Win rates are calculated using data from the last 30 days of public matchmaking. Brackets with fewer than 1,000 games may show higher variance.
-              </p>
-            </div>
-          </GlassCard>
+            <GlassCard className="p-8">
+              <div className="space-y-2">
+                {['1', '2', '3', '4', '5', '6', '7', '8'].map(rank => {
+                  const picks = (hero as any)[`${rank}_pick`];
+                  const wins = (hero as any)[`${rank}_win`];
+                  if (!picks) return null;
+                  
+                  return (
+                    <WinRateBar 
+                      key={rank}
+                      label={BRACKET_NAMES[Number(rank)]}
+                      picks={picks}
+                      wins={wins}
+                      colorClass={RANK_COLORS[rank]}
+                    />
+                  );
+                })}
+              </div>
+              
+              <div className="mt-8 p-4 rounded-2xl bg-[var(--nav-hover)] border border-[var(--card-border)]">
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-relaxed">
+                  Win rates are calculated using data from the last 30 days of public matchmaking.
+                </p>
+              </div>
+            </GlassCard>
+          </div>
+
+          <div>
+            <SectionHeader 
+              icon={Activity} 
+              title="Win Rate by Duration" 
+              description="Performance trend over game length."
+              color="text-gaming-accent" 
+            />
+            <HeroPowerSpikes heroId={heroId} />
+          </div>
         </div>
       </div>
     </div>

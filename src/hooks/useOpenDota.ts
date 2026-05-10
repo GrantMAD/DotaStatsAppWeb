@@ -316,3 +316,39 @@ export function usePlayerWordCloud(accountId: string | number | null) {
     staleTime: 1000 * 60 * 60 * 24, // Chat stats change slowly
   });
 }
+
+/**
+ * Hook to fetch hero matchups.
+ */
+export function useHeroMatchups(heroId: number | null) {
+  return useQuery({
+    queryKey: ['heroMatchups', heroId],
+    queryFn: () => (heroId ? openDotaApi.getHeroMatchups(heroId) : []),
+    enabled: !!heroId,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+/**
+ * Hook to fetch hero durations (win rate over game length).
+ */
+export function useHeroDurations(heroId: number | null) {
+  return useQuery({
+    queryKey: ['heroDurations', heroId],
+    queryFn: () => (heroId ? openDotaApi.getHeroDurations(heroId) : []),
+    enabled: !!heroId,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+/**
+ * Hook to fetch hero item popularity.
+ */
+export function useHeroItemPopularity(heroId: number | null) {
+  return useQuery({
+    queryKey: ['heroItemPopularity', heroId],
+    queryFn: () => (heroId ? openDotaApi.getHeroItemPopularity(heroId) : null),
+    enabled: !!heroId,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
