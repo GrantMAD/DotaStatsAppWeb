@@ -13,7 +13,8 @@ import {
   LogIn,
   ChevronLeft,
   ChevronRight,
-  LogOut
+  LogOut,
+  Zap
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -25,6 +26,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
   { label: 'Search', href: '/search', icon: Search, color: 'text-amber-600', bg: 'bg-amber-600/10' },
+  { label: 'Meta', href: '/meta', icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
   { label: 'Pro Scene', href: '/pro', icon: Trophy, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },
   { label: 'Compare', href: '/compare', icon: BarChart2, authRequired: true, color: 'text-violet-600', bg: 'bg-violet-600/10' },
   { label: 'Friends', href: '/friends', icon: Users, authRequired: true, color: 'text-rose-600', bg: 'bg-rose-600/10' },
