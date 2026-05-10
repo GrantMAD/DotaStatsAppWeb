@@ -33,9 +33,12 @@ export function LaneRoleInsights() {
         // Aggregate by hero_id and find best ones
         const heroStats: Record<number, { wins: number, games: number }> = {};
         scenarios.forEach(s => {
+          // OpenDota API has corrupted data at the 3600s time slice with inflated games/wins
+          if (s.time === 3600) return;
+
           if (!heroStats[s.hero_id]) heroStats[s.hero_id] = { wins: 0, games: 0 };
-          heroStats[s.hero_id].wins += s.wins;
-          heroStats[s.hero_id].games += s.games;
+          heroStats[s.hero_id].wins += Number(s.wins || 0);
+          heroStats[s.hero_id].games += Number(s.games || 0);
         });
 
         const formatted: AggregatedHeroStats[] = Object.entries(heroStats)
@@ -95,7 +98,6 @@ export function LaneRoleInsights() {
               <tr className="text-xs text-gray-400 uppercase tracking-wider">
                 <th className="px-6 py-4 font-medium">Hero</th>
                 <th className="px-6 py-4 font-medium">Win Rate</th>
-                <th className="px-6 py-4 font-medium">Popularity</th>
                 <th className="px-6 py-4 font-medium text-right">Action</th>
               </tr>
             </thead>
@@ -104,8 +106,7 @@ export function LaneRoleInsights() {
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
                     <td className="px-6 py-4"><div className="h-10 bg-white/5 rounded-lg w-32"></div></td>
-                    <td className="px-6 py-4"><div className="h-6 bg-white/5 rounded-lg w-16"></div></td>
-                    <td className="px-6 py-4"><div className="h-6 bg-white/5 rounded-lg w-20"></div></td>
+                    <td className="px-6 py-4"><div className="h-10 bg-white/5 rounded-lg w-24"></div></td>
                     <td className="px-6 py-4"><div className="h-8 bg-white/5 rounded-lg w-8 ml-auto"></div></td>
                   </tr>
                 ))
@@ -127,14 +128,14 @@ export function LaneRoleInsights() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1.5">
                         <span className={cn(
                           "font-mono font-bold",
                           hero.winRate >= 52 ? "text-emerald-500" : "text-foreground"
                         )}>
                           {hero.winRate.toFixed(1)}%
                         </span>
-                        <div className="w-24 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
                           <div 
                             className={cn(
                               "h-full rounded-full",
@@ -143,12 +144,10 @@ export function LaneRoleInsights() {
                             style={{ width: `${hero.winRate}%` }}
                           />
                         </div>
+                        <span className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
+                          {hero.games.toLocaleString()} Matches
+                        </span>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-400 font-mono">
-                        {hero.games.toLocaleString()} games
-                      </span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button className="p-2 rounded-lg bg-white/5 hover:bg-gaming-accent hover:text-white transition-all text-gray-400">

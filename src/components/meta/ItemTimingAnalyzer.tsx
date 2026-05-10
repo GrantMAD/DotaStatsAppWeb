@@ -127,14 +127,14 @@ export function ItemTimingAnalyzer() {
           )}
         </div>
 
-        <div className="flex-1 w-full min-h-[300px] relative">
+        <div className="w-full h-[300px] relative">
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gaming-accent"></div>
             </div>
           ) : chartData.length > 0 ? (
-            <div className="absolute inset-0">
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+            <div className="w-full h-full">
+              <ResponsiveContainer width="100%" height={300} minWidth={1}>
                 <LineChart data={chartData} margin={{ top: 5, right: 30, left: 10, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                   <XAxis 
