@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Zap, TrendingUp, Map, LayoutGrid, Award, Users } from 'lucide-react';
+import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 // Dynamic imports for tab components to fix "preloaded but not used" warnings
@@ -22,8 +22,12 @@ const CommunityDistribution = dynamic(() => import('@/components/meta/CommunityD
   loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
 });
 
+const ScenarioFunFacts = dynamic(() => import('@/components/meta/ScenarioFunFacts').then(mod => mod.ScenarioFunFacts), {
+  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+});
+
 export default function MetaPage() {
-  const [activeTab, setActiveTab] = useState<'items' | 'lanes' | 'ranks' | 'community'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'lanes' | 'ranks' | 'community' | 'insights'>('items');
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
@@ -97,6 +101,18 @@ export default function MetaPage() {
           <Users size={18} />
           <span>Community</span>
         </button>
+        <button
+          onClick={() => setActiveTab('insights')}
+          className={cn(
+            "flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shrink-0",
+            activeTab === 'insights' 
+              ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
+              : "text-gray-400 hover:text-foreground hover:bg-white/5"
+          )}
+        >
+          <Lightbulb size={18} />
+          <span>Insights</span>
+        </button>
       </div>
 
       {/* Main Content Area */}
@@ -138,6 +154,12 @@ export default function MetaPage() {
               <h2 className="text-xl font-bold">Global Community Distribution</h2>
             </div>
             <CommunityDistribution />
+          </div>
+        )}
+
+        {activeTab === 'insights' && (
+          <div className="space-y-6">
+            <ScenarioFunFacts />
           </div>
         )}
       </div>
