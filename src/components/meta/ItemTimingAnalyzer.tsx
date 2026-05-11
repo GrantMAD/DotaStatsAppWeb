@@ -14,7 +14,6 @@ import {
   ReferenceLine
 } from 'recharts';
 import { Info, TrendingDown, TrendingUp } from 'lucide-react';
-import Image from 'next/image';
 
 export function ItemTimingAnalyzer() {
   const [selectedHero, setSelectedHero] = useState<number>(1); // Anti-Mage
