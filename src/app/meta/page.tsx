@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb } from 'lucide-react';
+import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb, GitCompare } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 // Dynamic imports for tab components to fix "preloaded but not used" warnings
@@ -26,11 +26,31 @@ const ScenarioFunFacts = dynamic(() => import('@/components/meta/ScenarioFunFact
   loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
 });
 
+const ProVsPubMeta = dynamic(() => import('@/components/meta/ProVsPubMeta').then(mod => mod.ProVsPubMeta), {
+  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+});
+
+const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
+  ssr: false
+});
+
 export default function MetaPage() {
-  const [activeTab, setActiveTab] = useState<'items' | 'lanes' | 'ranks' | 'community' | 'insights'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'lanes' | 'ranks' | 'pro' | 'community' | 'insights'>('items');
+  const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
+
+  const handleHeroClick = (id: number) => {
+    setSelectedHeroId(id);
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
+      {/* Hero Detail Modal */}
+      <HeroDetailModal 
+        isOpen={selectedHeroId !== null}
+        onClose={() => setSelectedHeroId(null)}
+        heroId={selectedHeroId}
+      />
+
       {/* Header */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gaming-accent/20 to-transparent border border-gaming-accent/20 p-8">
         <div className="relative z-10 space-y-4">
@@ -90,6 +110,18 @@ export default function MetaPage() {
           <span>Rank Performance</span>
         </button>
         <button
+          onClick={() => setActiveTab('pro')}
+          className={cn(
+            "flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shrink-0",
+            activeTab === 'pro' 
+              ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
+              : "text-gray-400 hover:text-foreground hover:bg-white/5"
+          )}
+        >
+          <GitCompare size={18} />
+          <span>Pro vs Pub</span>
+        </button>
+        <button
           onClick={() => setActiveTab('community')}
           className={cn(
             "flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition-all shrink-0",
@@ -123,7 +155,7 @@ export default function MetaPage() {
               <TrendingUp className="text-gaming-accent w-5 h-5" />
               <h2 className="text-xl font-bold">Item Purchase Scenario Analyzer</h2>
             </div>
-            <ItemTimingAnalyzer />
+            <ItemTimingAnalyzer onHeroClick={handleHeroClick} />
           </div>
         )}
         
@@ -133,7 +165,7 @@ export default function MetaPage() {
               <Map className="text-gaming-accent w-5 h-5" />
               <h2 className="text-xl font-bold">Lane Role Win Rates</h2>
             </div>
-            <LaneRoleInsights />
+            <LaneRoleInsights onHeroClick={handleHeroClick} />
           </div>
         )}
 
@@ -143,7 +175,13 @@ export default function MetaPage() {
               <Award className="text-gaming-accent w-5 h-5" />
               <h2 className="text-xl font-bold">Bracket Performance Leaderboard</h2>
             </div>
-            <BracketLeaderboards />
+            <BracketLeaderboards onHeroClick={handleHeroClick} />
+          </div>
+        )}
+
+        {activeTab === 'pro' && (
+          <div className="space-y-6">
+            <ProVsPubMeta onHeroClick={handleHeroClick} />
           </div>
         )}
 

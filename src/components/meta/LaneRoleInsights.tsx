@@ -18,7 +18,11 @@ interface AggregatedHeroStats {
   games: number;
 }
 
-export function LaneRoleInsights() {
+interface LaneRoleInsightsProps {
+  onHeroClick?: (id: number) => void;
+}
+
+export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
   const [selectedLane, setSelectedLane] = useState<number>(2); // Mid
   const [data, setData] = useState<AggregatedHeroStats[]>([]);
   const [loading, setLoading] = useState(false);
@@ -112,7 +116,11 @@ export function LaneRoleInsights() {
                 ))
               ) : data.length > 0 ? (
                 data.map((hero) => (
-                  <tr key={hero.hero_id} className="hover:bg-white/5 transition-colors group">
+                  <tr 
+                    key={hero.hero_id} 
+                    onClick={() => onHeroClick?.(hero.hero_id)}
+                    className="hover:bg-white/5 transition-colors group cursor-pointer"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
@@ -122,7 +130,7 @@ export function LaneRoleInsights() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold text-foreground group-hover:text-gaming-accent transition-colors">
                           {HEROES[hero.hero_id]?.localized_name || `Unknown Hero (${hero.hero_id})`}
                         </span>
                       </div>
@@ -150,9 +158,9 @@ export function LaneRoleInsights() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button className="p-2 rounded-lg bg-white/5 hover:bg-gaming-accent hover:text-white transition-all text-gray-400">
+                      <div className="p-2 rounded-lg bg-white/5 group-hover:bg-gaming-accent group-hover:text-white transition-all text-gray-400 w-fit ml-auto">
                         <ChevronRight size={18} />
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 ))

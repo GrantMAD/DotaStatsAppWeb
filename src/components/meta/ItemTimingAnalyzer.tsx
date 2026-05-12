@@ -15,9 +15,13 @@ import {
   ReferenceArea,
   Label
 } from 'recharts';
-import { Info, TrendingDown, TrendingUp, Target, Clock, AlertTriangle, Zap } from 'lucide-react';
+import { Info, TrendingDown, TrendingUp, Target, Clock, AlertTriangle, Zap, ShoppingCart } from 'lucide-react';
 
-export function ItemTimingAnalyzer() {
+interface ItemTimingAnalyzerProps {
+  onHeroClick?: (id: number) => void;
+}
+
+export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
   const [selectedHero, setSelectedHero] = useState<number>(1); // Anti-Mage
   const [selectedItem, setSelectedItem] = useState<string>('bfury');
   const [data, setData] = useState<ItemTimingScenario[]>([]);
@@ -94,7 +98,15 @@ export function ItemTimingAnalyzer() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Hero Selector */}
         <div className="glass-card p-4 space-y-2">
-          <label className="text-sm font-medium text-gray-400">Select Hero</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-gray-400">Select Hero</label>
+            <button 
+              onClick={() => onHeroClick?.(selectedHero)}
+              className="text-[10px] font-bold text-gaming-accent uppercase hover:underline"
+            >
+              View Hero Stats
+            </button>
+          </div>
           <div className="relative">
             <select
               value={selectedHero}
@@ -107,23 +119,31 @@ export function ItemTimingAnalyzer() {
                 </option>
               ))}
             </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+              <Clock size={16} />
+            </div>
           </div>
         </div>
 
         {/* Item Selector */}
         <div className="glass-card p-4 space-y-2">
           <label className="text-sm font-medium text-gray-400">Select Item</label>
-          <select
-            value={selectedItem}
-            onChange={(e) => setSelectedItem(e.target.value)}
-            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
-          >
-            {itemList.map(item => (
-              <option key={item.id} value={item.name} className="bg-[var(--card-bg)] text-foreground">
-                {item.name.replace(/_/g, ' ')}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={selectedItem}
+              onChange={(e) => setSelectedItem(e.target.value)}
+              className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
+            >
+              {itemList.map(item => (
+                <option key={item.id} value={item.name} className="bg-[var(--card-bg)] text-foreground">
+                  {item.name.replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-500">
+              <ShoppingCart size={16} />
+            </div>
+          </div>
         </div>
       </div>
 

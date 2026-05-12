@@ -25,7 +25,11 @@ interface HeroRankData {
   games: number;
 }
 
-export function BracketLeaderboards() {
+interface BracketLeaderboardsProps {
+  onHeroClick?: (id: number) => void;
+}
+
+export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
   const [selectedRank, setSelectedRank] = useState<number>(8); // Default to Immortal
   const [data, setData] = useState<HeroRankData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,7 +125,11 @@ export function BracketLeaderboards() {
                 ))
               ) : data.length > 0 ? (
                 data.map((hero) => (
-                  <tr key={hero.id} className="hover:bg-white/5 transition-colors group">
+                  <tr 
+                    key={hero.id} 
+                    onClick={() => onHeroClick?.(hero.id)}
+                    className="hover:bg-white/5 transition-colors group cursor-pointer"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
@@ -131,7 +139,7 @@ export function BracketLeaderboards() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <span className="font-bold text-foreground">
+                        <span className="font-bold text-foreground group-hover:text-gaming-accent transition-colors">
                           {hero.localized_name}
                         </span>
                       </div>
