@@ -1,5 +1,5 @@
 export const STEAM_CDN_BASE = 'https://cdn.cloudflare.steamstatic.com';
-export const OPENDOTA_BASE_URL = 'https://api.opendota.com/api';
+export const OPENDOTA_BASE_URL = typeof window !== 'undefined' ? '/api/opendota' : 'https://api.opendota.com/api';
 
 /**
  * Helper to map Hero IDs to localized names.
