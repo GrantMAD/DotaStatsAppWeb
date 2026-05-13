@@ -33,7 +33,8 @@ import {
   Shield,
   Clock,
   Swords,
-  Heart
+  Heart,
+  Eye
 } from 'lucide-react';
 import RankBadge from '../ui/RankBadge';
 import { GlassCard } from '../ui/GlassCard';
@@ -42,6 +43,8 @@ import { Skeleton } from '../ui/Skeleton';
 import MatchFilters from './MatchFilters';
 import PerformanceTrends from './PerformanceTrends';
 import { WordCloud } from './WordCloud';
+import MMRHistoryChart from './MMRHistoryChart';
+import WardMapHeatmap from './WardMapHeatmap';
 import { 
   usePlayerHeroes, 
   usePlayerPeers, 
@@ -50,7 +53,9 @@ import {
   usePlayerTotals, 
   usePlayerCounts,
   useHeroStats,
-  useEncounterHistory
+  useEncounterHistory,
+  usePlayerWardMap,
+  usePlayerRatings
 } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
@@ -89,6 +94,7 @@ export function PlayerOverviewContent({
   const [activeTab, setActiveTab] = useState<ProfileTab>('Recent');
   const [recentView, setRecentView] = useState<'matches' | 'trends'>('matches');
   const [networkSubTab, setNetworkSubTab] = useState<'Allies' | 'Opponents'>('Allies');
+  const [lifetimeSubTab, setLifetimeSubTab] = useState<'Stats' | 'Rank' | 'Vision'>('Stats');
   const [limit, setLimit] = useState(20);
   const [filters, setFilters] = useState<PlayerMatchFilters>({ limit });
 
@@ -98,6 +104,8 @@ export function PlayerOverviewContent({
   const { data: peers = [], isLoading: peersLoading } = usePlayerPeers(accountId);
   const { data: totals = [], isLoading: totalsLoading } = usePlayerTotals(accountId);
   const { data: countsData, isLoading: countsLoading } = usePlayerCounts(accountId);
+  const { data: wardMap, isLoading: wardMapLoading } = usePlayerWardMap(accountId);
+  const { data: ratings, isLoading: ratingsLoading } = usePlayerRatings(accountId);
   const { data: allHeroStats = [] } = useHeroStats();
   const peerHistory = useEncounterHistory(currentUserId, accountId);
 
@@ -678,40 +686,84 @@ export function PlayerOverviewContent({
 
         {activeTab === 'Lifetime' && (
            <div className="space-y-12">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                 {totalsLoading ? (
-                   [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-3xl" />)
-                 ) : totals.map((total) => (
-                   <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
-                      <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
-                        {Math.round(total.sum / total.n).toLocaleString()}
-                      </h3>
-                      <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
-                   </GlassCard>
-                 ))}
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                  <h2 className="text-3xl font-black text-foreground tracking-tight uppercase">Record Book</h2>
+                  <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Deep analysis of your lifetime journey</p>
+                </div>
+
+                <div className="flex bg-[var(--nav-hover)] p-1 rounded-2xl border border-[var(--card-border)]">
+                  {[
+                    { id: 'Stats', label: 'General', icon: BarChart2 },
+                    { id: 'Rank', label: 'Rank Progress', icon: TrendingUp },
+                    { id: 'Vision', label: 'Vision Map', icon: Eye },
+                  ].map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setLifetimeSubTab(tab.id as any)}
+                        className={cn(
+                          "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
+                          lifetimeSubTab === tab.id 
+                            ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
+                            : "text-gray-500 hover:text-foreground hover:bg-white/5"
+                        )}
+                      >
+                        <Icon size={14} />
+                        {tab.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
-              <div className="space-y-8">
-                 <div className="flex items-center gap-4">
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
-                    <h2 className="text-xs font-black text-gray-600 uppercase tracking-[0.4em]">Match Distribution</h2>
-                    <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
-                 </div>
+              {lifetimeSubTab === 'Stats' && (
+                <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {totalsLoading ? (
+                      [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-3xl" />)
+                    ) : totals.map((total) => (
+                      <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
+                          <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
+                          <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
+                            {Math.round(total.sum / total.n).toLocaleString()}
+                          </h3>
+                          <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
+                      </GlassCard>
+                    ))}
+                  </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {countsLoading ? (
-                       [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 w-full rounded-3xl" />)
-                    ) : (
-                       <>
-                          {renderStatSection('Lobby Type', Globe, lobbyStats)}
-                          {renderStatSection('Game Mode', Gamepad2, modeStats)}
-                          {renderStatSection('Region', Navigation, regionStats)}
-                          {renderStatSection('Side of Map', MapIcon, sideStats)}
-                       </>
-                    )}
-                 </div>
-              </div>
+                  <div className="space-y-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                        <h2 className="text-xs font-black text-gray-600 uppercase tracking-[0.4em]">Match Distribution</h2>
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {countsLoading ? (
+                          [1, 2, 3, 4].map(i => <Skeleton key={i} className="h-64 w-full rounded-3xl" />)
+                        ) : (
+                          <>
+                              {renderStatSection('Lobby Type', Globe, lobbyStats)}
+                              {renderStatSection('Game Mode', Gamepad2, modeStats)}
+                              {renderStatSection('Region', Navigation, regionStats)}
+                              {renderStatSection('Side of Map', MapIcon, sideStats)}
+                          </>
+                        )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {lifetimeSubTab === 'Rank' && (
+                <MMRHistoryChart ratings={ratings || []} loading={ratingsLoading} />
+              )}
+
+              {lifetimeSubTab === 'Vision' && (
+                <WardMapHeatmap data={wardMap || null} loading={wardMapLoading} />
+              )}
            </div>
         )}
       </div>
