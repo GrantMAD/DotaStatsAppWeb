@@ -132,6 +132,7 @@ export interface MatchDetails {
       hero_healing_per_min: { raw: number; pct: number };
       tower_damage: { raw: number; pct: number };
       last_hits_per_min: { raw: number; pct: number };
+      lhten: { raw: number; pct: number };
     };
     stuns?: number;
     multi_kills?: Record<string, number>;
@@ -246,10 +247,9 @@ export interface PlayerHero {
 export async function getPlayerHeroes(accountId: string | number): Promise<PlayerHero[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/heroes`);
-    if (!response.ok) throw new Error('Failed to fetch player heroes');
+    if (!response.ok) return [];
     return await response.json();
   } catch (error) {
-    console.error('Error fetching player heroes:', error);
     return [];
   }
 }
@@ -257,10 +257,9 @@ export async function getPlayerHeroes(accountId: string | number): Promise<Playe
 export async function getPlayerProfile(accountId: string | number): Promise<PlayerProfile | null> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}`);
-    if (!response.ok) throw new Error('Failed to fetch profile');
+    if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Error fetching player profile:', error);
     return null;
   }
 }
@@ -269,10 +268,9 @@ export async function getPlayerWinLoss(accountId: string | number, params: Recor
   try {
     const query = new URLSearchParams(params).toString();
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/wl${query ? `?${query}` : ''}`);
-    if (!response.ok) throw new Error('Failed to fetch W/L stats');
+    if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Error fetching win/loss stats:', error);
     return null;
   }
 }
@@ -281,10 +279,9 @@ export async function getPlayerTotals(accountId: string | number, params: Record
   try {
     const query = new URLSearchParams(params).toString();
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/totals${query ? `?${query}` : ''}`);
-    if (!response.ok) throw new Error('Failed to fetch player totals');
+    if (!response.ok) return [];
     return await response.json();
   } catch (error) {
-    console.error('Error fetching player totals:', error);
     return [];
   }
 }
@@ -302,10 +299,9 @@ export interface PlayerMatchFilters {
 export async function getPlayerCounts(accountId: string | number): Promise<PlayerCounts | null> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/counts`);
-    if (!response.ok) throw new Error('Failed to fetch player counts');
+    if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Error fetching player counts:', error);
     return null;
   }
 }
@@ -321,11 +317,13 @@ export async function getPlayerMatches(accountId: string | number, filters: Play
     if (filters.lobby_type) params.append('lobby_type', filters.lobby_type.toString());
     if (filters.date) params.append('date', filters.date.toString());
 
-    const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/matches?${params.toString()}`);
-    if (!response.ok) throw new Error('Failed to fetch matches');
+    const queryString = params.toString();
+    const url = `${OPENDOTA_BASE_URL}/players/${accountId}/matches${queryString ? `?${queryString}` : ''}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) return [];
     return await response.json();
   } catch (error) {
-    console.error('Error fetching filtered matches:', error);
     return [];
   }
 }
@@ -333,11 +331,10 @@ export async function getPlayerMatches(accountId: string | number, filters: Play
 export async function getRecentMatches(accountId: string | number, limit: number = 20): Promise<RecentMatch[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/recentMatches`);
-    if (!response.ok) throw new Error('Failed to fetch recent matches');
+    if (!response.ok) return [];
     const data = await response.json();
     return data.slice(0, limit);
   } catch (error) {
-    console.error('Error fetching recent matches:', error);
     return [];
   }
 }
@@ -345,10 +342,9 @@ export async function getRecentMatches(accountId: string | number, limit: number
 export async function getPlayerPeers(accountId: string | number): Promise<Peer[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/peers`);
-    if (!response.ok) throw new Error('Failed to fetch peers');
+    if (!response.ok) return [];
     return await response.json();
   } catch (error) {
-    console.error('Error fetching peers:', error);
     return [];
   }
 }
@@ -356,10 +352,9 @@ export async function getPlayerPeers(accountId: string | number): Promise<Peer[]
 export async function getMatchDetails(matchId: number): Promise<MatchDetails | null> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/matches/${matchId}`);
-    if (!response.ok) throw new Error('Failed to fetch match details');
+    if (!response.ok) return null;
     return await response.json();
   } catch (error) {
-    console.error('Error fetching match details:', error);
     return null;
   }
 }

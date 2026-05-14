@@ -56,11 +56,15 @@ export const useActivityFeed = () => {
 
       const results = await Promise.allSettled(
         playerIds.map(async (id) => {
-          const [profile, matches] = await Promise.all([
-            openDotaApi.getPlayerProfile(id),
-            openDotaApi.getRecentMatches(id, 10)
-          ]);
-          return { id, profile, matches };
+          try {
+            const [profile, matches] = await Promise.all([
+              openDotaApi.getPlayerProfile(id),
+              openDotaApi.getPlayerMatches(id, { limit: 10 })
+            ]);
+            return { id, profile, matches };
+          } catch (err) {
+            return { id, profile: null, matches: [] };
+          }
         })
       );
 
