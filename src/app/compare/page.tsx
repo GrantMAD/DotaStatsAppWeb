@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useState, useContext } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { 
   usePlayerProfile, 
@@ -17,9 +17,10 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
-import { Plus, BarChart2 } from 'lucide-react';
+import { Plus, BarChart2, User } from 'lucide-react';
 import Image from 'next/image';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
+import { SteamAuthContext } from '@/context/SteamAuthContext';
 
 function CompareContent() {
   const searchParams = useSearchParams();
@@ -28,8 +29,13 @@ function CompareContent() {
   const p1 = searchParams.get('p1');
   const p2 = searchParams.get('p2');
 
-  const [isSelectModalOpen, setIsSelectModalOpen] = useState(false);
-  const [selectingFor, setSelectingFor] = useState<'p1' | 'p2' | null>(null);
+  const [mounted, setMounted] = useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const steamAuth = useContext(SteamAuthContext);
+  const myAccountId = steamAuth?.accountId ? String(steamAuth.accountId) : null;
 
   // Player 1 Data
   const { data: profile1, isLoading: loadingP1 } = usePlayerProfile(p1);
@@ -47,6 +53,17 @@ function CompareContent() {
   const { data: recent2, isLoading: loadingRecent2 } = useRecentMatches(p2, 20);
   const { data: peers2, isLoading: loadingPeers2 } = usePlayerPeers(p2);
 
+  // Hardened check: Check URL params AND fetched profile data
+  const isMeInComparison = !!(myAccountId && (
+    p1 === myAccountId || 
+    p2 === myAccountId || 
+    profile1?.profile?.account_id?.toString() === myAccountId || 
+    profile2?.profile?.account_id?.toString() === myAccountId
+  ));
+
+  const [isSelectModalOpen, setIsSelectModalOpen] = useState(false);
+  const [selectingFor, setSelectingFor] = useState<'p1' | 'p2' | null>(null);
+
   const isLoading = (p1 && (loadingP1 || loadingTotals1 || loadingRecent1 || loadingPeers1)) || 
                     (p2 && (loadingP2 || loadingTotals2 || loadingRecent2 || loadingPeers2));
 
@@ -63,6 +80,14 @@ function CompareContent() {
     }
     setIsSelectModalOpen(false);
     setSelectingFor(null);
+  };
+
+  const handleAddMe = (target: 'p1' | 'p2', e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!myAccountId) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set(target, myAccountId);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const getWR = (wl: any) => {
@@ -119,12 +144,24 @@ function CompareContent() {
       return (
         <div 
           onClick={() => handleOpenSelect(target)}
-          className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-[var(--card-border)] rounded-2xl hover:bg-[var(--nav-hover)] transition-colors group cursor-pointer"
+          className="flex-1 flex flex-col items-center justify-center p-6 border-2 border-dashed border-[var(--card-border)] rounded-2xl hover:bg-[var(--nav-hover)] transition-colors group cursor-pointer relative min-h-[220px]"
         >
            <div className="w-16 h-16 rounded-full bg-[var(--nav-hover)] flex items-center justify-center group-hover:scale-110 transition-transform">
               <Plus className="w-8 h-8 text-foreground/40" />
            </div>
            <p className="mt-4 text-xs font-black uppercase text-foreground/40 tracking-widest">Select Player</p>
+           
+           <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+             {mounted && myAccountId && !isMeInComparison && (
+               <button
+                 onClick={(e) => handleAddMe(target, e)}
+                 className="px-3 py-1 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/30 rounded-lg flex items-center gap-2 transition-all"
+               >
+                 <User className="w-3 h-3 text-purple-400" />
+                 <span className="text-[10px] font-black uppercase text-purple-400">Add Me</span>
+               </button>
+             )}
+           </div>
         </div>
       );
     }
@@ -132,7 +169,7 @@ function CompareContent() {
     return (
       <div 
         onClick={() => handleOpenSelect(target)}
-        className="flex-1 flex flex-col items-center p-6 cursor-pointer group"
+        className="flex-1 flex flex-col items-center justify-center p-6 cursor-pointer group relative min-h-[220px]"
       >
         <div className="relative">
           <img 
@@ -147,6 +184,18 @@ function CompareContent() {
         <h2 className="text-xl font-black mt-8 text-center text-foreground truncate max-w-full px-4 group-hover:text-purple-400 transition-colors">
           {profile.profile.personaname}
         </h2>
+        
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+          {mounted && myAccountId && !isMeInComparison && myAccountId !== profile.profile.account_id?.toString() && (
+            <button
+              onClick={(e) => handleAddMe(target, e)}
+              className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg flex items-center gap-2 transition-all opacity-0 group-hover:opacity-100"
+            >
+              <User className="w-3 h-3 text-foreground/40" />
+              <span className="text-[10px] font-black uppercase text-foreground/40">Switch to Me</span>
+            </button>
+          )}
+        </div>
       </div>
     );
   };
@@ -212,6 +261,12 @@ function CompareContent() {
               label="Avg GPM" 
               val1={getAvg(totals1 || [], 'gold_per_min')} 
               val2={getAvg(totals2 || [], 'gold_per_min')} 
+            />
+            <CompareStatRow 
+              label="Avg Deaths" 
+              val1={getAvg(totals1 || [], 'deaths')} 
+              val2={getAvg(totals2 || [], 'deaths')} 
+              higherIsBetter={false}
             />
             <CompareStatRow 
               label="Avg XPM" 
