@@ -497,7 +497,12 @@ export function PlayerOverviewContent({
                 </>
               ) : (
                 <div className="mt-8">
-                  <PerformanceTrends matches={trendMatches} totals={totals} loading={totalsLoading || richLoading} />
+                  <PerformanceTrends 
+                    matches={trendMatches} 
+                    totals={totals} 
+                    rankTier={profile?.rank_tier || null}
+                    loading={totalsLoading || richLoading} 
+                  />
                 </div>
               )}
             </div>

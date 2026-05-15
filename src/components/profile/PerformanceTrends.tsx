@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { RecentMatch, PlayerTotal } from '@/services/opendota';
+import { RANK_PERFORMANCE_BENCHMARKS } from '@/services/constants';
 import { 
   LineChart, 
   Line, 
@@ -11,7 +12,9 @@ import {
   ResponsiveContainer, 
   AreaChart, 
   Area,
-  CartesianGrid
+  CartesianGrid,
+  ReferenceLine,
+  Label
 } from 'recharts';
 import { 
   TrendingUp, 
@@ -33,10 +36,15 @@ import { Skeleton } from '../ui/Skeleton';
 interface PerformanceTrendsProps {
   matches: RecentMatch[];
   totals: PlayerTotal[];
+  rankTier: number | null;
   loading?: boolean;
 }
 
-export default function PerformanceTrends({ matches, totals, loading }: PerformanceTrendsProps) {
+type MetricType = 'kda' | 'gpm' | 'xpm';
+
+export default function PerformanceTrends({ matches, totals, rankTier, loading }: PerformanceTrendsProps) {
+  const [activeMetric, setActiveMetric] = useState<MetricType>('kda');
+
   const trends = useMemo(() => {
     const recent = matches?.slice(0, 20) || [];
     if (recent.length === 0 || loading) return null;
@@ -73,9 +81,11 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
     const lifetimeLH = (safeTotals.find(t => t.field === 'last_hits')?.sum || 0) / lifetimeMatches;
     const lifetimeHealing = (safeTotals.find(t => t.field === 'hero_healing')?.sum || 0) / lifetimeMatches;
 
-    const kdaHistory = [...recent].reverse().map((m, i) => ({
+    const history = [...recent].reverse().map((m, i) => ({
       index: i + 1,
-      kda: Number(((m.kills + m.assists) / Math.max(1, m.deaths)).toFixed(2))
+      kda: Number(((m.kills + m.assists) / Math.max(1, m.deaths)).toFixed(2)),
+      gpm: m.gold_per_min || 0,
+      xpm: m.xp_per_min || 0,
     }));
 
     const winRateRecent = (recent.filter(m => {
@@ -84,6 +94,10 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
     }).length / recentCount) * 100;
 
     const isOnFire = winRateRecent >= 65 || (lifetimeKDA > 0 && avgKDA > lifetimeKDA * 1.25);
+
+    // Get rank benchmark
+    const rankDigit = rankTier ? Math.floor(rankTier / 10) : 0;
+    const benchmark = RANK_PERFORMANCE_BENCHMARKS[rankDigit] || null;
 
     return {
       avgKDA, lifetimeKDA,
@@ -95,11 +109,12 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
       avgHealing, lifetimeHealing,
       topLane,
       uniqueHeroes,
-      kdaHistory,
+      history,
       winRateRecent,
-      isOnFire
+      isOnFire,
+      benchmark
     };
-  }, [matches, totals, loading]);
+  }, [matches, totals, loading, rankTier]);
 
   if (loading) {
     return (
@@ -165,6 +180,8 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
     );
   };
 
+  const activeBenchmarkValue = trends.benchmark ? trends.benchmark[activeMetric] : null;
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center justify-between">
@@ -201,49 +218,89 @@ export default function PerformanceTrends({ matches, totals, loading }: Performa
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <GlassCard className="h-[300px] flex flex-col p-6">
-            <div className="flex items-center justify-between mb-8">
+          <GlassCard className="h-[350px] flex flex-col p-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
               <div>
-                <h3 className="text-sm font-black text-foreground uppercase tracking-widest">KDA Momentum</h3>
-                <p className="text-gray-500 text-[10px] font-bold mt-1">Match by match trajectory</p>
+                <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Momentum Visualizer</h3>
+                <p className="text-gray-500 text-[10px] font-bold mt-1">Match by match trajectory vs. Rank Average</p>
               </div>
-              <div className="bg-[var(--nav-hover)] px-3 py-1 rounded-lg text-gaming-accent text-[10px] font-black uppercase">
-                Trend Visualizer
+              <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl">
+                {(['kda', 'gpm', 'xpm'] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setActiveMetric(m)}
+                    className={cn(
+                      "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-300",
+                      activeMetric === m 
+                        ? "bg-gaming-accent text-white shadow-lg" 
+                        : "text-gray-500 hover:text-gray-300"
+                    )}
+                  >
+                    {m}
+                  </button>
+                ))}
               </div>
             </div>
             
             <div className="flex-1 w-full -ml-4">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trends.kdaHistory}>
+                <AreaChart data={trends.history}>
                   <defs>
-                    <linearGradient id="kdaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                    <linearGradient id="metricGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={activeMetric === 'kda' ? '#8b5cf6' : activeMetric === 'gpm' ? '#f59e0b' : '#3b82f6'} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={activeMetric === 'kda' ? '#8b5cf6' : activeMetric === 'gpm' ? '#f59e0b' : '#3b82f6'} stopOpacity={0}/>
                     </linearGradient>
                   </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis 
+                    dataKey="index" 
+                    hide 
+                  />
+                  <YAxis 
+                    hide 
+                    domain={activeMetric === 'kda' ? ['dataMin - 1', 'dataMax + 1'] : ['dataMin - 50', 'dataMax + 50']} 
+                  />
                   <Area 
                     type="monotone" 
-                    dataKey="kda" 
-                    stroke="#8b5cf6" 
+                    dataKey={activeMetric} 
+                    stroke={activeMetric === 'kda' ? '#8b5cf6' : activeMetric === 'gpm' ? '#f59e0b' : '#3b82f6'} 
                     strokeWidth={4}
                     fillOpacity={1} 
-                    fill="url(#kdaGradient)" 
+                    fill="url(#metricGradient)" 
                     animationDuration={1500}
                   />
+                  {activeBenchmarkValue && (
+                    <ReferenceLine 
+                      y={activeBenchmarkValue} 
+                      stroke="#6366f1" 
+                      strokeDasharray="5 5"
+                      strokeWidth={2}
+                    >
+                      <Label 
+                        value={`${activeMetric.toUpperCase()} Rank Avg`} 
+                        position="right" 
+                        fill="#6366f1"
+                        fontSize={10}
+                        fontWeight="black"
+                        className="uppercase tracking-widest"
+                      />
+                    </ReferenceLine>
+                  )}
                   <Tooltip 
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
                           <div className="glass-card bg-[var(--card-bg)] p-2 border-[var(--card-border)] shadow-2xl">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
-                            <p className="text-xl font-black text-foreground">{payload[0].value} KDA</p>
+                            <p className="text-xl font-black text-foreground">
+                              {payload[0].value} {activeMetric.toUpperCase()}
+                            </p>
                           </div>
                         );
                       }
                       return null;
                     }}
                   />
-                  <YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
