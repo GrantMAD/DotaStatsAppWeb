@@ -599,16 +599,23 @@ export function PlayerOverviewContent({
               {/* Highlights */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  {duo && duo.with_games > 1 && (
-                    <GlassCard className="p-6 border-win/20 bg-win/5">
+                    <GlassCard 
+                       hoverable
+                       onClick={() => router.push(`/compare?p1=${accountId}&p2=${duo.account_id}`)}
+                       className="p-6 border-win/20 bg-win/5 cursor-pointer group/card"
+                    >
                        <div className="flex items-center gap-4">
-                          <div className="p-3 bg-win/20 rounded-2xl text-win">
+                          <div className="p-3 bg-win/20 rounded-2xl text-win group-hover/card:scale-110 transition-transform">
                              <Heart size={24} />
                           </div>
-                          <div>
-                             <h3 className="text-win font-black uppercase tracking-widest text-[10px] mb-1">Dynamic Duo</h3>
+                          <div className="flex-1 min-w-0">
+                             <div className="flex items-center justify-between">
+                                <h3 className="text-win font-black uppercase tracking-widest text-[10px] mb-1">Dynamic Duo</h3>
+                                <ChevronRight size={14} className="text-win/40 group-hover/card:translate-x-1 transition-transform" />
+                             </div>
                              <div className="flex items-center gap-3">
                                 <img src={duo.avatar} className="w-10 h-10 rounded-full border border-win/30" alt="duo" />
-                                <span className="text-lg font-black text-foreground truncate max-w-[150px]">{duo.personaname}</span>
+                                <span className="text-lg font-black text-foreground truncate">{duo.personaname}</span>
                              </div>
                              <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{duo.with_games} Games Shared</p>
                           </div>
@@ -616,16 +623,23 @@ export function PlayerOverviewContent({
                     </GlassCard>
                  )}
                  {nemesis && nemesis.against_games >= 3 && (
-                    <GlassCard className="p-6 border-loss/20 bg-loss/5 text-right flex-row-reverse">
+                    <GlassCard 
+                       hoverable
+                       onClick={() => router.push(`/compare?p1=${accountId}&p2=${nemesis.account_id}`)}
+                       className="p-6 border-loss/20 bg-loss/5 cursor-pointer group/card"
+                    >
                        <div className="flex items-center gap-4 flex-row-reverse">
-                          <div className="p-3 bg-loss/20 rounded-2xl text-loss">
+                          <div className="p-3 bg-loss/20 rounded-2xl text-loss group-hover/card:scale-110 transition-transform">
                              <Swords size={24} />
                           </div>
-                          <div>
-                             <h3 className="text-loss font-black uppercase tracking-widest text-[10px] mb-1">Nemesis</h3>
+                          <div className="flex-1 min-w-0 text-right">
+                             <div className="flex items-center justify-between flex-row-reverse">
+                                <h3 className="text-loss font-black uppercase tracking-widest text-[10px] mb-1">Nemesis</h3>
+                                <ChevronRight size={14} className="text-loss/40 rotate-180 group-hover/card:-translate-x-1 transition-transform" />
+                             </div>
                              <div className="flex items-center gap-3 flex-row-reverse">
                                 <img src={nemesis.avatar} className="w-10 h-10 rounded-full border border-loss/30" alt="nemesis" />
-                                <span className="text-lg font-black text-foreground truncate max-w-[150px]">{nemesis.personaname}</span>
+                                <span className="text-lg font-black text-foreground truncate">{nemesis.personaname}</span>
                              </div>
                              <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{nemesis.against_games} Rivalries</p>
                           </div>
