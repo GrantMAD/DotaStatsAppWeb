@@ -5,7 +5,7 @@ import { MatchDetails, PickBan } from '@/services/opendota';
 import { getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
-import { Users, Info, Swords, TrendingUp, TrendingDown } from 'lucide-react';
+import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 import { usePlayerPeers } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -192,7 +192,10 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
                   {player.personaname}
                 </Link>
               ) : (
-                <span className="text-sm font-black text-gray-500 italic">Anonymous</span>
+                <span className="text-sm font-black text-gray-500 italic flex items-center gap-2">
+                  <EyeOff size={12} className="text-gray-600" />
+                  Anonymous
+                </span>
               )}
               {peer && (
                 <div className="bg-gaming-accent/20 px-1.5 py-0.5 rounded border border-gaming-accent/30 flex items-center gap-1 shrink-0">

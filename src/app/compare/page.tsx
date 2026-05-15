@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense, useState, useContext } from 'react';
+import React, { Suspense, useState, useContext, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { 
   usePlayerProfile, 
@@ -8,7 +8,9 @@ import {
   usePlayerHeroes,
   usePlayerTotals,
   useRecentMatches,
-  usePlayerPeers
+  usePlayerPeers,
+  isProfilePrivate,
+  isDataRestricted
 } from '@/hooks/useOpenDota';
 import CompareStatRow from '@/components/compare/CompareStatRow';
 import RankBadge from '@/components/ui/RankBadge';
@@ -21,6 +23,8 @@ import { Plus, BarChart2, User } from 'lucide-react';
 import Image from 'next/image';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 import { SteamAuthContext } from '@/context/SteamAuthContext';
+import { DataPrivacyIndicator } from '@/components/ui/DataPrivacyIndicator';
+import { EyeOff } from 'lucide-react';
 
 function CompareContent() {
   const searchParams = useSearchParams();
@@ -52,6 +56,12 @@ function CompareContent() {
   const { data: totals2, isLoading: loadingTotals2 } = usePlayerTotals(p2);
   const { data: recent2, isLoading: loadingRecent2 } = useRecentMatches(p2, 20);
   const { data: peers2, isLoading: loadingPeers2 } = usePlayerPeers(p2);
+  
+  const isP1Private = useMemo(() => isProfilePrivate(profile1 ?? null), [profile1]);
+  const isP1Restricted = useMemo(() => isDataRestricted(profile1 ?? null, recent1?.length || 0), [profile1, recent1]);
+  
+  const isP2Private = useMemo(() => isProfilePrivate(profile2 ?? null), [profile2]);
+  const isP2Restricted = useMemo(() => isDataRestricted(profile2 ?? null, recent2?.length || 0), [profile2, recent2]);
 
   // Hardened check: Check URL params AND fetched profile data
   const isMeInComparison = !!(myAccountId && (
@@ -181,8 +191,11 @@ function CompareContent() {
             <RankBadge rankTier={profile.rank_tier} size={60} />
           </div>
         </div>
-        <h2 className="text-xl font-black mt-8 text-center text-foreground truncate max-w-full px-4 group-hover:text-purple-400 transition-colors">
+        <h2 className="text-xl font-black mt-8 text-center text-foreground truncate max-w-full px-4 group-hover:text-purple-400 transition-colors flex items-center justify-center gap-2">
           {profile.profile.personaname}
+          {isProfilePrivate(profile) && (
+            <EyeOff size={14} className="text-red-500" />
+          )}
         </h2>
         
         <div className="absolute bottom-6 left-0 right-0 flex justify-center">
@@ -240,6 +253,30 @@ function CompareContent() {
         </div>
       ) : profile1 && profile2 ? (
         <div className="space-y-12">
+          {(isP1Private || isP1Restricted || isP2Private || isP2Restricted) && (
+            <div className="space-y-4">
+              { (isP1Private || isP1Restricted) && (
+                <DataPrivacyIndicator 
+                  type={isP1Private ? 'profile' : 'matches'} 
+                  isCurrentUser={myAccountId === p1}
+                  className="border-purple-500/30"
+                />
+              )}
+              { (isP2Private || isP2Restricted) && (
+                <DataPrivacyIndicator 
+                  type={isP2Private ? 'profile' : 'matches'} 
+                  isCurrentUser={myAccountId === p2}
+                  className="border-purple-500/30"
+                />
+              )}
+              <GlassCard className="p-4 bg-amber-500/5 border-amber-500/20">
+                <p className="text-amber-500 text-[10px] font-black uppercase tracking-widest text-center">
+                  Notice: Comparison statistics may be inaccurate or incomplete due to privacy settings.
+                </p>
+              </GlassCard>
+            </div>
+          )}
+
           <GlassCard className="p-8">
              <CompareStatRow 
               label="Win Rate" 

@@ -4,8 +4,12 @@ import { useMemo } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { 
   openDotaApi, 
-  OPENDOTA_BASE_URL 
+  OPENDOTA_BASE_URL,
+  isProfilePrivate,
+  isDataRestricted 
 } from '../services/opendota';
+
+export { isProfilePrivate, isDataRestricted };
 
 /**
  * Hook to fetch a player's profile data.

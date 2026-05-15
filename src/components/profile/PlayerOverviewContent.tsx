@@ -5,7 +5,9 @@ import {
   PlayerProfile, 
   WinLossStats, 
   RecentMatch, 
-  PlayerMatchFilters
+  PlayerMatchFilters,
+  isProfilePrivate,
+  isDataRestricted
 } from '@/services/opendota';
 import { HEROES, getHeroImageUrl, REGIONS } from '@/services/constants';
 import { cn } from '@/utils/cn';
@@ -60,6 +62,7 @@ import {
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DataPrivacyIndicator } from '../ui/DataPrivacyIndicator';
 
 type ProfileTab = 'Recent' | 'Heroes' | 'Network' | 'Social' | 'Lifetime';
 
@@ -107,6 +110,10 @@ export function PlayerOverviewContent({
   const { data: wardMap, isLoading: wardMapLoading } = usePlayerWardMap(accountId);
   const { data: ratings, isLoading: ratingsLoading } = usePlayerRatings(accountId);
   const { data: allHeroStats = [] } = useHeroStats();
+  
+  const isPrivateAccount = useMemo(() => isProfilePrivate(profile), [profile]);
+  const isDataRestrictedAccount = useMemo(() => isDataRestricted(profile, filteredMatches.length), [profile, filteredMatches]);
+  
   const peerHistory = useEncounterHistory(currentUserId, accountId);
 
   // Compute lifetime stats helpers
@@ -298,9 +305,9 @@ export function PlayerOverviewContent({
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Win Rate</p>
                 <p className={cn(
                   "text-4xl font-black italic",
-                  (wl.win / (wl.win + wl.lose)) >= 0.5 ? "text-win" : "text-loss"
+                  (wl.win + wl.lose) > 0 && (wl.win / (wl.win + wl.lose)) >= 0.5 ? "text-win" : "text-loss"
                 )}>
-                  {((wl.win / (wl.win + wl.lose)) * 100).toFixed(1)}%
+                  {(wl.win + wl.lose) > 0 ? ((wl.win / (wl.win + wl.lose)) * 100).toFixed(1) : '0.0'}%
                 </p>
                 <div className="flex gap-2 mt-1 justify-center md:justify-end text-[10px] font-black">
                   <span className="text-win">{wl.win}W</span>
@@ -350,18 +357,11 @@ export function PlayerOverviewContent({
         </GlassCard>
       )}
 
-      {isPrivate && (
-        <div className="bg-amber-500/10 border border-amber-500/30 p-6 rounded-3xl flex items-center gap-6 group">
-          <div className="p-3 rounded-2xl bg-amber-500 text-black">
-            <EyeOff size={24} />
-          </div>
-          <div>
-            <h3 className="text-amber-500 font-black uppercase tracking-widest text-sm mb-1">Private Profile</h3>
-            <p className="text-gray-400 font-medium text-sm leading-relaxed">
-              This user has not enabled "Expose Public Match Data" in their Dota 2 settings. Statistics may be incomplete or missing.
-            </p>
-          </div>
-        </div>
+      {(isPrivateAccount || isDataRestrictedAccount) && (
+        <DataPrivacyIndicator 
+          type={isPrivateAccount ? 'profile' : 'matches'} 
+          isCurrentUser={isCurrentUser}
+        />
       )}
 
       {/* Tab Navigation */}
@@ -382,6 +382,9 @@ export function PlayerOverviewContent({
             >
               <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
               {tab.label}
+              {(tab.id !== 'Recent' && (isPrivateAccount || isDataRestrictedAccount)) && (
+                <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50" />
+              )}
             </button>
           );
         })}
@@ -541,7 +544,7 @@ export function PlayerOverviewContent({
                 [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
               ) : playerHeroes.sort((a, b) => b.games - a.games).slice(0, 50).map((hero) => {
                 const info = HEROES[Number(hero.hero_id)];
-                const winRate = (hero.win / hero.games) * 100;
+                const winRate = hero.games > 0 ? (hero.win / hero.games) * 100 : 0;
                 return (
                   <Link key={hero.hero_id} href={`/hero/${hero.hero_id}`} className="block group">
                     <GlassCard hoverable className="p-4 flex flex-col gap-4">
@@ -560,7 +563,7 @@ export function PlayerOverviewContent({
                             "text-xl font-black leading-none",
                              winRate >= 55 ? "text-win" : winRate < 45 ? "text-loss" : "text-foreground"
                           )}>
-                            {winRate.toFixed(1)}%
+                            {hero.games > 0 ? winRate.toFixed(1) : '0.0'}%
                           </p>
                           <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mt-1">Win Rate</p>
                         </div>
@@ -746,7 +749,7 @@ export function PlayerOverviewContent({
                       <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
                           <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
                           <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
-                            {Math.round(total.sum / total.n).toLocaleString()}
+                            {total.n > 0 ? Math.round(total.sum / total.n).toLocaleString() : '0'}
                           </h3>
                           <p className="text-xs font-bold text-foreground/40 uppercase italic">Lifetime Average</p>
                       </GlassCard>
