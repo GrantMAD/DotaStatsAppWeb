@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMatchDetails, useLiveGames } from '@/hooks/useOpenDota';
 import { MatchScoreboard } from '@/components/match/MatchScoreboard';
@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GAME_MODES, requestMatchParse } from '@/services/opendota';
 import { cn } from '@/utils/cn';
-import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users } from 'lucide-react';
+import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 type MatchTab = 'Scoreboard' | 'Highlights' | 'Economy' | 'Timeline' | 'Chat';
@@ -24,8 +24,23 @@ export default function MatchPage() {
   const [activeTab, setActiveTab] = useState<MatchTab>('Scoreboard');
   const [isParsing, setIsParsing] = useState(false);
   const [parseRequested, setParseRequested] = useState(false);
+  const [pollCount, setPollCount] = useState(0);
   
   const { data: match, isLoading, error } = useMatchDetails(matchId);
+
+  // Auto-refresh polling logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (parseRequested && !match?.version && pollCount < 10) {
+      interval = setInterval(() => {
+        setPollCount(prev => prev + 1);
+        // Next.js client-side re-fetching happens via useMatchDetails (React Query)
+      }, 20000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [parseRequested, match?.version, pollCount]);
   const { data: liveGames = [] } = useLiveGames();
 
   const handleRequestParse = async () => {
@@ -177,7 +192,15 @@ export default function MatchPage() {
         <div className="p-8 md:p-12 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-center md:text-left">
-              <h1 className="text-foreground font-black text-3xl md:text-4xl tracking-tighter uppercase mb-2">Match Analysis</h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-foreground font-black text-3xl md:text-4xl tracking-tighter uppercase">Match Analysis</h1>
+                <div className={cn(
+                  "px-2 py-1 rounded-md border text-[8px] font-black uppercase tracking-widest",
+                  match.version ? "bg-win/10 border-win/20 text-win" : "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                )}>
+                  {match.version ? 'Full Analysis' : 'Basic Data'}
+                </div>
+              </div>
               <p className="text-gray-500 font-bold uppercase text-[10px] tracking-[0.3em]">
                 {GAME_MODES[match.game_mode] || 'Standard Match'} • ID {match.match_id}
               </p>
@@ -223,7 +246,7 @@ export default function MatchPage() {
               This match has not been fully parsed yet. Economy trends, timeline events, and detailed combat logs will be available once the parsing process is complete.
             </p>
           </div>
-          {!parseRequested && (
+          {!parseRequested ? (
             <Button 
               onClick={handleRequestParse} 
               disabled={isParsing}
@@ -232,6 +255,14 @@ export default function MatchPage() {
             >
               Start Parsing
             </Button>
+          ) : (
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Polling Data...</span>
+              </div>
+              <span className="text-[9px] font-bold text-gray-500 uppercase italic">This may take a few minutes</span>
+            </div>
           )}
         </div>
       )}
@@ -241,6 +272,7 @@ export default function MatchPage() {
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
+          const isLocked = ['Economy', 'Timeline', 'Chat'].includes(tab.id) && !match.version;
           return (
             <button
               key={tab.id}
@@ -249,11 +281,13 @@ export default function MatchPage() {
                 "flex-1 min-w-[120px] flex items-center justify-center gap-2 px-6 py-4 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-[0.1em]",
                 isActive 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]" 
-                  : "text-gray-500 hover:text-foreground hover:bg-[var(--nav-hover)]"
+                  : "text-gray-500 hover:text-foreground hover:bg-[var(--nav-hover)]",
+                isLocked && "opacity-40"
               )}
             >
               <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
               {tab.label}
+              {isLocked && <Lock size={10} className="ml-1" />}
             </button>
           );
         })}
