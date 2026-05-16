@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { MatchDetails, PickBan } from '@/services/opendota';
-import { getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from '@/services/constants';
+import { HEROES, getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
 import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from 'lucide-react';
@@ -160,6 +160,18 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
 function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] }) {
   const items = [player.item_0, player.item_1, player.item_2, player.item_3, player.item_4, player.item_5];
   const peer = player.account_id ? userPeers.find(up => up.account_id === player.account_id) : null;
+  const heroData = HEROES[player.hero_id];
+
+  const attrColor = useMemo(() => {
+    if (!heroData) return 'gray';
+    switch (heroData.primary_attr) {
+      case 'str': return '#ef4444';
+      case 'agi': return '#22c55e';
+      case 'int': return '#06b6d4';
+      case 'all': return '#eab308';
+      default: return 'gray';
+    }
+  }, [heroData]);
 
   const laningGrade = useMemo(() => {
     const efficiency = player.lane_efficiency_pct;
@@ -168,17 +180,27 @@ function ScoreboardRow({ player, userPeers }: { player: any, userPeers: any[] })
   }, [player]);
 
   return (
-    <div className="group border-b border-[var(--overlay-border)] hover:bg-[var(--overlay-medium)] transition-all duration-300">
-      <div className="flex flex-wrap items-center gap-4 p-4">
+    <div className="group border-b border-[var(--overlay-border)] hover:bg-[var(--overlay-medium)] transition-all duration-300 relative overflow-hidden">
+      {/* Subtle attribute background glow */}
+      <div 
+        className="absolute -left-20 top-0 bottom-0 w-64 opacity-0 group-hover:opacity-[0.03] transition-opacity pointer-events-none blur-[60px]"
+        style={{ backgroundColor: attrColor }}
+      />
+
+      <div className="flex flex-wrap items-center gap-4 p-4 relative z-10">
         {/* Hero & Level */}
         <div className="flex items-center gap-4 w-56 shrink-0">
-          <div className="relative shrink-0">
+          <div className="relative shrink-0 group/hero">
+            <div 
+              className="absolute -inset-1 rounded blur-[4px] opacity-40 group-hover/hero:opacity-100 transition-opacity" 
+              style={{ backgroundColor: attrColor }}
+            />
             <img 
               src={getHeroImageUrl(player.hero_id)} 
-              className="w-14 h-8 rounded shadow-lg border border-[var(--overlay-border)]" 
+              className="relative w-14 h-8 rounded shadow-lg border border-white/10 z-10" 
               alt="hero" 
             />
-            <div className="absolute -bottom-1 -right-1 bg-black/90 text-[8px] font-black text-white px-1 rounded border border-[var(--overlay-border)]">
+            <div className="absolute -bottom-1 -right-1 bg-black/90 text-[8px] font-black text-white px-1 rounded border border-white/20 z-20">
               {player.level}
             </div>
           </div>
