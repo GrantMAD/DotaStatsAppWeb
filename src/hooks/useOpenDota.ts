@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { createClient } from '@/utils/supabase/client';
 import { 
   openDotaApi, 
   OPENDOTA_BASE_URL,
@@ -162,9 +163,111 @@ export function useLiveGames() {
  * Hook to search for players.
  */
 export function useSearchPlayers(query: string) {
+  const supabase = createClient();
+  const queryClient = useQueryClient();
   return useQuery({
     queryKey: ['searchPlayers', query],
-    queryFn: () => openDotaApi.searchPlayers(query),
+    queryFn: async () => {
+      const trimmedQuery = query.trim();
+      if (!trimmedQuery || trimmedQuery.length < 3) return [];
+
+      // 1. Search Registered App Users in Supabase
+      let appUsers: any[] = [];
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, steam_account_id, steam_name')
+          .ilike('steam_name', `%${trimmedQuery}%`)
+          .not('steam_account_id', 'is', null)
+          .limit(10);
+        
+        if (!error && data) {
+          appUsers = await Promise.all(data.map(async u => {
+            let avatar = '';
+            try {
+              const profile = await openDotaApi.getPlayerProfile(u.steam_account_id);
+              if (profile && profile.profile) {
+                avatar = profile.profile.avatarfull;
+              }
+            } catch (err) {
+              console.warn("Failed to fetch avatar for app user:", err);
+            }
+            return {
+              account_id: Number(u.steam_account_id),
+              personaname: u.steam_name || 'App User',
+              avatarfull: avatar,
+              isAppUser: true,
+              appUserId: u.id
+            };
+          }));
+          appUsers = appUsers.filter(u => !isNaN(u.account_id) && u.account_id > 0);
+        }
+      } catch (e) {
+        console.error('Error searching app users in hook:', e);
+      }
+
+      // 2. Search Notable/Pro Players
+      let proPlayers: any[] = [];
+      try {
+        const proPlayersData = await openDotaApi.getProPlayers();
+        const qLower = trimmedQuery.toLowerCase();
+        proPlayers = proPlayersData
+          .filter((p: any) => p.personaname?.toLowerCase().includes(qLower) || p.name?.toLowerCase().includes(qLower))
+          .slice(0, 10)
+          .map((p: any) => ({
+            account_id: p.account_id,
+            personaname: p.name || p.personaname,
+            avatarfull: p.avatarfull || p.avatar,
+            last_match_time: p.last_match_time,
+            isPro: true,
+            team_tag: p.team_tag
+          }));
+      } catch (e) {
+        console.error('Error searching pro players in hook:', e);
+      }
+
+      // Merge initial fast results
+      const mergedResultsMap = new Map<number, any>();
+      appUsers.forEach(p => mergedResultsMap.set(p.account_id, p));
+      proPlayers.forEach(p => {
+        if (mergedResultsMap.has(p.account_id)) {
+          const existing = mergedResultsMap.get(p.account_id)!;
+          mergedResultsMap.set(p.account_id, { ...existing, isPro: true, team_tag: p.team_tag });
+        } else {
+          mergedResultsMap.set(p.account_id, p);
+        }
+      });
+
+      const initialResults = Array.from(mergedResultsMap.values());
+
+      // 3. Fire Async Global Search to not block immediate local results
+      openDotaApi.searchPlayers(trimmedQuery)
+        .then((globalResults) => {
+          queryClient.setQueryData(['searchPlayers', query], (oldData: any) => {
+            const currentMap = new Map<number, any>();
+            (oldData || []).forEach((p: any) => currentMap.set(p.account_id, p));
+            
+            globalResults.forEach((p: any) => {
+              if (currentMap.has(p.account_id)) {
+                const existing = currentMap.get(p.account_id)!;
+                currentMap.set(p.account_id, {
+                  avatarfull: p.avatarfull || existing.avatarfull,
+                  last_match_time: p.last_match_time || existing.last_match_time,
+                  ...existing,
+                });
+              } else {
+                currentMap.set(p.account_id, p);
+              }
+            });
+            return Array.from(currentMap.values());
+          });
+        })
+        .catch(e => {
+          console.warn('Global OpenDota search timed out or failed in background:', e.message);
+        });
+
+      return initialResults;
+    },
     enabled: query.trim().length >= 3,
   });
 }

@@ -52,9 +52,21 @@ export function PlayerListItem({
       </div>
 
       <div className="flex-1 min-w-0">
-        <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
-          {player.personaname}
-        </h3>
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
+            {player.personaname}
+          </h3>
+          {(player as any).isPro && (
+            <span className="bg-gaming-accent/20 text-gaming-accent border border-gaming-accent/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
+              {(player as any).team_tag ? `PRO (${(player as any).team_tag})` : 'PRO'}
+            </span>
+          )}
+          {((player as any).isAppUser || appUserId) && (
+            <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
+              App User
+            </span>
+          )}
+        </div>
         <p className="text-gray-500 text-xs mt-1">
           ID: {player.account_id}
           {player.last_match_time && (

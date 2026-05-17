@@ -21,15 +21,18 @@ export function PlayerDetailModal({
   accountId,
   isCurrentUser = false,
 }: PlayerDetailModalProps) {
-  const { data: profile, isLoading: profileLoading, error: profileError } = usePlayerProfile(isOpen ? accountId : null);
-  const { data: wl, isLoading: wlLoading } = usePlayerWinLoss(isOpen ? accountId : null);
-  const { friends, following } = useFriends();
+  const { data: profile, isLoading: profileLoading, error: profileError } = usePlayerProfile(isOpen && accountId ? accountId : null);
+  const { data: wl, isLoading: wlLoading } = usePlayerWinLoss(isOpen && accountId ? accountId : null);
+  const { friends = [], following = [] } = useFriends();
 
   const loading = profileLoading || wlLoading;
 
+  // Header Title Logic
+  const playerName = profile?.profile?.personaname || "Player Details";
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Player Details" size="xl">
-      <div className="max-h-[85vh] overflow-y-auto pr-2 no-scrollbar">
+    <Modal isOpen={isOpen} onClose={onClose} title={playerName} size="xl">
+      <div className="h-full flex flex-col">
         {loading ? (
           <div className="space-y-8 animate-pulse p-4">
             <Skeleton className="h-48 w-full rounded-3xl" />
@@ -41,18 +44,22 @@ export function PlayerDetailModal({
               <Skeleton className="h-64 w-full rounded-2xl" />
             </div>
           </div>
-        ) : profileError || !profile ? (
+        ) : profileError || !profile || !accountId ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
             <AlertCircle className="w-16 h-16 text-loss mb-6" />
-            <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Player Not Found</h2>
+            <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">
+              {profileError ? "Search Error" : "Player Not Found"}
+            </h2>
             <p className="text-gray-500 font-medium max-w-xs mx-auto">
-              We couldn't retrieve profile details for this account ID.
+              {profileError 
+                ? "There was an issue connecting to the archives. Please try again later."
+                : "We couldn't retrieve profile details for this account ID."}
             </p>
           </div>
         ) : (
-          <div className="animate-in fade-in duration-500">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <PlayerOverviewContent
-              accountId={accountId!}
+              accountId={accountId}
               profile={profile}
               wl={wl || null}
               isCurrentUser={isCurrentUser}

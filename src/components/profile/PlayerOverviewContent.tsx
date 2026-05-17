@@ -31,6 +31,7 @@ import {
   GitCompare,
   EyeOff,
   UserPlus,
+  Check,
   Skull,
   Shield,
   Clock,
@@ -60,6 +61,7 @@ import {
   usePlayerRatings
 } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { useFriends } from '@/hooks/useFriends';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DataPrivacyIndicator } from '../ui/DataPrivacyIndicator';
@@ -110,6 +112,7 @@ export function PlayerOverviewContent({
   const { data: wardMap, isLoading: wardMapLoading } = usePlayerWardMap(accountId);
   const { data: ratings, isLoading: ratingsLoading } = usePlayerRatings(accountId);
   const { data: allHeroStats = [] } = useHeroStats();
+  const { isFollowing, followUser, unfollowUser } = useFriends();
   
   const isPrivateAccount = useMemo(() => isProfilePrivate(profile), [profile]);
   const isDataRestrictedAccount = useMemo(() => isDataRestricted(profile, filteredMatches.length), [profile, filteredMatches]);
@@ -284,8 +287,23 @@ export function PlayerOverviewContent({
                 </div>
               )}
               {!isCurrentUser && (
-                <Button size="sm" className="h-10 px-6">
-                  <UserPlus size={16} /> Follow
+                <Button 
+                  size="sm" 
+                  className={cn(
+                    "h-10 px-6",
+                    isFollowing(accountId) ? "bg-[var(--nav-hover)] text-gray-400 hover:text-foreground" : ""
+                  )}
+                  onClick={() => isFollowing(accountId) ? unfollowUser(accountId) : followUser(accountId)}
+                >
+                  {isFollowing(accountId) ? (
+                    <>
+                      <Check size={16} /> Following
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus size={16} /> Follow
+                    </>
+                  )}
                 </Button>
               )}
               <Button 

@@ -21,6 +21,10 @@ export interface SearchResult {
   avatarfull: string;
   last_match_time?: string;
   similarity?: number;
+  isPro?: boolean;
+  isAppUser?: boolean;
+  appUserId?: string;
+  team_tag?: string;
 }
 
 export interface WinLossStats {
@@ -243,7 +247,7 @@ export async function searchPlayers(query: string): Promise<SearchResult[]> {
   }
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000);
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
 
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/search?q=${encodeURIComponent(query)}`, {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle } from 'lucide-react';
+import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 import { useSearchPlayers, usePlayerPeers, useHeroStats } from '@/hooks/useOpenDota';
 import { useFriends } from '@/hooks/useFriends';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -157,7 +157,10 @@ export default function SearchPage() {
             {query && (
               <button 
                 type="button"
-                onClick={() => setQuery('')}
+                onClick={() => {
+                  setQuery('');
+                  setActiveQuery('');
+                }}
                 className="p-2 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-gray-500" />
@@ -178,22 +181,34 @@ export default function SearchPage() {
           <div className="bg-blue-600/10 border border-blue-600/20 p-4 rounded-2xl flex items-center gap-4">
             <Info className="w-6 h-6 text-blue-400 shrink-0" />
             <p className="text-blue-200 text-sm font-medium">
-              Showing players who have played with you and are registered on the app.
+              Displays your network of frequent teammates and opponents calculated from your public match history. This naturally includes your Steam friends as well as random players you often queue with.
             </p>
           </div>
         )}
 
         {searching ? (
-          <div className="space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="glass-card p-4 h-20 flex items-center gap-4">
-                <Skeleton className="w-12 h-12 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-1/3" />
-                  <Skeleton className="h-3 w-1/4" />
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 px-4 py-2 bg-gaming-accent/5 rounded-xl border border-gaming-accent/10 w-fit">
+              <Loader2 className="w-5 h-5 text-gaming-accent animate-spin" />
+              <p className="text-foreground font-medium">
+                {searchMode === 'steam' ? (
+                  "Loading Steam Friends..."
+                ) : (
+                  <>Currently searching for <span className="text-gaming-accent font-bold">"{activeQuery}"</span></>
+                )}
+              </p>
+            </div>
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="glass-card p-4 h-20 flex items-center gap-4">
+                  <Skeleton className="w-12 h-12 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-1/3" />
+                    <Skeleton className="h-3 w-1/4" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ) : (
           <div className="space-y-8">
