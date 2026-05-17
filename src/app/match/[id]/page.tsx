@@ -24,23 +24,15 @@ export default function MatchPage() {
   const [activeTab, setActiveTab] = useState<MatchTab>('Scoreboard');
   const [isParsing, setIsParsing] = useState(false);
   const [parseRequested, setParseRequested] = useState(false);
-  const [pollCount, setPollCount] = useState(0);
   
-  const { data: match, isLoading, error } = useMatchDetails(matchId);
-
-  // Auto-refresh polling logic
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (parseRequested && !match?.version && pollCount < 10) {
-      interval = setInterval(() => {
-        setPollCount(prev => prev + 1);
-        // Next.js client-side re-fetching happens via useMatchDetails (React Query)
-      }, 20000);
+  const { data: match, isLoading, error } = useMatchDetails(matchId, {
+    refetchInterval: (data: any) => {
+      // If we requested a parse and don't have a version yet, poll every 20s
+      if (parseRequested && !data?.version) return 20000;
+      return false;
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [parseRequested, match?.version, pollCount]);
+  });
+
   const { data: liveGames = [] } = useLiveGames();
 
   const handleRequestParse = async () => {

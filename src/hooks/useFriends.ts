@@ -114,7 +114,7 @@ export const useFriends = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, instanceId, supabase]);
+  }, [user?.id, queryClient, instanceId]);
 
   const followMutation = useMutation({
     mutationFn: async (steamAccountId: string) => {
@@ -224,7 +224,7 @@ export const useNotifications = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, instanceId, supabase]);
+  }, [user?.id, queryClient, instanceId]);
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {

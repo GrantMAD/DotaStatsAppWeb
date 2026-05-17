@@ -5,7 +5,8 @@ import { MobileHeader } from './MobileHeader';
 import { usePathname } from 'next/navigation';
 
 import { useSidebar } from '@/context/SidebarContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PageTransition } from './PageTransition';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -28,7 +29,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         className="pt-16 lg:pt-0 min-h-screen p-4 lg:p-10"
       >
         <div className="max-w-7xl mx-auto">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
       </motion.main>
       

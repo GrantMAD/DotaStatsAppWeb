@@ -15,7 +15,6 @@ import {
 import CompareStatRow from '@/components/compare/CompareStatRow';
 import RankBadge from '@/components/ui/RankBadge';
 import { getHeroImageUrl } from '@/services/constants';
-import { AppLayout } from '@/components/layout/AppLayout';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -432,14 +431,12 @@ function CompareContent() {
 
 export default function ComparePage() {
   return (
-    <AppLayout>
-      <Suspense fallback={
-        <div className="max-w-4xl mx-auto py-20 flex flex-col items-center">
-           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-        </div>
-      }>
-        <CompareContent />
-      </Suspense>
-    </AppLayout>
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto py-20 flex flex-col items-center">
+         <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
+      </div>
+    }>
+      <CompareContent />
+    </Suspense>
   );
 }

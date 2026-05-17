@@ -185,23 +185,26 @@ export default function HomePage() {
             description="Recent achievements and matches from your network."
             color="text-win" 
           />
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
-            {loadingActivity ? (
-              [1, 2, 3].map(i => <Skeleton key={i} className="w-[280px] h-24 shrink-0 rounded-2xl" />)
-            ) : activities.length > 0 ? (
-              activities.map((item) => (
-                <ActivityFeedItem 
-                  key={item.id}
-                  item={item} 
-                  onPressPlayer={(id) => router.push(`/profile/${id}`)} 
-                  onPressMatch={(id) => router.push(`/match/${id}`)} 
-                />
-              ))
-            ) : (
-              <GlassCard className="w-full border-dashed flex items-center justify-center py-10 text-gray-500 font-bold italic">
-                No recent activity from friends
-              </GlassCard>
-            )}
+          <div className="relative group/feed">
+            <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 no-scrollbar scroll-smooth">
+              {loadingActivity ? (
+                [1, 2, 3].map(i => <Skeleton key={i} className="w-[320px] h-[120px] shrink-0 rounded-2xl" />)
+              ) : activities.length > 0 ? (
+                activities.map((item, idx) => (
+                  <ActivityFeedItem 
+                    key={item.id}
+                    item={item} 
+                    index={idx}
+                    onPressPlayer={(id) => router.push(`/profile/${id}`)} 
+                    onPressMatch={(id) => router.push(`/match/${id}`)} 
+                  />
+                ))
+              ) : (
+                <GlassCard className="w-full border-dashed flex items-center justify-center py-10 text-gray-500 font-bold italic">
+                  No recent activity from friends
+                </GlassCard>
+              )}
+            </div>
           </div>
         </div>
       )}

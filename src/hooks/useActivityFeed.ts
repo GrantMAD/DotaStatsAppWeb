@@ -59,7 +59,7 @@ export const useActivityFeed = () => {
           try {
             const [profile, matches] = await Promise.all([
               openDotaApi.getPlayerProfile(id),
-              openDotaApi.getPlayerMatches(id, { limit: 10 })
+              openDotaApi.getRecentMatches(id, 10)
             ]);
             return { id, profile, matches };
           } catch (err) {

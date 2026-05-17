@@ -371,13 +371,15 @@ export function useGlobalRecords(field: string) {
 /**
  * Hook to fetch match details.
  */
-export function useMatchDetails(matchId: number | null) {
+export function useMatchDetails(matchId: number | null, options: any = {}) {
   return useQuery({
     queryKey: ['matchDetails', matchId],
     queryFn: () => (matchId ? openDotaApi.getMatchDetails(matchId) : null),
     enabled: !!matchId,
+    ...options
   });
 }
+
 
 /**
  * Hook to fetch player totals.
