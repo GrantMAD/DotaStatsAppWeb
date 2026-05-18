@@ -117,13 +117,16 @@ export default function HomePage() {
 
   const topTier = useMemo(() => tierList.slice(0, 15), [tierList]);
 
+  const newHighlightsCount = useMemo(() => {
+    const oneDayAgo = (Date.now() / 1000) - (24 * 60 * 60);
+    return activities.filter(a => a.timestamp > oneDayAgo).length;
+  }, [activities]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
   };
-
-
 
   return (
     <div className="pb-20">
@@ -163,7 +166,7 @@ export default function HomePage() {
               </div>
               <input
                 type="text"
-                placeholder="Search players, heroes, matches..."
+                placeholder="Search players, heroes..."
                 className="w-full h-16 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-[var(--glass-start)] transition-all"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -185,6 +188,11 @@ export default function HomePage() {
             description="Recent achievements and matches from your network."
             color="text-win" 
           />
+          <div className="px-4 mb-4">
+            <p className="text-xs font-black uppercase tracking-widest text-win bg-win/10 px-3 py-1.5 rounded-lg inline-block border border-win/20 shadow-lg shadow-win/5">
+              {newHighlightsCount} New Highlights in the last 24h
+            </p>
+          </div>
           <div className="relative group/feed">
             <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 no-scrollbar scroll-smooth">
               {loadingActivity ? (

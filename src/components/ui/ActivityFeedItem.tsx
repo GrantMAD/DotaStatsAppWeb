@@ -11,7 +11,14 @@ import {
   CheckCircle2, 
   XCircle,
   ArrowRight,
-  Flame
+  Flame,
+  Skull,
+  Swords,
+  Target,
+  ShieldAlert,
+  Sword,
+  Crown,
+  Award
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { useHeroStats } from "@/hooks/useOpenDota";
@@ -32,6 +39,62 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
 
   const getTheme = () => {
     switch (item.type) {
+      case 'rampage': return {
+        color: "text-red-500",
+        bg: "bg-red-500/10",
+        border: "border-red-500/20",
+        glow: "shadow-red-500/10",
+        icon: <Skull className="w-3.5 h-3.5" />,
+        label: "Rampage!"
+      };
+      case 'ultra_kill': return {
+        color: "text-orange-500",
+        bg: "bg-orange-500/10",
+        border: "border-orange-500/20",
+        glow: "shadow-orange-500/5",
+        icon: <Swords className="w-3.5 h-3.5" />,
+        label: "Ultra Kill"
+      };
+      case 'triple_kill': return {
+        color: "text-yellow-500",
+        bg: "bg-yellow-500/10",
+        border: "border-yellow-500/20",
+        glow: "shadow-yellow-500/5",
+        icon: <Target className="w-3.5 h-3.5" />,
+        label: "Triple Kill"
+      };
+      case 'aegis_snatch': return {
+        color: "text-cyan-400",
+        bg: "bg-cyan-400/10",
+        border: "border-cyan-400/20",
+        glow: "shadow-cyan-400/5",
+        icon: <ShieldAlert className="w-3.5 h-3.5" />,
+        label: "Aegis Snatched"
+      };
+      case 'rapier': return {
+        color: "text-amber-400",
+        bg: "bg-amber-400/10",
+        border: "border-amber-400/20",
+        glow: "shadow-amber-400/10",
+        icon: <Sword className="w-3.5 h-3.5" />,
+        label: "Divine Rapier"
+      };
+      case 'godlike': return {
+        color: "text-purple-500",
+        bg: "bg-purple-500/10",
+        border: "border-purple-500/20",
+        glow: "shadow-purple-500/5",
+        icon: <Crown className="w-3.5 h-3.5" />,
+        label: "Godlike Streak"
+      };
+      case 'benchmark': return {
+        color: "text-blue-400",
+        bg: "bg-blue-400/10",
+        border: "border-blue-400/20",
+        glow: "shadow-blue-400/5",
+        icon: <Award className="w-3.5 h-3.5" />,
+        label: "Elite Performance"
+      };
       case 'win_streak': return {
         color: "text-amber-500",
         bg: "bg-amber-500/10",
@@ -81,6 +144,13 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
     const suffix = isTurbo ? ' (Turbo)' : '';
 
     switch (item.type) {
+      case 'rampage': return `secured a RAMPAGE!${suffix}`;
+      case 'ultra_kill': return `got an Ultra Kill!${suffix}`;
+      case 'triple_kill': return `got a Triple Kill!${suffix}`;
+      case 'aegis_snatch': return `SNATCHED the Aegis!${suffix}`;
+      case 'rapier': return `purchased a Divine Rapier!${suffix}`;
+      case 'godlike': return `is on a GODLIKE streak!${suffix}`;
+      case 'benchmark': return `was in the Top 1% for ${item.details.benchmarkType}!${suffix}`;
       case 'win_streak': return `reached a ${item.details.streakCount}-win streak!${suffix}`;
       case 'mvp': return `had an MVP performance!${suffix}`;
       case 'rank_up': return `is ranked at ${getRankName(item.details.newRank || 0)}`;
@@ -93,6 +163,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
     if (item.type === 'win_streak') return `${item.details.streakCount} WINS`;
     if (item.type === 'mvp') return `${item.details.kda} KDA`;
     if (item.type === 'recent_match' && item.details.win) return 'VICTORY';
+    if (item.type === 'benchmark') return 'TOP 1%';
     return null;
   };
 
@@ -148,24 +219,26 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0 z-10">
-          <div className="flex items-center justify-between mb-1">
-            <div className={cn("flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider", theme.bg, theme.color)}>
-              {theme.icon}
-              {theme.label}
+        <div className="flex-1 min-w-0 z-10 h-full flex flex-col justify-between py-1">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className={cn("flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider", theme.bg, theme.color)}>
+                {theme.icon}
+                {theme.label}
+              </div>
+              {getBadge() && (
+                <span className="text-[9px] font-black text-gray-500 opacity-50 tracking-tighter uppercase">
+                  {getBadge()}
+                </span>
+              )}
             </div>
-            {getBadge() && (
-              <span className="text-[9px] font-black text-gray-500 opacity-50 tracking-tighter uppercase">
-                {getBadge()}
-              </span>
-            )}
+            
+            <p className="text-xs text-foreground leading-snug line-clamp-2 pr-4">
+              <span className="font-bold text-gaming-accent group-hover:text-foreground transition-colors">{item.player.name}</span> {getMessage()}
+            </p>
           </div>
           
-          <p className="text-xs text-foreground leading-snug line-clamp-2 pr-4">
-            <span className="font-bold text-gaming-accent group-hover:text-foreground transition-colors">{item.player.name}</span> {getMessage()}
-          </p>
-          
-          <div className="flex items-center justify-between mt-2">
+          <div className="flex items-center justify-between mt-auto">
             <p className="text-[10px] text-gray-500 font-medium">
               {formatDistanceToNow(new Date(item.timestamp * 1000), { addSuffix: true })}
             </p>
