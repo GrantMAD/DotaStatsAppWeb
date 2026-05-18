@@ -77,11 +77,14 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
   };
 
   const getMessage = () => {
+    const isTurbo = item.details.gameMode === 23;
+    const suffix = isTurbo ? ' (Turbo)' : '';
+
     switch (item.type) {
-      case 'win_streak': return `reached a ${item.details.streakCount}-win streak!`;
-      case 'mvp': return `had an MVP performance!`;
+      case 'win_streak': return `reached a ${item.details.streakCount}-win streak!${suffix}`;
+      case 'mvp': return `had an MVP performance!${suffix}`;
       case 'rank_up': return `is ranked at ${getRankName(item.details.newRank || 0)}`;
-      case 'recent_match': return `${item.details.win ? 'Won' : 'Played'} a match as ${hero?.localized_name || 'a hero'}`;
+      case 'recent_match': return `${item.details.win ? 'Won' : 'Played'} a match as ${hero?.localized_name || 'a hero'}${suffix}`;
       default: return `played a match.`;
     }
   };
