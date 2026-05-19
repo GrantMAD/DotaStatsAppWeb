@@ -271,7 +271,7 @@ export default function SearchPage() {
                       isFollowing={isFollowing(player.account_id.toString())}
                       isFriend={appUsersMap[player.account_id] ? isFriend(appUsersMap[player.account_id]) : false}
                       isCurrentUser={steamAccountId === player.account_id.toString()}
-                      onFollow={() => followUser(player.account_id.toString())}
+                      onFollow={() => followUser(player.account_id.toString(), player.personaname)}
                       onUnfollow={() => unfollowUser(player.account_id.toString())}
                       onClick={() => handlePlayerClick(player.account_id)}
                     />

@@ -76,6 +76,8 @@ function CompareContent() {
   const isLoading = (p1 && (loadingP1 || loadingTotals1 || loadingRecent1 || loadingPeers1)) || 
                     (p2 && (loadingP2 || loadingTotals2 || loadingRecent2 || loadingPeers2));
 
+  const [isAddingMe, setIsAddingMe] = useState(false);
+
   const handleOpenSelect = (target: 'p1' | 'p2') => {
     setSelectingFor(target);
     setIsSelectModalOpen(true);
@@ -91,12 +93,22 @@ function CompareContent() {
     setSelectingFor(null);
   };
 
+  const handleRemovePlayer = (target: 'p1' | 'p2', e: React.MouseEvent) => {
+    e.stopPropagation();
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete(target);
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   const handleAddMe = (target: 'p1' | 'p2', e: React.MouseEvent) => {
     e.stopPropagation();
     if (!myAccountId) return;
+    setIsAddingMe(true);
     const params = new URLSearchParams(searchParams.toString());
     params.set(target, myAccountId);
     router.push(`${pathname}?${params.toString()}`);
+    // Reset after a short delay or when loading finishes
+    setTimeout(() => setIsAddingMe(false), 2000);
   };
 
   const getWR = (wl: any) => {
@@ -180,6 +192,14 @@ function CompareContent() {
         onClick={() => handleOpenSelect(target)}
         className="flex-1 flex flex-col items-center justify-center p-6 cursor-pointer group relative min-h-[220px]"
       >
+        <button
+          onClick={(e) => handleRemovePlayer(target, e)}
+          className="absolute top-4 right-4 p-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 transition-all z-10"
+          title="Remove Player"
+        >
+          <Plus className="w-4 h-4 rotate-45" />
+        </button>
+
         <div className="relative">
           <img 
             src={profile.profile.avatarfull} 
@@ -248,7 +268,9 @@ function CompareContent() {
       {isLoading ? (
         <div className="py-20 flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="text-foreground/50 font-bold animate-pulse">Calculating Stats...</p>
+          <p className="text-foreground/50 font-bold animate-pulse">
+            {isAddingMe ? "Loading User..." : "Calculating Stats..."}
+          </p>
         </div>
       ) : profile1 && profile2 ? (
         <div className="space-y-12">

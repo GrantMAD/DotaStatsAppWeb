@@ -149,23 +149,24 @@ export default function FriendsPage() {
                   user={{
                     id: follow.id,
                     steam_account_id: follow.followed_steam_id,
-                    steam_name: ''
+                    steam_name: follow.steam_name || `Player ${follow.followed_steam_id}`
                   }}
                   onClick={() => handleItemClick(follow.followed_steam_id)}
                   rightComponent={
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       {steamAccountId && steamAccountId !== follow.followed_steam_id && (
                         <Link
                           href={`/compare?p1=${steamAccountId}&p2=${follow.followed_steam_id}`}
-                          className="p-2.5 bg-gaming-accent/10 border border-gaming-accent/20 rounded-xl text-gaming-accent hover:bg-gaming-accent hover:text-white transition-all shadow-lg shadow-gaming-accent/10 hover:shadow-gaming-accent/20 group/compare"
+                          className="flex items-center gap-2 px-3 py-2 bg-gaming-accent text-white rounded-xl hover:bg-gaming-accent-light transition-all shadow-lg shadow-gaming-accent/20 group/compare"
                           title="Compare Stats"
                         >
                           <GitCompare className="w-4 h-4 group-hover/compare:rotate-12 transition-transform" />
+                          <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Compare</span>
                         </Link>
                       )}
                       <button
                         onClick={() => unfollowUser(follow.followed_steam_id)}
-                        className="px-3 py-1.5 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
+                        className="px-3 py-2 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
                       >
                         Unfollow
                       </button>

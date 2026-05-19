@@ -117,11 +117,15 @@ export const useFriends = () => {
   }, [user?.id, queryClient, instanceId]);
 
   const followMutation = useMutation({
-    mutationFn: async (steamAccountId: string) => {
+    mutationFn: async ({ steamAccountId, steamName }: { steamAccountId: string, steamName?: string }) => {
       if (!user) throw new Error('Not logged in');
       const { error } = await supabase
         .from('follows')
-        .insert({ follower_id: user.id, followed_steam_id: steamAccountId });
+        .insert({ 
+          follower_id: user.id, 
+          followed_steam_id: steamAccountId,
+          steam_name: steamName 
+        });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -169,7 +173,7 @@ export const useFriends = () => {
     friends, 
     following, 
     loading: friendsLoading || followingLoading, 
-    followUser: followMutation.mutate,
+    followUser: (steamAccountId: string, steamName?: string) => followMutation.mutate({ steamAccountId, steamName }),
     unfollowUser: unfollowMutation.mutate,
     sendFriendRequest: sendFriendRequestMutation.mutate,
     isFollowing,

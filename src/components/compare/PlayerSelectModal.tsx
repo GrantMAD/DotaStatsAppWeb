@@ -62,7 +62,7 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
     following.forEach(f => {
       list.push({
         account_id: parseInt(f.followed_steam_id),
-        personaname: `Followed Player ${f.followed_steam_id}`, // We might not have name here
+        personaname: f.steam_name || `Followed Player ${f.followed_steam_id}`,
         isFollowing: true
       });
     });

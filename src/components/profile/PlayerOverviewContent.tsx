@@ -293,7 +293,7 @@ export function PlayerOverviewContent({
                     "h-10 px-6",
                     isFollowing(accountId) ? "bg-[var(--nav-hover)] text-gray-400 hover:text-foreground" : ""
                   )}
-                  onClick={() => isFollowing(accountId) ? unfollowUser(accountId) : followUser(accountId)}
+                  onClick={() => isFollowing(accountId) ? unfollowUser(accountId) : followUser(accountId, profile?.profile?.personaname)}
                 >
                   {isFollowing(accountId) ? (
                     <>
