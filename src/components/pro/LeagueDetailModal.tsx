@@ -1,24 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLeagueMatches } from '@/hooks/useOpenDota';
 import { Modal } from '../ui/Modal';
 import { ProMatchCard } from '../ui/ProMatchCard';
+import { MatchDetailModal } from '../match/MatchDetailModal';
 import { Skeleton } from '../ui/Skeleton';
-import { Trophy, Calendar, Info, Map } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Trophy, Calendar, Info, Map, Timer, AlertCircle } from 'lucide-react';
 import { getLeagueImageUrl } from '@/services/constants';
 
 interface LeagueDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   league: any | null;
+  isActive?: boolean;
 }
 
-export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModalProps) {
-  const router = useRouter();
+export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueDetailModalProps) {
   const [imageError, setImageError] = React.useState(false);
   const { data: matches = [], isLoading: loading } = useLeagueMatches(isOpen && league ? league.leagueid : null);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+
+  const stats = useMemo(() => {
+    if (!matches || matches.length === 0) return null;
+    
+    const times = matches.map(m => m.start_time);
+    const minTime = Math.min(...times);
+    const maxTime = Math.max(...times);
+    
+    return {
+      startDate: new Date(minTime * 1000),
+      endDate: new Date(maxTime * 1000),
+      totalMatches: matches.length,
+      avgDuration: matches.reduce((acc, m) => acc + m.duration, 0) / matches.length
+    };
+  }, [matches]);
 
   if (!league) return null;
 
@@ -26,6 +42,11 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Tournament Details" size="xl">
+      <MatchDetailModal 
+        isOpen={selectedMatchId !== null}
+        onClose={() => setSelectedMatchId(null)}
+        matchId={selectedMatchId}
+      />
       <div className="space-y-8 max-h-[80vh] overflow-y-auto pr-2 no-scrollbar">
         {/* League Hero Section */}
         <div className="relative rounded-3xl overflow-hidden border border-[var(--card-border)] group">
@@ -34,26 +55,45 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
               src={bannerUrl} 
               alt={league.name} 
               onError={() => setImageError(true)}
-              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-700" 
+              className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" 
             />
           ) : (
-            <div className="h-48 bg-[var(--nav-hover)] flex items-center justify-center">
+            <div className="h-64 bg-[var(--nav-hover)] flex items-center justify-center">
               <Trophy className="w-20 h-20 text-foreground/5" />
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
           
           <div className="absolute bottom-6 left-6 right-6">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 text-gaming-accent text-[10px] font-black uppercase tracking-widest mb-3">
-              {league.tier} Tier
+            <div className="flex items-center gap-2 mb-3">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 text-gaming-accent text-[10px] font-black uppercase tracking-widest">
+                {league.tier} Tier
+              </div>
+              {isActive && (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-win/20 border border-win/50 text-win text-[10px] font-black uppercase tracking-widest animate-pulse">
+                   <div className="w-2 h-2 rounded-full bg-win" />
+                   Live Now
+                </div>
+              )}
+              {stats && (
+                <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest">
+                   {stats.totalMatches} Matches
+                </div>
+              )}
             </div>
-            <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter">
+            <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter leading-none">
               {league.name}
             </h2>
+            {stats && (
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+                <Calendar size={14} className="text-gaming-accent" />
+                {stats.startDate.toLocaleDateString()} — {stats.endDate.toLocaleDateString()}
+              </p>
+            )}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
            <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
               <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
                  <Info size={16} />
@@ -72,6 +112,30 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
                  <p className="text-foreground font-bold uppercase">{league.region || 'International'}</p>
               </div>
            </div>
+           {stats && (
+             <>
+               <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+                     <Timer size={16} />
+                  </div>
+                  <div>
+                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Avg Game</p>
+                     <p className="text-foreground font-bold">{Math.floor(stats.avgDuration / 60)}m</p>
+                  </div>
+               </div>
+               <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+                     <Trophy size={16} />
+                  </div>
+                  <div>
+                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Status</p>
+                     <p className="text-foreground font-bold uppercase">
+                        {stats.endDate > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) ? 'Recent' : 'Archived'}
+                     </p>
+                  </div>
+               </div>
+             </>
+           )}
         </div>
 
         {loading ? (
@@ -88,14 +152,11 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
             </h3>
             
             {matches.length > 0 ? (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matches.slice(0, 20).map(item => (
                   <div 
                     key={item.match_id} 
-                    onClick={() => {
-                      onClose();
-                      router.push(`/match/${item.match_id}`);
-                    }}
+                    onClick={() => setSelectedMatchId(item.match_id)}
                     className="cursor-pointer"
                   >
                     <ProMatchCard
@@ -107,14 +168,20 @@ export function LeagueDetailModal({ isOpen, onClose, league }: LeagueDetailModal
                       duration={item.duration}
                       leagueName={item.league_name}
                       startTime={item.start_time}
+                      radiantLogo={item.radiant_logo}
+                      direLogo={item.dire_logo}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--nav-hover)] rounded-3xl border border-dashed border-[var(--card-border)]">
-                 <Calendar className="w-12 h-12 text-gray-700 mb-4" />
-                 <p className="text-gray-500 font-bold italic">No recent match data available for this tournament</p>
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--nav-hover)] rounded-3xl border border-dashed border-[var(--card-border)] p-8">
+                 <AlertCircle className="w-16 h-16 text-amber-500 mb-4 opacity-50" />
+                 <h4 className="text-foreground font-bold uppercase tracking-tight text-xl">Limited Data Coverage</h4>
+                 <p className="text-gray-500 text-sm max-w-sm mx-auto mt-2 italic leading-relaxed">
+                    Historical or lower-tier tournament data may be incomplete or restricted in the public archives. 
+                    Detailed match records are primarily maintained for Premium and Professional tier events.
+                 </p>
               </div>
             )}
           </div>

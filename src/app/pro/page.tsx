@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Trophy, Users, Shield, Search, X } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { useLeagues, useProTeams, useProPlayers } from '@/hooks/useOpenDota';
+import { getLiveGames, getProMatches, ProTeam, ProPlayer } from '@/services/opendota';
 import { LeagueCard } from '@/components/ui/LeagueCard';
 import { TeamListItem } from '@/components/ui/TeamListItem';
 import { ProPlayerItem } from '@/components/ui/ProPlayerItem';
@@ -16,28 +17,60 @@ type SubTabType = 'Premium' | 'Professional' | 'Amateur';
 import { useRouter } from 'next/navigation';
 import { TeamDetailModal } from '@/components/pro/TeamDetailModal';
 import { LeagueDetailModal } from '@/components/pro/LeagueDetailModal';
-import { ProTeam, ProPlayer } from '@/services/opendota';
+import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
+import { MatchDetailModal } from '@/components/match/MatchDetailModal';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ProPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>('Tournaments');
   const [subTab, setSubTab] = useState<SubTabType>('Premium');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Archived'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   const [selectedTeam, setSelectedTeam] = useState<ProTeam | null>(null);
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [selectedLeague, setSelectedLeague] = useState<any | null>(null);
   const [isLeagueModalOpen, setIsLeagueModalOpen] = useState(false);
+  const [selectedPlayerId, setSelectedPlayerId] = useState<number | null>(null);
+  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
 
   const { data: leagues = [], isLoading: loadingLeagues } = useLeagues();
   const { data: teams = [], isLoading: loadingTeams } = useProTeams();
   const { data: players = [], isLoading: loadingPlayers } = useProPlayers();
+  const { data: liveGames = [] } = useQuery({ queryKey: ['liveGames'], queryFn: getLiveGames });
+  const { data: recentProMatches = [] } = useQuery({ queryKey: ['recentProMatches'], queryFn: () => getProMatches(100) });
+
+  const activeLeagueIds = useMemo(() => {
+    const ids = new Set<number>();
+    
+    // Check live games
+    liveGames.forEach(game => {
+      // OpenDota live games might not always have league_id in the flat structure 
+      // but if they do, we add it.
+      if ((game as any).league_id) ids.add((game as any).league_id);
+    });
+
+    // Check recent pro matches (last 48 hours)
+    const fortyEightHoursAgo = Math.floor(Date.now() / 1000) - (48 * 60 * 60);
+    recentProMatches.forEach(match => {
+      if (match.start_time > fortyEightHoursAgo) {
+        ids.add(match.leagueid);
+      }
+    });
+
+    return ids;
+  }, [liveGames, recentProMatches]);
 
   const isLoading = loadingLeagues || loadingTeams || loadingPlayers;
 
   const filteredLeagues = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
     let baseLeagues = leagues;
+    
+    // Tier Filter
     if (subTab === 'Premium') {
       baseLeagues = leagues.filter((l) => l.tier === 'premium');
     } else if (subTab === 'Professional') {
@@ -45,9 +78,17 @@ export default function ProPage() {
     } else {
       baseLeagues = leagues.filter((l) => l.tier !== 'premium' && l.tier !== 'professional');
     }
+
+    // Status Filter
+    if (statusFilter === 'Active') {
+      baseLeagues = baseLeagues.filter(l => activeLeagueIds.has(l.leagueid));
+    } else if (statusFilter === 'Archived') {
+      baseLeagues = baseLeagues.filter(l => !activeLeagueIds.has(l.leagueid));
+    }
+
     if (!query) return baseLeagues;
     return baseLeagues.filter((l) => l.name.toLowerCase().includes(query));
-  }, [leagues, searchQuery, subTab]);
+  }, [leagues, searchQuery, subTab, statusFilter, activeLeagueIds]);
 
   const filteredTeams = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
@@ -93,7 +134,8 @@ export default function ProPage() {
 
   const handleItemClick = (id: number) => {
     if (activeTab === 'Players') {
-      router.push(`/profile/${id}`);
+      setSelectedPlayerId(id);
+      setIsPlayerModalOpen(true);
     } else if (activeTab === 'Teams') {
       const team = teams.find(t => t.team_id === id);
       if (team) {
@@ -111,7 +153,6 @@ export default function ProPage() {
 
   return (
     <div className="container-custom py-8">
-      {/* ... rest of existing return ... */}
       <TeamDetailModal 
         isOpen={isTeamModalOpen} 
         onClose={() => setIsTeamModalOpen(false)} 
@@ -121,6 +162,17 @@ export default function ProPage() {
         isOpen={isLeagueModalOpen} 
         onClose={() => setIsLeagueModalOpen(false)} 
         league={selectedLeague} 
+        isActive={selectedLeague ? activeLeagueIds.has(selectedLeague.leagueid) : false}
+      />
+      <PlayerDetailModal
+        isOpen={isPlayerModalOpen}
+        onClose={() => setIsPlayerModalOpen(false)}
+        accountId={selectedPlayerId?.toString() || null}
+      />
+      <MatchDetailModal
+        isOpen={isMatchModalOpen}
+        onClose={() => setIsMatchModalOpen(false)}
+        matchId={selectedMatchId}
       />
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div className="flex items-center gap-4">
@@ -159,8 +211,8 @@ export default function ProPage() {
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 mb-8">
-        {/* Sub Tabs */}
+      <div className="flex flex-col gap-6 mb-8">
+        {/* Tier Sub Tabs */}
         <div className="flex gap-2 bg-[var(--nav-hover)] p-1 rounded-full border border-[var(--card-border)] self-start">
           {(['Premium', 'Professional', 'Amateur'] as SubTabType[]).map((tab) => (
             <button
@@ -181,8 +233,28 @@ export default function ProPage() {
           ))}
         </div>
 
+        {/* Status Filters (Tournament only) */}
+        {activeTab === 'Tournaments' && (
+          <div className="flex gap-2 bg-[var(--nav-hover)] p-1 rounded-full border border-[var(--card-border)] self-start">
+            {(['All', 'Active', 'Archived'] as const).map((status) => (
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={cn(
+                  "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                  statusFilter === status 
+                    ? "bg-win text-white shadow-lg shadow-win/20" 
+                    : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
+                )}
+              >
+                {status}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative w-full max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input
             type="text"
@@ -225,6 +297,7 @@ export default function ProPage() {
             <LeagueCard 
               key={league.leagueid} 
               league={league} 
+              isActive={activeLeagueIds.has(league.leagueid)}
               onClick={handleItemClick} 
             />
           ))}

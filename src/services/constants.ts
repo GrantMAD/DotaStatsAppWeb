@@ -269,11 +269,17 @@ export function getItemImageUrlByName(itemName: string): string {
  * Handles relative paths by prefixing with Steam CDN and ensuring .png extension.
  */
 export function getLeagueImageUrl(banner: string | null): string | null {
-  if (!banner) return null;
+  if (!banner || banner === "") return null;
   if (banner.startsWith('http')) return banner;
   
   // Many league images from OpenDota are relative paths like /econ/leagues/...
+  // or just the filename like banner.png
   let cleanPath = banner.startsWith('/') ? banner.slice(1) : banner;
+  
+  // If it doesn't look like a full path, it might be in the default leagues folder
+  if (!cleanPath.includes('/')) {
+    cleanPath = `econ/leagues/${cleanPath}`;
+  }
   
   // Ensure extension is present for Steam CDN assets
   if (!cleanPath.includes('.')) {

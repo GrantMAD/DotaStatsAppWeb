@@ -14,10 +14,11 @@ interface League {
 
 interface LeagueCardProps {
   league: League;
+  isActive?: boolean;
   onClick: (id: number) => void;
 }
 
-export function LeagueCard({ league, onClick }: LeagueCardProps) {
+export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
   const [imageError, setImageError] = React.useState(false);
 
   const getTierColor = (tier: string | null) => {
@@ -48,13 +49,25 @@ export function LeagueCard({ league, onClick }: LeagueCardProps) {
             <Trophy className="w-12 h-12 text-white/10" />
           </div>
         )}
-        <div className="absolute top-3 left-3">
+        
+        {/* Status & Tier Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-2">
           <span className={cn(
             "px-2 py-1 rounded text-[10px] font-black uppercase border backdrop-blur-md",
             getTierColor(league.tier)
           )}>
             {league.tier || 'Unknown'}
           </span>
+          
+          <div className={cn(
+            "px-2 py-1 rounded text-[8px] font-black uppercase border backdrop-blur-md flex items-center gap-1 w-fit",
+            isActive 
+              ? "bg-win/20 text-win border-win/30 animate-pulse" 
+              : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+          )}>
+            <div className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-win" : "bg-gray-500")} />
+            {isActive ? 'Live / Active' : 'Archived'}
+          </div>
         </div>
       </div>
 
