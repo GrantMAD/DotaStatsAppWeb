@@ -13,6 +13,8 @@ interface ProMatchCardProps {
   duration: number;
   leagueName: string;
   startTime: number;
+  radiantLogo?: string;
+  direLogo?: string;
 }
 
 export function ProMatchCard({
@@ -23,7 +25,9 @@ export function ProMatchCard({
   radiantWin,
   duration,
   leagueName,
-  startTime
+  startTime,
+  radiantLogo,
+  direLogo
 }: ProMatchCardProps) {
   const formatDuration = (s: number) => {
     const mins = Math.floor(s / 60);
@@ -44,8 +48,12 @@ export function ProMatchCard({
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 flex flex-col items-center gap-2">
-          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-radiant">
-            {radiantName?.[0] || 'R'}
+          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-radiant overflow-hidden">
+            {radiantLogo ? (
+              <img src={radiantLogo} alt={radiantName || 'R'} className="w-full h-full object-contain p-1" />
+            ) : (
+              radiantName?.[0] || 'R'
+            )}
           </div>
           <p className={cn(
             "text-sm font-bold truncate w-full text-center",
@@ -63,8 +71,12 @@ export function ProMatchCard({
         </div>
 
         <div className="flex-1 flex flex-col items-center gap-2">
-          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-dire">
-            {direName?.[0] || 'D'}
+          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-dire overflow-hidden">
+            {direLogo ? (
+              <img src={direLogo} alt={direName || 'D'} className="w-full h-full object-contain p-1" />
+            ) : (
+              direName?.[0] || 'D'
+            )}
           </div>
           <p className={cn(
             "text-sm font-bold truncate w-full text-center",

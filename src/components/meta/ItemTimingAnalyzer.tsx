@@ -89,6 +89,7 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
       latestPoint,
       earliestPoint,
       peakToLateDrop,
+      averageTiming: chartData.reduce((acc, d) => acc + d.time * d.games, 0) / chartData.reduce((acc, d) => acc + (d.games || 1), 0),
       isHighImpact: peakToLateDrop > 10
     };
   }, [chartData]);
@@ -262,10 +263,24 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
                   <ReferenceLine y={50} stroke="#ef4444" strokeDasharray="3 3" opacity={0.5}>
                     <Label value="50% WIN RATE" position="insideBottomRight" fill="#ef4444" fontSize={10} offset={10} />
                   </ReferenceLine>
+
+                  <ReferenceLine y={60} stroke="#22c55e" strokeDasharray="3 3" opacity={0.2}>
+                    <Label value="DOMINANT" position="insideTopRight" fill="#22c55e" fontSize={10} offset={10} />
+                  </ReferenceLine>
+
+                  <ReferenceLine y={40} stroke="#ef4444" strokeDasharray="3 3" opacity={0.2}>
+                    <Label value="STRUGGLING" position="insideBottomRight" fill="#ef4444" fontSize={10} offset={10} />
+                  </ReferenceLine>
                   
                   {insights?.peakPoint && (
                     <ReferenceLine x={insights.peakPoint.time} stroke="#22c55e" strokeDasharray="5 5">
                       <Label value="PEAK SPIKE" position="top" fill="#22c55e" fontSize={10} />
+                    </ReferenceLine>
+                  )}
+
+                  {insights?.averageTiming && (
+                    <ReferenceLine x={insights.averageTiming} stroke="#94a3b8" strokeDasharray="3 3" opacity={0.5}>
+                      <Label value="AVG TIMING" position="bottom" fill="#94a3b8" fontSize={10} />
                     </ReferenceLine>
                   )}
 
@@ -276,20 +291,20 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
                   )}
 
                   <Line
-                    type="monotone"
+                    type="linear"
                     dataKey="winRate"
-                    stroke="var(--gaming-accent)"
+                    stroke="var(--color-gaming-accent, #8b5cf6)"
                     strokeWidth={4}
                     dot={{ 
                       r: 4, 
                       fill: '#ffffff', 
-                      stroke: 'var(--gaming-accent)', 
+                      stroke: 'var(--color-gaming-accent, #8b5cf6)', 
                       strokeWidth: 2,
                       fillOpacity: 1
                     }}
                     activeDot={{ 
                       r: 8, 
-                      fill: 'var(--gaming-accent)', 
+                      fill: 'var(--color-gaming-accent, #8b5cf6)', 
                       stroke: '#ffffff', 
                       strokeWidth: 2 
                     }}

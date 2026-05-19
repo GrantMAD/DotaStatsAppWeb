@@ -37,6 +37,15 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 import { STEAM_CDN_BASE } from '@/services/constants';
+import dynamic from 'next/dynamic';
+
+const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
+  ssr: false
+});
+
+const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailModal').then(mod => mod.MatchDetailModal), {
+  ssr: false
+});
 
 // Minimum picks threshold to avoid heroes with tiny sample sizes
 const MIN_PICKS = 5000;
@@ -106,6 +115,8 @@ export default function HomePage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isBansExpanded, setIsBansExpanded] = useState(false);
+  const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   const processedStats = useMemo(() => processHeroStats(heroesData), [heroesData]);
   const { topWinRate, mostPicked, proPicks, proBans } = processedStats;
@@ -130,6 +141,20 @@ export default function HomePage() {
 
   return (
     <div className="pb-20">
+      {/* Hero Detail Modal */}
+      <HeroDetailModal 
+        isOpen={selectedHeroId !== null}
+        onClose={() => setSelectedHeroId(null)}
+        heroId={selectedHeroId}
+      />
+
+      {/* Match Detail Modal */}
+      <MatchDetailModal 
+        isOpen={selectedMatchId !== null}
+        onClose={() => setSelectedMatchId(null)}
+        matchId={selectedMatchId}
+      />
+
       {/* Hero Section */}
       <div className="relative mb-12 pt-12 lg:pt-20">
         <div className="max-w-none">
@@ -248,7 +273,7 @@ export default function HomePage() {
             [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
           ) : (
             topTier.map((item) => (
-              <div key={item.id} onClick={() => router.push(`/hero/${item.id}`)} className="cursor-pointer">
+              <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
                 <HeroStatsCard
                   heroName={item.name}
                   heroImg={item.img}
@@ -277,7 +302,7 @@ export default function HomePage() {
               [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
             ) : (
               topWinRate.map((item, idx) => (
-                <div key={item.id} onClick={() => router.push(`/hero/${item.id}`)} className="cursor-pointer">
+                <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
                   <HeroStatsCard
                     heroName={item.name}
                     heroImg={item.img}
@@ -304,7 +329,7 @@ export default function HomePage() {
               [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
             ) : (
               mostPicked.map((item, idx) => (
-                <div key={item.id} onClick={() => router.push(`/hero/${item.id}`)} className="cursor-pointer">
+                <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
                   <HeroStatsCard
                     heroName={item.name}
                     heroImg={item.img}
@@ -334,7 +359,7 @@ export default function HomePage() {
           [1, 2, 3].map(i => <Skeleton key={i} className="w-[300px] h-48 shrink-0 rounded-2xl" />)
         ) : (
           proMatchesData.map((item) => (
-            <div key={item.match_id} onClick={() => router.push(`/match/${item.match_id}`)} className="cursor-pointer">
+            <div key={item.match_id} onClick={() => setSelectedMatchId(item.match_id)} className="cursor-pointer">
               <ProMatchCard
                 radiantName={item.radiant_name}
                 direName={item.dire_name}
@@ -344,6 +369,8 @@ export default function HomePage() {
                 duration={item.duration}
                 leagueName={item.league_name}
                 startTime={item.start_time}
+                radiantLogo={item.radiant_logo}
+                direLogo={item.dire_logo}
               />
             </div>
           ))
@@ -367,7 +394,7 @@ export default function HomePage() {
                 key={hero.id} 
                 hoverable 
                 className="p-3 flex items-center gap-4 cursor-pointer"
-                onClick={() => router.push(`/hero/${hero.id}`)}
+                onClick={() => setSelectedHeroId(hero.id)}
               >
                 <span className="w-6 text-sm font-black text-loss italic">{idx + 1}</span>
                 <div className="w-12 h-7 rounded overflow-hidden bg-[var(--nav-hover)]">
@@ -404,7 +431,7 @@ export default function HomePage() {
                     <LiveGameCard 
                       key={game.match_id} 
                       game={game} 
-                      onPress={(id) => router.push(`/match/${id}`)} 
+                      onPress={(id) => setSelectedMatchId(id)} 
                     />
                   ))}
                 </div>

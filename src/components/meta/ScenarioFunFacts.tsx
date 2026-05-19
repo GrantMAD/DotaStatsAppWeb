@@ -9,7 +9,10 @@ import {
   Castle, 
   TrendingUp, 
   Lightbulb,
-  ArrowRight
+  ArrowRight,
+  Sword,
+  Target,
+  ShieldAlert
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -18,6 +21,8 @@ interface FunFact {
   title: string;
   description: string;
   scenario: string;
+  type: 'misc' | 'lane';
+  lane_role?: number;
   icon: React.ReactNode;
   color: string;
 }
@@ -28,14 +33,35 @@ const FUN_FACTS: FunFact[] = [
     title: 'First Blood Impact',
     description: 'Teams that secure the first kill often dictate the early game tempo.',
     scenario: 'first_blood',
+    type: 'misc',
     icon: <Skull size={24} />,
     color: 'text-red-500'
+  },
+  {
+    id: 'neg_first_blood',
+    title: 'Giving Away First Blood',
+    description: 'The psychological and economic cost of dying first is significant.',
+    scenario: 'neg_first_blood',
+    type: 'misc',
+    icon: <ShieldAlert size={24} />,
+    color: 'text-orange-600'
+  },
+  {
+    id: 'mid_lane',
+    title: 'Mid Lane Dominance',
+    description: 'Winning the mid lane (highest XP) has the strongest correlation with victory.',
+    scenario: 'lane_role',
+    type: 'lane',
+    lane_role: 2,
+    icon: <Target size={24} />,
+    color: 'text-purple-500'
   },
   {
     id: 'courier_kill',
     title: 'Courier Kill Value',
     description: 'Interrupting enemy logistics by killing their courier has massive hidden value.',
     scenario: 'courier_kill',
+    type: 'misc',
     icon: <Package size={24} />,
     color: 'text-amber-500'
   },
@@ -44,6 +70,7 @@ const FUN_FACTS: FunFact[] = [
     title: 'The Roshan Factor',
     description: 'Securing the first Roshan kill provides a significant strategic advantage.',
     scenario: 'roshan_kill',
+    type: 'misc',
     icon: <Zap size={24} />,
     color: 'text-indigo-500'
   },
@@ -52,6 +79,7 @@ const FUN_FACTS: FunFact[] = [
     title: 'Early Tower Pressure',
     description: 'Destroying the first tower opens up the map and boosts win probability.',
     scenario: 'tower_kill',
+    type: 'misc',
     icon: <Castle size={24} />,
     color: 'text-emerald-500'
   }
@@ -66,7 +94,12 @@ export function ScenarioFunFacts() {
       setLoading(true);
       try {
         const results = await Promise.all(
-          FUN_FACTS.map(fact => openDotaApi.getScenariosMisc({ scenario: fact.scenario }))
+          FUN_FACTS.map(fact => {
+            if (fact.type === 'lane') {
+              return openDotaApi.getScenariosLaneRoles({ lane_role: fact.lane_role });
+            }
+            return openDotaApi.getScenariosMisc({ scenario: fact.scenario });
+          })
         );
 
         const processedData: Record<string, { winRate: number; games: number }> = {};
@@ -77,13 +110,12 @@ export function ScenarioFunFacts() {
           let totalWins = 0;
           let totalGames = 0;
           
+          // @ts-ignore - scenarios can be MiscScenario[] or LaneRoleScenario[]
           scenarios.forEach(s => {
-            // Convert wins and games from string to number before aggregation
             totalWins += Number(s.wins || 0);
             totalGames += Number(s.games || 0);
           });
           
-          // Ensure totalGames is treated as a number for comparison
           if (Number(totalGames) > 0) {
             processedData[factId] = {
               winRate: (totalWins / totalGames) * 100,

@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,6 +16,20 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children, className, size = 'md' }: ModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-2xl',
@@ -22,7 +38,10 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
     '2xl': 'max-w-7xl',
     full: 'max-w-[95vw]'
   };
-  return (
+
+  if (!mounted) return null;
+
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-10">
@@ -60,4 +79,6 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
       )}
     </AnimatePresence>
   );
+
+  return createPortal(modalContent, document.body);
 }

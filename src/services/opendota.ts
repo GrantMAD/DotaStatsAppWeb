@@ -558,6 +558,8 @@ export interface ProMatch {
   radiant_score: number;
   dire_score: number;
   radiant_win: boolean | null;
+  radiant_logo?: string;
+  dire_logo?: string;
 }
 
 export async function getTeamMatches(teamId: number): Promise<ProMatch[]> {
