@@ -4,17 +4,10 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { openDotaApi, HeroStats } from '@/services/opendota';
 import { getHeroImageUrl } from '@/services/constants';
 import { GitCompare, Trophy, Users, Info, TrendingUp, ArrowUpRight } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import Image from 'next/image';
 
-interface MetaGapData {
-  id: number;
-  name: string;
-  proContestRate: number; // Pick + Ban rate in Pro
-  pubPickRate: number;
-  proWinRate: number;
-  pubWinRate: number;
-  gap: number;
-  type: 'pro-favorite' | 'pub-stomper' | 'skill-cap';
+interface ProVsPubMetaProps {
+  onHeroClick?: (id: number) => void;
 }
 
 interface ProVsPubMetaProps {
@@ -117,7 +110,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
           <div className="space-y-1">
             <h3 className="text-lg font-bold uppercase tracking-wider">The Professional Gap</h3>
             <p className="text-sm text-gray-400 max-w-2xl">
-              Professional meta often predicts upcoming public trends. We compare each hero's share of pro contest slots (Pick + Ban) 
+              Professional meta often predicts upcoming public trends. We compare each hero&apos;s share of pro contest slots (Pick + Ban) 
               vs. their share of public picks, identifying which heroes pros value that pubs undervalue — and vice versa.
             </p>
           </div>
@@ -144,7 +137,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
                 onClick={() => onHeroClick?.(hero.id)}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
               >
-                <img src={getHeroImageUrl(hero.id)} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
+                <Image src={getHeroImageUrl(hero.id)} width={40} height={40} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-sm truncate group-hover:text-gaming-accent transition-colors">{hero.name}</div>
                   <div className="text-[10px] text-gray-400 flex items-center gap-2">
@@ -181,7 +174,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
                 onClick={() => onHeroClick?.(hero.id)}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
               >
-                <img src={getHeroImageUrl(hero.id)} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
+                <Image src={getHeroImageUrl(hero.id)} width={40} height={40} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-sm truncate group-hover:text-gaming-accent transition-colors">{hero.name}</div>
                   <div className="text-[10px] text-gray-400 flex items-center gap-2">
@@ -205,7 +198,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
             <div className="ml-auto group relative">
               <Info size={14} className="text-gray-500 cursor-help" />
               <div className="absolute bottom-full right-0 mb-2 w-48 p-2 bg-black/90 text-[10px] rounded border border-white/10 hidden group-hover:block z-20">
-                Heroes that perform significantly better in Pro games than Pub games. Indicates a high "Skill Ceiling".
+                Heroes that perform significantly better in Pro games than Pub games. Indicates a high &quot;Skill Ceiling&quot;.
               </div>
             </div>
           </div>
@@ -216,7 +209,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
                 onClick={() => onHeroClick?.(hero.id)}
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer group"
               >
-                <img src={getHeroImageUrl(hero.id)} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
+                <Image src={getHeroImageUrl(hero.id)} width={40} height={40} className="w-10 h-10 rounded-lg object-cover" alt={hero.name} />
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-sm truncate group-hover:text-gaming-accent transition-colors">{hero.name}</div>
                   <div className="text-[10px] text-gray-400 flex items-center gap-2">
@@ -243,7 +236,7 @@ export function ProVsPubMeta({ onHeroClick }: ProVsPubMetaProps) {
           <TrendingUp className="text-gray-400" size={16} />
         </div>
         <p className="text-xs text-gray-400 leading-relaxed italic">
-          Tip: Heroes in the "Efficiency Gap" list often require high levels of farm priority and team protection. 
+          Tip: Heroes in the &quot;Efficiency Gap&quot; list often require high levels of farm priority and team protection. 
           In pubs, they may struggle if the team is not coordinated around them.
         </p>
       </div>

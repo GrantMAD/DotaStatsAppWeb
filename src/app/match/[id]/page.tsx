@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useMatchDetails, useLiveGames } from '@/hooks/useOpenDota';
 import { MatchScoreboard } from '@/components/match/MatchScoreboard';
@@ -12,7 +12,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GAME_MODES, requestMatchParse } from '@/services/opendota';
 import { cn } from '@/utils/cn';
-import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users, Lock } from 'lucide-react';
+import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users, Lock, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 type MatchTab = 'Scoreboard' | 'Highlights' | 'Economy' | 'Timeline' | 'Chat';
@@ -26,7 +26,7 @@ export default function MatchPage() {
   const [parseRequested, setParseRequested] = useState(false);
   
   const { data: match, isLoading, error } = useMatchDetails(matchId, {
-    refetchInterval: (data: any) => {
+    refetchInterval: (data: { version?: unknown } | undefined) => {
       // If we requested a parse and don't have a version yet, poll every 20s
       if (parseRequested && !data?.version) return 20000;
       return false;
@@ -87,19 +87,19 @@ export default function MatchPage() {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-6 rounded-3xl">
+              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Avg MMR</p>
                 <p className="text-2xl font-black text-amber-500 italic">{liveGame.average_mmr}</p>
               </div>
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-6 rounded-3xl">
+              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Duration</p>
                 <p className="text-2xl font-black text-foreground italic">{Math.floor(liveGame.game_time / 60)}m</p>
               </div>
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-6 rounded-3xl">
+              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Players</p>
                 <p className="text-2xl font-black text-foreground italic">{liveGame.players.length}</p>
               </div>
-              <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-6 rounded-3xl">
+              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Server</p>
                 <p className="text-2xl font-black text-foreground italic">#{liveGame.server_id.slice(-4)}</p>
               </div>
@@ -124,7 +124,7 @@ export default function MatchPage() {
              </h3>
              <div className="space-y-4">
                 {liveGame.players.slice(0, 5).map((p, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-[var(--nav-hover)] rounded-2xl border border-[var(--card-border)]">
+                  <div key={i} className="flex items-center gap-4 p-4 bg-(--nav-hover) rounded-2xl border border-(--card-border)">
                     <div className="w-10 h-10 rounded-full bg-zinc-800" />
                     <span className="font-bold text-foreground">{p.name || `Player ${i + 1}`}</span>
                   </div>
@@ -138,7 +138,7 @@ export default function MatchPage() {
              </h3>
              <div className="space-y-4">
                 {liveGame.players.slice(5, 10).map((p, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-[var(--nav-hover)] rounded-2xl border border-[var(--card-border)]">
+                  <div key={i} className="flex items-center gap-4 p-4 bg-(--nav-hover) rounded-2xl border border-(--card-border)">
                     <div className="w-10 h-10 rounded-full bg-zinc-800" />
                     <span className="font-bold text-foreground">{p.name || `Player ${i + 6}`}</span>
                   </div>
@@ -157,7 +157,7 @@ export default function MatchPage() {
           <AlertCircle className="w-16 h-16 text-loss mx-auto mb-6" />
           <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Match Not Found</h2>
           <p className="text-gray-500 font-medium mb-8">
-            We couldn't retrieve details for Match ID: {matchId}. It might be too old or private.
+            We couldn&apos;t retrieve details for Match ID: {matchId}. It might be too old or private.
           </p>
           <Button onClick={() => router.back()} variant="secondary">
             Go Back
@@ -167,7 +167,7 @@ export default function MatchPage() {
     );
   }
 
-  const TABS: { id: MatchTab; label: string; icon: any }[] = [
+  const TABS: { id: MatchTab; label: string; icon: LucideIcon }[] = [
     { id: 'Scoreboard', label: 'Scoreboard', icon: LayoutGrid },
     { id: 'Highlights', label: 'Highlights', icon: Trophy },
     { id: 'Economy', label: 'Economy', icon: BarChart2 },
@@ -177,12 +177,19 @@ export default function MatchPage() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
+      <div className="flex items-center justify-between gap-4">
+        <Button variant="secondary" size="sm" onClick={() => router.back()} className="inline-flex items-center gap-2">
+          <ChevronLeft className="w-4 h-4" />
+          Back
+        </Button>
+      </div>
+
       {/* Match Hero Header - Immersive Redesign */}
       <GlassCard className="p-0 overflow-hidden border-none relative bg-transparent">
         {/* Dynamic Background Splitting */}
         <div className="absolute inset-0 flex">
-          <div className="flex-1 bg-gradient-to-br from-win/20 via-win/5 to-transparent" />
-          <div className="flex-1 bg-gradient-to-bl from-loss/20 via-loss/5 to-transparent" />
+          <div className="flex-1 bg-linear-to-br from-win/20 via-win/5 to-transparent" />
+          <div className="flex-1 bg-linear-to-bl from-loss/20 via-loss/5 to-transparent" />
         </div>
         
         {/* Atmosphere/Glow effects */}
@@ -207,7 +214,7 @@ export default function MatchPage() {
             <div className="flex flex-col items-center shrink-0">
                <div className="relative group">
                   <div className="absolute -inset-8 bg-gaming-accent/10 rounded-full blur-2xl group-hover:bg-gaming-accent/20 transition-colors" />
-                  <div className="relative bg-zinc-900/80 border border-white/10 px-8 py-4 rounded-3xl backdrop-blur-2xl shadow-2xl flex flex-col items-center min-w-[180px]">
+                  <div className="relative bg-zinc-900/80 border border-white/10 px-8 py-4 rounded-3xl backdrop-blur-2xl shadow-2xl flex flex-col items-center min-w-45">
                      <div className="flex items-center gap-2 mb-1">
                         <Timer className="w-3 h-3 text-gray-500" />
                         <span className="text-xl font-black text-foreground italic tracking-tight">
@@ -216,7 +223,7 @@ export default function MatchPage() {
                      </div>
                      <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Game Duration</p>
                      
-                     <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent my-3" />
+                     <div className="w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent my-3" />
                      
                      <div className={cn(
                        "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-lg",
@@ -281,7 +288,7 @@ export default function MatchPage() {
       )}
 
       {/* Tab Nav */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--card-border)] rounded-2xl sticky top-4 z-40 shadow-2xl">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-(--card-bg) backdrop-blur-xl border border-(--card-border) rounded-2xl sticky top-4 z-40 shadow-2xl">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -291,10 +298,10 @@ export default function MatchPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex-1 min-w-[120px] flex items-center justify-center gap-2 px-6 py-4 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-[0.1em]",
+                "flex-1 min-w-30 flex items-center justify-center gap-2 px-6 py-4 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-widest",
                 isActive 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]" 
-                  : "text-gray-500 hover:text-foreground hover:bg-[var(--nav-hover)]",
+                  : "text-gray-500 hover:text-foreground hover:bg-(--nav-hover)",
                 isLocked && "opacity-40"
               )}
             >

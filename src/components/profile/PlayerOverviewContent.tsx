@@ -37,7 +37,8 @@ import {
   Clock,
   Swords,
   Heart,
-  Eye
+  Eye,
+  type LucideIcon
 } from 'lucide-react';
 import RankBadge from '../ui/RankBadge';
 import { GlassCard } from '../ui/GlassCard';
@@ -48,6 +49,7 @@ import PerformanceTrends from './PerformanceTrends';
 import { WordCloud } from './WordCloud';
 import MMRHistoryChart from './MMRHistoryChart';
 import WardMapHeatmap from './WardMapHeatmap';
+import { HeroDetailModal } from '../hero/HeroDetailModal';
 import { 
   usePlayerHeroes, 
   usePlayerPeers, 
@@ -102,6 +104,7 @@ export function PlayerOverviewContent({
   const [lifetimeSubTab, setLifetimeSubTab] = useState<'Stats' | 'Rank' | 'Vision'>('Stats');
   const [limit, setLimit] = useState(20);
   const [filters, setFilters] = useState<PlayerMatchFilters>({ limit });
+  const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
 
   const { data: filteredMatches = [], isLoading: matchesLoading } = usePlayerMatches(accountId, filters);
   const { data: richRecentMatches = [], isLoading: richLoading } = useRecentMatches(accountId, limit);
@@ -155,13 +158,13 @@ export function PlayerOverviewContent({
       .slice(0, 5);
   }, [countsData]);
 
-  const renderStatSection = (title: string, Icon: any, stats: CategoryStats[]) => (
+  const renderStatSection = (title: string, Icon: LucideIcon, stats: CategoryStats[]) => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl overflow-hidden shadow-xl"
+      className="bg-(--card-bg) border border-(--card-border) rounded-3xl overflow-hidden shadow-xl"
     >
-      <div className="flex items-center gap-3 bg-[var(--nav-hover)] p-4 border-b border-[var(--card-border)]">
+      <div className="flex items-center gap-3 bg-(--nav-hover) p-4 border-b border-(--card-border)">
         <div className="p-2 bg-gaming-accent/20 rounded-xl text-gaming-accent">
           <Icon size={18} />
         </div>
@@ -170,7 +173,7 @@ export function PlayerOverviewContent({
       <div className="p-4 space-y-4">
         {stats.map((stat, i) => (
           <div key={i} className={cn(
-            "flex items-center justify-between pb-4 border-b border-[var(--card-border)] last:border-0 last:pb-0",
+            "flex items-center justify-between pb-4 border-b border-(--card-border) last:border-0 last:pb-0",
             stat.total === 0 && "opacity-40 grayscale"
           )}>
             <div className="min-w-0 flex-1">
@@ -198,7 +201,7 @@ export function PlayerOverviewContent({
     ? filteredMatches 
     : richRecentMatches;
 
-  const TABS: { id: ProfileTab; label: string; icon: any }[] = [
+  const TABS: { id: ProfileTab; label: string; icon: LucideIcon }[] = [
     { id: 'Recent', label: 'Recent Activity', icon: History },
     { id: 'Heroes', label: 'Hero Pool', icon: Trophy },
     { id: 'Network', label: 'Network', icon: Users },
@@ -223,16 +226,16 @@ export function PlayerOverviewContent({
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-20">
       {/* Premium Header */}
-      <GlassCard className="p-8 border-[var(--card-border)] relative overflow-hidden group">
+      <GlassCard className="p-8 border-(--card-border) relative overflow-hidden group">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,var(--color-gaming-accent)_0%,transparent_50%)]" />
         
         <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
           <div className="relative">
-            <div className="w-32 h-32 rounded-full border-4 border-gaming-accent/50 p-1 bg-[var(--nav-hover)] overflow-hidden shadow-2xl">
+            <div className="w-32 h-32 rounded-full border-4 border-gaming-accent/50 p-1 bg-(--nav-hover) overflow-hidden shadow-2xl">
               {profile?.profile?.avatarfull ? (
                 <img src={profile.profile.avatarfull} alt="avatar" className="w-full h-full rounded-full object-cover" />
               ) : (
-                <div className="w-full h-full rounded-full bg-[var(--nav-hover)] animate-pulse" />
+                <div className="w-full h-full rounded-full bg-(--nav-hover) animate-pulse" />
               )}
             </div>
             <div className="absolute -bottom-2 -right-2 scale-125">
@@ -265,23 +268,23 @@ export function PlayerOverviewContent({
 
             <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
               {isCurrentUser ? (
-                <Link href="/friends" className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
+                <Link href="/friends" className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
                    <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
                    <p className="text-foreground font-black">{friendsCount}</p>
                 </Link>
               ) : (
-                <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
+                <div className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl">
                    <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
                    <p className="text-foreground font-black">{friendsCount}</p>
                 </div>
               )}
               {isCurrentUser ? (
-                <Link href="/friends" className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
+                <Link href="/friends" className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
                    <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
                    <p className="text-foreground font-black">{followingCount}</p>
                 </Link>
               ) : (
-                <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] px-4 py-2 rounded-xl">
+                <div className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl">
                    <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
                    <p className="text-foreground font-black">{followingCount}</p>
                 </div>
@@ -291,7 +294,7 @@ export function PlayerOverviewContent({
                   size="sm" 
                   className={cn(
                     "h-10 px-6",
-                    isFollowing(accountId) ? "bg-[var(--nav-hover)] text-gray-400 hover:text-foreground" : ""
+                    isFollowing(accountId) ? "bg-(--nav-hover) text-gray-400 hover:text-foreground" : ""
                   )}
                   onClick={() => isFollowing(accountId) ? unfollowUser(accountId) : followUser(accountId, profile?.profile?.personaname)}
                 >
@@ -309,7 +312,7 @@ export function PlayerOverviewContent({
               <Button 
                 variant="secondary" 
                 size="sm" 
-                className="h-10 px-6 border-[var(--card-border)] text-purple-400"
+                className="h-10 px-6 border-(--card-border) text-purple-400"
                 onClick={() => router.push(`/compare?p1=${accountId}`)}
               >
                 <GitCompare size={16} /> Compare
@@ -357,13 +360,13 @@ export function PlayerOverviewContent({
                     <p className="text-foreground font-black">{peerHistory.with_games} Games</p>
                     <p className="text-win text-[10px] font-black">{peerHistory.with_win} Wins</p>
                  </div>
-                 <div className="w-px h-full bg-[var(--card-border)] hidden md:block" />
+                 <div className="w-px h-full bg-(--card-border) hidden md:block" />
                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">As Opponent</p>
                     <p className="text-foreground font-black">{peerHistory.against_games} Games</p>
                     <p className="text-loss text-[10px] font-black">{peerHistory.against_games - peerHistory.against_win} Losses</p>
                  </div>
-                 <div className="w-px h-full bg-[var(--card-border)] hidden md:block" />
+                 <div className="w-px h-full bg-(--card-border) hidden md:block" />
                  <div className="text-center md:text-left">
                     <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-1">Last Played</p>
                     <p className="text-foreground font-black text-sm mt-0.5">
@@ -383,7 +386,7 @@ export function PlayerOverviewContent({
       )}
 
       {/* Tab Navigation */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-[var(--card-bg)] backdrop-blur-xl border border-[var(--card-border)] sticky top-4 z-40 shadow-2xl rounded-2xl">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-(--card-bg) backdrop-blur-xl border border-(--card-border) sticky top-4 z-40 shadow-2xl rounded-2xl">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -392,10 +395,10 @@ export function PlayerOverviewContent({
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex-1 min-w-[120px] flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-[0.1em]",
+                "flex-1 min-w-30 flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-widest",
                 isActive 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]" 
-                  : "text-gray-500 hover:text-foreground hover:bg-[var(--nav-hover)]"
+                  : "text-gray-500 hover:text-foreground hover:bg-(--nav-hover)"
               )}
             >
               <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
@@ -414,7 +417,7 @@ export function PlayerOverviewContent({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
               <div className="flex items-center gap-2 mb-2">
-                <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)]">
+                <div className="flex bg-(--nav-hover) p-1 rounded-xl border border-(--card-border)">
                   <button 
                     onClick={() => setRecentView('matches')}
                     className={cn(
@@ -460,7 +463,7 @@ export function PlayerOverviewContent({
                             )}
                           >
                             <div className="flex items-center gap-6">
-                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-[var(--card-border)] shrink-0">
+                              <div className="w-16 h-10 rounded-lg overflow-hidden border border-(--card-border) shrink-0">
                                  <img src={getHeroImageUrl(match.hero_id)} alt="hero" className="w-full h-full object-cover" />
                               </div>
                               
@@ -540,11 +543,32 @@ export function PlayerOverviewContent({
                        <div className="flex items-center justify-between mb-2">
                           <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ranked vs. Unranked</span>
                        </div>
-                       <div className="h-2 w-full bg-[var(--nav-hover)] rounded-full overflow-hidden flex">
+                       <div className="h-2 w-full bg-(--nav-hover) rounded-full overflow-hidden flex">
                           <div className="h-full bg-gaming-accent" style={{ width: '60%' }} />
-                          <div className="h-full bg-[var(--card-border)]" style={{ width: '40%' }} />
+                          <div className="h-full bg-(--card-border)" style={{ width: '40%' }} />
                        </div>
                     </div>
+                 </div>
+               </GlassCard>
+               <GlassCard className="p-6">
+                 <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-6 flex items-center gap-2">
+                   <MapIcon size={16} className="text-gaming-accent" /> Win Rate by Side
+                 </h3>
+                 <div className="space-y-4">
+                   {sideStats.map((stat) => {
+                     const percent = stat.total > 0 ? (stat.win / stat.total) * 100 : 0;
+                     return (
+                       <div key={stat.label} className="space-y-2">
+                         <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest text-gray-500">
+                           <span>{stat.label}</span>
+                           <span>{percent.toFixed(1)}%</span>
+                         </div>
+                         <div className="h-2 w-full bg-(--nav-hover) rounded-full overflow-hidden">
+                           <div className="h-full bg-gaming-accent transition-all" style={{ width: `${percent}%` }} />
+                         </div>
+                       </div>
+                     );
+                   })}
                  </div>
                </GlassCard>
             </div>
@@ -564,10 +588,15 @@ export function PlayerOverviewContent({
                 const info = HEROES[Number(hero.hero_id)];
                 const winRate = hero.games > 0 ? (hero.win / hero.games) * 100 : 0;
                 return (
-                  <Link key={hero.hero_id} href={`/hero/${hero.hero_id}`} className="block group">
+                  <button
+                    key={hero.hero_id}
+                    type="button"
+                    onClick={() => setSelectedHeroId(Number(hero.hero_id))}
+                    className="w-full text-left block group"
+                  >
                     <GlassCard hoverable className="p-4 flex flex-col gap-4">
                       <div className="flex items-center gap-6">
-                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-[var(--card-border)] shrink-0 shadow-lg">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-(--card-border) shrink-0 shadow-lg">
                           <img src={getHeroImageUrl(Number(hero.hero_id))} alt="hero" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -587,7 +616,7 @@ export function PlayerOverviewContent({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-4 gap-2 pt-4 border-t border-[var(--card-border)]">
+                      <div className="grid grid-cols-4 gap-2 pt-4 border-t border-(--card-border)">
                          <div className="text-center">
                             <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
                             <p className="text-xs font-black text-foreground">{(hero.kda || 0).toFixed(2)}</p>
@@ -608,7 +637,7 @@ export function PlayerOverviewContent({
                          </div>
                       </div>
                     </GlassCard>
-                  </Link>
+                  </button>
                 );
               })}
             </div>
@@ -670,7 +699,7 @@ export function PlayerOverviewContent({
               </div>
 
               {/* Network Tabs */}
-              <div className="flex bg-[var(--nav-hover)] p-1 rounded-2xl border border-[var(--card-border)] w-fit">
+              <div className="flex bg-(--nav-hover) p-1 rounded-2xl border border-(--card-border) w-fit">
                  {(['Allies', 'Opponents'] as const).map((tab) => (
                     <button
                        key={tab}
@@ -696,7 +725,7 @@ export function PlayerOverviewContent({
                     return (
                        <Link key={peer.account_id} href={`/profile/${peer.account_id}`} className="block group">
                           <GlassCard hoverable className="p-4 flex items-center gap-4 transition-all duration-300">
-                             <img src={peer.avatarfull || peer.avatar} className="w-12 h-12 rounded-full border border-[var(--card-border)] bg-[var(--nav-hover)] group-hover:border-gaming-accent transition-colors" alt="avatar" />
+                             <img src={peer.avatarfull || peer.avatar} className="w-12 h-12 rounded-full border border-(--card-border) bg-(--nav-hover) group-hover:border-gaming-accent transition-colors" alt="avatar" />
                              <div className="flex-1 min-w-0">
                                 <h4 className="text-sm font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">{peer.personaname}</h4>
                                 <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
@@ -732,17 +761,17 @@ export function PlayerOverviewContent({
                   <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Deep analysis of your lifetime journey</p>
                 </div>
 
-                <div className="flex bg-[var(--nav-hover)] p-1 rounded-2xl border border-[var(--card-border)]">
-                  {[
+                <div className="flex bg-(--nav-hover) p-1 rounded-2xl border border-(--card-border)">
+                  {([
                     { id: 'Stats', label: 'General', icon: BarChart2 },
                     { id: 'Rank', label: 'Rank Progress', icon: TrendingUp },
                     { id: 'Vision', label: 'Vision Map', icon: Eye },
-                  ].map((tab) => {
+                  ] as Array<{ id: 'Stats' | 'Rank' | 'Vision'; label: string; icon: LucideIcon }> ).map((tab) => {
                     const Icon = tab.icon;
                     return (
                       <button
                         key={tab.id}
-                        onClick={() => setLifetimeSubTab(tab.id as any)}
+                        onClick={() => setLifetimeSubTab(tab.id)}
                         className={cn(
                           "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
                           lifetimeSubTab === tab.id 
@@ -776,9 +805,9 @@ export function PlayerOverviewContent({
 
                   <div className="space-y-8">
                     <div className="flex items-center gap-4">
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-(--card-border) to-transparent" />
                         <h2 className="text-xs font-black text-gray-600 uppercase tracking-[0.4em]">Match Distribution</h2>
-                        <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[var(--card-border)] to-transparent" />
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-(--card-border) to-transparent" />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -807,6 +836,11 @@ export function PlayerOverviewContent({
            </div>
         )}
       </div>
+      <HeroDetailModal
+        isOpen={selectedHeroId !== null}
+        onClose={() => setSelectedHeroId(null)}
+        heroId={selectedHeroId}
+      />
     </div>
   );
 }

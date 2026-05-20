@@ -7,27 +7,27 @@ import { cn } from '@/utils/cn';
 
 // Dynamic imports for tab components to fix "preloaded but not used" warnings
 const ItemTimingAnalyzer = dynamic(() => import('@/components/meta/ItemTimingAnalyzer').then(mod => mod.ItemTimingAnalyzer), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const LaneRoleInsights = dynamic(() => import('@/components/meta/LaneRoleInsights').then(mod => mod.LaneRoleInsights), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const BracketLeaderboards = dynamic(() => import('@/components/meta/BracketLeaderboards').then(mod => mod.BracketLeaderboards), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const CommunityDistribution = dynamic(() => import('@/components/meta/CommunityDistribution').then(mod => mod.CommunityDistribution), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const ScenarioFunFacts = dynamic(() => import('@/components/meta/ScenarioFunFacts').then(mod => mod.ScenarioFunFacts), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const ProVsPubMeta = dynamic(() => import('@/components/meta/ProVsPubMeta').then(mod => mod.ProVsPubMeta), {
-  loading: () => <div className="h-[400px] animate-pulse bg-white/5 rounded-3xl" />
+  loading: () => <div className="h-100 animate-pulse bg-white/5 rounded-3xl" />
 });
 
 const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
@@ -52,7 +52,7 @@ export default function MetaPage() {
       />
 
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gaming-accent/20 to-transparent border border-gaming-accent/20 p-8">
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-gaming-accent/20 to-transparent border border-gaming-accent/20 p-8">
         <div className="relative z-10 space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gaming-accent flex items-center justify-center shadow-lg shadow-gaming-accent/40">
@@ -67,8 +67,8 @@ export default function MetaPage() {
         </div>
         
         {/* Background Decor */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gaming-accent/10 blur-[100px] -mr-32 -mt-32 rounded-full"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/5 blur-[80px] -ml-24 -mb-24 rounded-full"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gaming-accent/10 blur-25 -mr-32 -mt-32 rounded-full"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/5 blur-20 -ml-24 -mb-24 rounded-full"></div>
       </div>
 
       {/* Navigation Tabs */}
