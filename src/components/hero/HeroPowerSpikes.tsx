@@ -15,10 +15,24 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 
-const CustomTooltip = ({ active, payload }: any) => {
+type DurationTooltipPayload = {
+  payload: {
+    name: string;
+    winRate: number;
+    games: number;
+  };
+  value: number;
+};
+
+type DurationTooltipProps = {
+  active?: boolean;
+  payload?: DurationTooltipPayload[];
+};
+
+const CustomTooltip = ({ active, payload }: DurationTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[var(--glass-start)] backdrop-blur-md border border-[var(--card-border)] p-3 rounded-xl shadow-2xl">
+      <div className="bg-(--glass-start) backdrop-blur-md border border-(--card-border) p-3 rounded-xl shadow-2xl">
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1 italic">
           {payload[0].payload.name}
         </p>
@@ -52,15 +66,23 @@ export function HeroPowerSpikes({ heroId }: { heroId: number }) {
   React.useEffect(() => {
     if (!containerRef.current) return;
 
+    const checkSize = () => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      if (rect.width > 0 && rect.height > 0) {
+        setReady(true);
+      }
+    };
+
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-
       if (width > 0 && height > 0) {
         setReady(true);
       }
     });
 
     observer.observe(containerRef.current);
+    checkSize();
 
     return () => observer.disconnect();
   }, []);
@@ -79,7 +101,7 @@ export function HeroPowerSpikes({ heroId }: { heroId: number }) {
 
   if (isLoading || !ready) {
     return (
-      <GlassCard className="p-6 h-[400px] flex items-center justify-center">
+      <GlassCard className="p-6 h-100 flex items-center justify-center">
         <Skeleton className="w-full h-full rounded-2xl" />
       </GlassCard>
     );
@@ -87,7 +109,7 @@ export function HeroPowerSpikes({ heroId }: { heroId: number }) {
 
   if (chartData.length === 0) {
     return (
-      <GlassCard className="p-6 h-[400px] flex items-center justify-center border-dashed">
+      <GlassCard className="p-6 h-100 flex items-center justify-center border-dashed">
         <p className="text-gray-500 font-bold italic uppercase tracking-widest text-[10px]">
           No duration data found
         </p>
@@ -99,7 +121,7 @@ export function HeroPowerSpikes({ heroId }: { heroId: number }) {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="min-h-[400px]"
+      className="min-h-100"
     >
       <GlassCard className="p-6 h-full flex flex-col">
         {/* Header */}
@@ -177,7 +199,7 @@ export function HeroPowerSpikes({ heroId }: { heroId: number }) {
         </div>
 
         {/* Footer */}
-        <div className="mt-4 pt-4 border-t border-[var(--card-border)] flex justify-between">
+        <div className="mt-4 pt-4 border-t border-(--card-border) flex justify-between">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gaming-accent shadow-[0_0_8px_var(--gaming-accent)]" />
             <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest italic">

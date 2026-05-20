@@ -1,12 +1,13 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Image from 'next/image';
 import { useHeroItemPopularity } from '@/hooks/useOpenDota';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { getItemImageUrl, ITEM_IDS } from '@/services/constants';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Zap, Sword, Trophy } from 'lucide-react';
+import { type LucideIcon, ShoppingCart, Zap, Sword, Trophy } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 interface ItemIconProps {
@@ -21,11 +22,13 @@ function ItemIcon({ itemId, count, total }: ItemIconProps) {
   return (
     <div className="flex flex-col items-center gap-2 group">
       <div className="relative">
-        <div className="w-12 h-9 rounded bg-[var(--nav-hover)] border border-[var(--card-border)] overflow-hidden group-hover:border-gaming-accent transition-colors shadow-lg">
-          <img 
-            src={getItemImageUrl(itemId)} 
+        <div className="relative w-12 h-9 rounded bg-(--nav-hover) border border-(--card-border) overflow-hidden group-hover:border-gaming-accent transition-colors shadow-lg">
+          <Image
+            src={getItemImageUrl(itemId)}
             alt={ITEM_IDS[itemId] || 'item'}
-            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform"
+            fill
+            sizes="48px"
+            className="object-cover transform group-hover:scale-110 transition-transform"
           />
         </div>
         <div className="absolute -bottom-1 -right-1 bg-black/80 px-1 rounded text-[7px] font-black text-white italic border border-white/10">
@@ -39,12 +42,12 @@ function ItemIcon({ itemId, count, total }: ItemIconProps) {
 interface ItemSectionProps {
   title: string;
   items: [string, number][];
-  icon: any;
+  icon: LucideIcon;
   color: string;
 }
 
 function ItemSection({ title, items, icon: Icon, color }: ItemSectionProps) {
-  const total = useMemo(() => items.reduce((sum, [_, count]) => sum + count, 0), [items]);
+  const total = useMemo(() => items.reduce((sum, [, count]) => sum + count, 0), [items]);
   
   return (
     <div className="space-y-3">

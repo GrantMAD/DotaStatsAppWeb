@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Image from 'next/image';
 import {
+  type LucideIcon,
   Trophy,
   Target,
   Shield,
@@ -19,6 +21,7 @@ import {
 import { useHeroStats, usePlayerHeroes } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { STEAM_CDN_BASE } from '@/services/constants';
+import type { HeroStats } from '@/services/opendota';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -45,15 +48,11 @@ function WinRateBar({
   wins,
   label,
   colorClass,
-  minWR,
-  maxWR
 }: {
   picks: number;
   wins: number;
   label: string;
   colorClass: string;
-  minWR: number;
-  maxWR: number;
 }) {
   const wr = picks > 0 ? (wins / picks) * 100 : 0;
 
@@ -81,7 +80,7 @@ function WinRateBar({
         </span>
       </div>
 
-      <div className="h-2 bg-[var(--nav-hover)] rounded-full overflow-hidden border border-[var(--card-border)]">
+      <div className="h-2 bg-(--nav-hover) rounded-full overflow-hidden border border-(--card-border)">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${barWidth}%` }}
@@ -100,7 +99,7 @@ function WinRateBar({
   );
 }
 
-function StatBox({ label, value, subValue, icon: Icon, color }: { label: string; value: string | number; subValue?: string; icon?: any; color?: string }) {
+function StatBox({ label, value, subValue, icon: Icon, color }: { label: string; value: string | number; subValue?: string; icon?: LucideIcon; color?: string }) {
   return (
     <GlassCard className="p-6 flex flex-col justify-between group overflow-hidden relative">
       <div className="relative z-10">
@@ -129,7 +128,7 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
   const { data: heroes = [], isLoading: loadingHeroes } = useHeroStats();
   const { data: playerHeroes = [], isLoading: loadingPlayerStats } = usePlayerHeroes(steamAccountId);
 
-  const hero = useMemo(() => heroes.find(h => h.id === heroId), [heroes, heroId]);
+  const hero = useMemo<HeroStats | undefined>(() => heroes.find((h: HeroStats) => h.id === heroId), [heroes, heroId]);
   const playerHeroStats = useMemo(() =>
     playerHeroes.find(h => Number(h.hero_id) === heroId),
     [playerHeroes, heroId]);
@@ -174,14 +173,16 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
   return (
     <div className="space-y-12">
       {/* Hero Header */}
-      <div className="relative rounded-[2rem] overflow-hidden border border-[var(--card-border)] shadow-2xl shadow-black/50">
-        <div className="aspect-[21/9] md:aspect-[3/1] relative">
-          <img
+      <div className="relative rounded-4xl overflow-hidden border border-(--card-border) shadow-2xl shadow-black/50">
+        <div className="aspect-21/9 md:aspect-3/1 relative">
+          <Image
             src={`${STEAM_CDN_BASE}${hero.img}`}
             alt={hero.localized_name}
-            className="w-full h-full object-cover"
+            fill
+            sizes="100vw"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d1a] via-[#0d0d1a]/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-[#0d0d1a] via-[#0d0d1a]/40 to-transparent" />
 
           <div className="absolute bottom-8 left-8 right-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -189,7 +190,7 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
                 <div className={cn("px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", attrColors[hero.primary_attr])}>
                   {attrNames[hero.primary_attr]}
                 </div>
-                <div className="px-4 py-1 rounded-full bg-[var(--nav-hover)] text-foreground text-[10px] font-black uppercase tracking-widest border border-[var(--card-border)]">
+                <div className="px-4 py-1 rounded-full bg-(--nav-hover) text-foreground text-[10px] font-black uppercase tracking-widest border border-(--card-border)">
                   {hero.attack_type}
                 </div>
               </div>
@@ -198,14 +199,14 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
               </h1>
               <div className="flex flex-wrap gap-2 mt-4">
                 {hero.roles.map(role => (
-                  <span key={role} className="px-2 py-1 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-lg text-[9px] font-bold text-gray-400 uppercase tracking-wider">
+                  <span key={role} className="px-2 py-1 bg-(--nav-hover) border border-(--card-border) rounded-lg text-[9px] font-bold text-gray-400 uppercase tracking-wider">
                     {role}
                   </span>
                 ))}
               </div>
             </div>
 
-            <div className="bg-[var(--glass-start)] backdrop-blur-xl border border-[var(--card-border)] rounded-3xl p-4 md:p-6 min-w-[160px]">
+            <div className="bg-(--glass-start) backdrop-blur-xl border border-(--card-border) rounded-3xl p-4 md:p-6 min-w-40">
               <p className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1 italic">Global Pub Win Rate</p>
               <div className="flex items-baseline gap-1">
                 <span className={cn("text-4xl font-black italic tracking-tighter", pubWinRate >= 50 ? "text-win" : "text-loss")}>
@@ -349,8 +350,10 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
               {(() => {
                 const rankData = ['1', '2', '3', '4', '5', '6', '7', '8']
                   .map(rank => {
-                    const picks = (hero as any)[`${rank}_pick`];
-                    const wins = (hero as any)[`${rank}_win`];
+                    const pickKey = `${rank}_pick` as keyof HeroStats;
+                    const winKey = `${rank}_win` as keyof HeroStats;
+                    const picks = hero[pickKey] as number;
+                    const wins = hero[winKey] as number;
 
                     const wr =
                       picks > 0
@@ -366,9 +369,6 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
                   })
                   .filter(r => r.picks > 0);
 
-                const minWR = Math.min(...rankData.map(r => r.wr));
-                const maxWR = Math.max(...rankData.map(r => r.wr));
-
                 return (
                   <div className="space-y-2">
                     {rankData.map(({ rank, picks, wins }) => (
@@ -378,8 +378,6 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
                         picks={picks}
                         wins={wins}
                         colorClass={RANK_COLORS[rank]}
-                        minWR={minWR}
-                        maxWR={maxWR}
                       />
                     ))}
                   </div>

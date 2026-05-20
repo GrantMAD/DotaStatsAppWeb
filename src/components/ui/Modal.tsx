@@ -19,13 +19,16 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const frame = requestAnimationFrame(() => setMounted(true));
+
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
+
     return () => {
+      cancelAnimationFrame(frame);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
@@ -44,7 +47,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 lg:p-10">
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 lg:p-10">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -57,16 +60,16 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className={cn(
-              "relative w-full max-h-[90vh] glass-card overflow-hidden flex flex-col p-0 border-[var(--card-border)]",
+              "relative w-full max-h-[90vh] glass-card overflow-hidden flex flex-col p-0 border-(--card-border)",
               sizeClasses[size],
               className
             )}
           >
-            <div className="flex items-center justify-between p-6 border-b border-[var(--card-border)]">
+            <div className="flex items-center justify-between p-6 border-b border-(--card-border)">
               <h3 className="text-xl font-bold text-foreground">{title}</h3>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-[var(--nav-hover)] rounded-lg transition-colors"
+                className="p-2 hover:bg-(--nav-hover) rounded-lg transition-colors"
               >
                 <X className="w-6 h-6 text-gray-400" />
               </button>
