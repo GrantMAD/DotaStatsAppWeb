@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Users, UserCheck, UserPlus, Search, X, GitCompare, UserMinus } from 'lucide-react';
+import { Users, UserCheck, UserPlus, Search, X, GitCompare } from 'lucide-react';
 import { useFriends } from '@/hooks/useFriends';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { UserListItem } from '@/components/ui/UserListItem';
@@ -39,6 +39,17 @@ export default function FriendsPage() {
     router.push(`/profile/${accountId}`);
   };
 
+  const renderCompareButton = (accountId: string) => (
+    <Link
+      href={`/compare?p1=${steamAccountId}&p2=${accountId}`}
+      className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-gaming-accent text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-gaming-accent/20 hover:bg-gaming-accent-light transition-all"
+      title="Compare Stats"
+    >
+      <GitCompare className="w-4 h-4" />
+      <span className="hidden sm:inline">Compare</span>
+    </Link>
+  );
+
   return (
     <div className="container-custom py-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
@@ -54,7 +65,7 @@ export default function FriendsPage() {
           </div>
         </div>
 
-        <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)] self-start md:self-end">
+        <div className="flex bg-(--nav-hover) p-1 rounded-xl border border-(--card-border) self-start md:self-end">
           <button
             onClick={() => {
               setActiveTab('Friends');
@@ -64,7 +75,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Friends' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
+                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <UserCheck className="w-4 h-4" />
@@ -79,7 +90,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Following' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
+                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <UserPlus className="w-4 h-4" />
@@ -97,12 +108,12 @@ export default function FriendsPage() {
             placeholder={activeTab === 'Friends' ? "Search by name or ID..." : "Search by ID..."}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl py-3 pl-12 pr-12 text-foreground placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-[var(--card-bg)] transition-all"
+            className="w-full bg-(--nav-hover) border border-(--card-border) rounded-xl py-3 pl-12 pr-12 text-foreground placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-(--card-bg) transition-all"
           />
           {searchQuery && (
             <button 
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-(--nav-hover) rounded-full transition-colors"
             >
               <X className="w-4 h-4 text-gray-500" />
             </button>
@@ -124,26 +135,20 @@ export default function FriendsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeTab === 'Friends' ? (
-              filteredFriends.map((friend, index) => (
+              filteredFriends.map((friend) => (
                 <UserListItem 
                   key={friend.id}
                   user={friend.users}
                   onClick={() => handleItemClick(friend.users.steam_account_id)}
                   rightComponent={
                     steamAccountId && steamAccountId !== friend.users.steam_account_id ? (
-                      <Link
-                        href={`/compare?p1=${steamAccountId}&p2=${friend.users.steam_account_id}`}
-                        className="p-2.5 bg-gaming-accent/10 border border-gaming-accent/20 rounded-xl text-gaming-accent hover:bg-gaming-accent hover:text-white transition-all shadow-lg shadow-gaming-accent/10 hover:shadow-gaming-accent/20 group/compare"
-                        title="Compare Stats"
-                      >
-                        <GitCompare className="w-4 h-4 group-hover/compare:rotate-12 transition-transform" />
-                      </Link>
+                      renderCompareButton(friend.users.steam_account_id)
                     ) : undefined
                   }
                 />
               ))
             ) : (
-              filteredFollowing.map((follow, index) => (
+              filteredFollowing.map((follow) => (
                 <UserListItem 
                   key={follow.id}
                   user={{
@@ -152,21 +157,15 @@ export default function FriendsPage() {
                     steam_name: follow.steam_name || `Player ${follow.followed_steam_id}`
                   }}
                   onClick={() => handleItemClick(follow.followed_steam_id)}
+                  stackMetadata
                   rightComponent={
                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                       {steamAccountId && steamAccountId !== follow.followed_steam_id && (
-                        <Link
-                          href={`/compare?p1=${steamAccountId}&p2=${follow.followed_steam_id}`}
-                          className="flex items-center gap-2 px-3 py-2 bg-gaming-accent text-white rounded-xl hover:bg-gaming-accent-light transition-all shadow-lg shadow-gaming-accent/20 group/compare"
-                          title="Compare Stats"
-                        >
-                          <GitCompare className="w-4 h-4 group-hover/compare:rotate-12 transition-transform" />
-                          <span className="text-[10px] font-black uppercase tracking-widest hidden lg:inline">Compare</span>
-                        </Link>
+                        renderCompareButton(follow.followed_steam_id)
                       )}
                       <button
                         onClick={() => unfollowUser(follow.followed_steam_id)}
-                        className="px-3 py-2 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
+                        className="px-3 py-2 bg-(--nav-hover) border border-(--card-border) rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
                       >
                         Unfollow
                       </button>
@@ -183,7 +182,7 @@ export default function FriendsPage() {
           (activeTab === 'Following' && filteredFollowing.length === 0)
         ) && (
           <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-            <div className="w-24 h-24 bg-[var(--nav-hover)] rounded-full flex items-center justify-center mb-6 border border-[var(--card-border)]">
+            <div className="w-24 h-24 bg-(--nav-hover) rounded-full flex items-center justify-center mb-6 border border-(--card-border)">
               <Users className="w-12 h-12 text-gray-500" />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-2">
