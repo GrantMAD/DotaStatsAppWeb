@@ -1,8 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useNotifications } from '@/hooks/useFriends';
+import { useNotifications, AppNotification } from '@/hooks/useFriends';
 import { GlassCard } from '@/components/ui/GlassCard';
+
+type NotificationItem = AppNotification & {
+  related_match_id?: string | null;
+};
 import { Button } from '@/components/ui/Button';
 import { 
   Bell, 
@@ -31,7 +35,7 @@ export default function NotificationsPage() {
     }
   };
 
-  const handleNotificationClick = (n: any) => {
+  const handleNotificationClick = (n: NotificationItem) => {
     if (!n.is_read) {
       markAsRead(n.id);
     }

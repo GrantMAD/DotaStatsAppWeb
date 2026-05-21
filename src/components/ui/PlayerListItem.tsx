@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { User, Plus, Check, UserPlus, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
@@ -10,6 +11,9 @@ interface PlayerListItemProps {
     personaname: string;
     avatarfull: string;
     last_match_time?: string;
+    isPro?: boolean;
+    team_tag?: string;
+    isAppUser?: boolean;
   };
   appUserId?: string;
   isFollowing?: boolean;
@@ -37,12 +41,14 @@ export function PlayerListItem({
       onClick={onClick}
       className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
     >
-      <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-(--card-border) bg-(--nav-hover)">
+      <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-(--card-border) bg-(--nav-hover)">
         {player.avatarfull ? (
-          <img 
-            src={player.avatarfull} 
+          <Image
+            src={player.avatarfull}
             alt={player.personaname}
-            className="w-full h-full object-cover"
+            fill
+            sizes="56px"
+            className="object-cover"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -56,12 +62,12 @@ export function PlayerListItem({
           <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
             {player.personaname}
           </h3>
-          {(player as any).isPro && (
+          {player.isPro && (
             <span className="bg-gaming-accent/20 text-gaming-accent border border-gaming-accent/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
-              {(player as any).team_tag ? `PRO (${(player as any).team_tag})` : 'PRO'}
+              {player.team_tag ? `PRO (${player.team_tag})` : 'PRO'}
             </span>
           )}
-          {((player as any).isAppUser || appUserId) && (
+          {(player.isAppUser || appUserId) && (
             <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
               App User
             </span>

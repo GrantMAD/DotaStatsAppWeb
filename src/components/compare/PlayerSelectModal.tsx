@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, X, Users, Globe, ChevronRight, User } from 'lucide-react';
+import { Search, Users, Globe, ChevronRight, User } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { useSearchPlayers } from '@/hooks/useOpenDota';
 import { useFriends } from '@/hooks/useFriends';
-import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 import { createClient } from '@/utils/supabase/client';
+import Image from 'next/image';
 
 interface PlayerSelectModalProps {
   isOpen: boolean;
@@ -17,15 +17,31 @@ interface PlayerSelectModalProps {
   title?: string;
 }
 
-export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select Player" }: PlayerSelectModalProps) {
-  const { user } = useSupabaseAuth();
+type FriendPlayer = {
+  account_id: number;
+  personaname: string;
+  isFriend?: boolean;
+  isFollowing?: boolean;
+};
+
+export function PlayerSelectModal({
+  isOpen,
+  onClose,
+  onSelect,
+  title = "Select Player",
+}: PlayerSelectModalProps) {
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
   const [searchMode, setSearchMode] = useState<'search' | 'friends'>('search');
+
+  // ✅ FIXED: proper state
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [appUsersMap, setAppUsersMap] = useState<Record<number, string>>({});
 
-  const { data: searchResults = [], isLoading: searching } = useSearchPlayers(activeQuery);
-  const { friends, following, loading: loadingFriends } = useFriends();
+  const { data: searchResults = [], isLoading: searching } =
+    useSearchPlayers(activeQuery);
+
+  const { friends, following } = useFriends();
   const supabase = createClient();
 
   useEffect(() => {
@@ -33,6 +49,7 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
       if (!searchResults.length) return;
 
       const accountIds = searchResults.map(r => r.account_id.toString());
+
       const { data, error } = await supabase
         .from('users')
         .select('id, steam_account_id')
@@ -40,12 +57,15 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
 
       if (data && !error) {
         const map: Record<number, string> = {};
+
         data.forEach(u => {
           map[Number(u.steam_account_id)] = u.id;
         });
+
         setAppUsersMap(map);
       }
     }
+
     checkAppUsers();
   }, [searchResults, supabase]);
 
@@ -55,35 +75,37 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
     setActiveQuery(query);
   };
 
-  const friendsList = useMemo(() => {
-    const list: any[] = [];
-    
-    // Add following
+  // ✅ FIXED: removed any
+  const friendsList = useMemo<FriendPlayer[]>(() => {
+    const list: FriendPlayer[] = [];
+
     following.forEach(f => {
       list.push({
         account_id: parseInt(f.followed_steam_id),
         personaname: f.steam_name || `Followed Player ${f.followed_steam_id}`,
-        isFollowing: true
+        isFollowing: true,
       });
     });
 
-    // Add friends
     friends.forEach(f => {
       const friendUser = f.users;
       if (friendUser) {
         list.push({
           account_id: parseInt(friendUser.steam_account_id),
           personaname: friendUser.steam_name || 'Friend',
-          isFriend: true
+          isFriend: true,
         });
       }
     });
 
-    // Remove duplicates
-    const unique = Array.from(new Map(list.map(item => [item.account_id, item])).values());
-    
+    const unique = Array.from(
+      new Map(list.map(item => [item.account_id, item])).values()
+    );
+
     if (!query) return unique;
-    return unique.filter(p => p.personaname.toLowerCase().includes(query.toLowerCase()));
+    return unique.filter(p =>
+      p.personaname.toLowerCase().includes(query.toLowerCase())
+    );
   }, [friends, following, query]);
 
   return (
@@ -95,20 +117,21 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
             onClick={() => setSearchMode('search')}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
-              searchMode === 'search' 
-                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20" 
+              searchMode === 'search'
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
                 : "text-gray-500 hover:text-white"
             )}
           >
             <Globe className="w-4 h-4" />
             Global Search
           </button>
+
           <button
             onClick={() => setSearchMode('friends')}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
-              searchMode === 'friends' 
-                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20" 
+              searchMode === 'friends'
+                ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20"
                 : "text-gray-500 hover:text-white"
             )}
           >
@@ -122,7 +145,11 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
           <input
             type="text"
-            placeholder={searchMode === 'search' ? "Search by name or Steam ID..." : "Filter friends..."}
+            placeholder={
+              searchMode === 'search'
+                ? "Search by name or Steam ID..."
+                : "Filter friends..."
+            }
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -130,8 +157,9 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
             }}
             className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-purple-500/50 transition-all"
           />
+
           {searchMode === 'search' && (
-            <button 
+            <button
               type="submit"
               className="absolute right-2 top-1/2 -translate-y-1/2 bg-purple-600 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-purple-500 transition-all"
             >
@@ -141,11 +169,14 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
         </form>
 
         {/* Results */}
-        <div className="space-y-2 min-h-[300px]">
+        <div className="space-y-2 min-h-75">
           {searchMode === 'search' ? (
             searching ? (
               [...Array(5)].map((_, i) => (
-                <div key={i} className="p-3 flex items-center gap-4 bg-white/5 rounded-xl border border-transparent">
+                <div
+                  key={i}
+                  className="p-3 flex items-center gap-4 bg-white/5 rounded-xl border border-transparent"
+                >
                   <Skeleton className="w-10 h-10 rounded-full" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-1/3" />
@@ -154,17 +185,20 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
                 </div>
               ))
             ) : searchResults.length > 0 ? (
-              searchResults.map((player) => (
-                <div 
+              searchResults.map(player => (
+                <div
                   key={player.account_id}
                   onClick={() => onSelect(player.account_id.toString())}
                   className="p-3 flex items-center gap-4 bg-white/5 rounded-xl border border-transparent hover:border-purple-500/50 hover:bg-white/10 transition-all cursor-pointer group"
                 >
-                  <img 
-                    src={player.avatarfull} 
+                  <Image
+                    src={player.avatarfull}
                     alt={player.personaname}
+                    width={40}
+                    height={40}
                     className="w-10 h-10 rounded-full border border-white/10"
                   />
+
                   <div className="flex-1 min-w-0">
                     <h4 className="text-white font-bold truncate group-hover:text-purple-400 transition-colors">
                       {player.personaname}
@@ -173,6 +207,7 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
                       ID: {player.account_id}
                     </p>
                   </div>
+
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-purple-400 transition-all" />
                 </div>
               ))
@@ -184,8 +219,8 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
             )
           ) : (
             friendsList.length > 0 ? (
-              friendsList.map((player) => (
-                <div 
+              friendsList.map(player => (
+                <div
                   key={player.account_id}
                   onClick={() => onSelect(player.account_id.toString())}
                   className="p-3 flex items-center gap-4 bg-white/5 rounded-xl border border-transparent hover:border-purple-500/50 hover:bg-white/10 transition-all cursor-pointer group"
@@ -193,22 +228,31 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
                   <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
                     <User className="w-5 h-5 text-purple-400" />
                   </div>
+
                   <div className="flex-1 min-w-0">
                     <h4 className="text-white font-bold truncate group-hover:text-purple-400 transition-colors">
                       {player.personaname}
                     </h4>
+
                     <div className="flex items-center gap-2">
-                       <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">
+                      <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">
                         ID: {player.account_id}
                       </p>
+
                       {player.isFriend && (
-                        <span className="text-[8px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded border border-green-500/20 font-black uppercase">Friend</span>
+                        <span className="text-[8px] bg-green-500/10 text-green-500 px-1.5 py-0.5 rounded border border-green-500/20 font-black uppercase">
+                          Friend
+                        </span>
                       )}
+
                       {player.isFollowing && (
-                        <span className="text-[8px] bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded border border-blue-500/20 font-black uppercase">Following</span>
+                        <span className="text-[8px] bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded border border-blue-500/20 font-black uppercase">
+                          Following
+                        </span>
                       )}
                     </div>
                   </div>
+
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-purple-400 transition-all" />
                 </div>
               ))
@@ -219,7 +263,7 @@ export function PlayerSelectModal({ isOpen, onClose, onSelect, title = "Select P
               </div>
             )
           )}
-          
+
           {!activeQuery && searchMode === 'search' && (
             <div className="flex flex-col items-center justify-center py-10 text-center opacity-40">
               <Search className="w-10 h-10 mb-2" />

@@ -3,18 +3,15 @@
 import React, { useMemo } from 'react';
 import { PlayerRating } from '@/services/opendota';
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   Tooltip, 
   ResponsiveContainer, 
   AreaChart, 
   Area,
-  CartesianGrid,
-  YAxisProps
+  CartesianGrid
 } from 'recharts';
-import { TrendingUp, Activity, Award } from 'lucide-react';
+import { TrendingUp, Activity } from 'lucide-react';
 import { GlassCard } from '../ui/GlassCard';
 import { Skeleton } from '../ui/Skeleton';
 import { format } from 'date-fns';
@@ -76,12 +73,12 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
   }, [chartData]);
 
   if (loading) {
-    return <Skeleton className="h-[400px] w-full rounded-3xl" />;
+    return <Skeleton className="h-100 w-full rounded-3xl" />;
   }
 
   if (chartData.length === 0) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[var(--card-border)] rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
           No historical MMR data found for this player.
@@ -113,7 +110,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
         </GlassCard>
       </div>
 
-      <GlassCard className="h-[400px] p-8 bg-[var(--tech-bg)] border-[var(--overlay-border)] relative overflow-hidden">
+      <GlassCard className="h-100 p-8 bg-(--tech-bg) border-(--overlay-border) relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5">
            <TrendingUp size={120} />
         </div>
@@ -125,7 +122,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
            </div>
         </div>
 
-        <div className="h-[280px] w-full relative z-10 min-h-[280px]">
+        <div className="h-70 w-full relative z-10 min-h-70">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
               <defs>
@@ -162,7 +159,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="glass-card bg-[var(--card-bg)] p-3 border-[var(--card-border)] shadow-2xl backdrop-blur-xl">
+                      <div className="glass-card bg-(--card-bg) p-3 border-(--card-border) shadow-2xl backdrop-blur-xl">
                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{payload[0].payload.date}</p>
                         <p className="text-2xl font-black text-foreground">{payload[0].value?.toLocaleString()} MMR</p>
                       </div>

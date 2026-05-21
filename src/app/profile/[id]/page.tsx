@@ -43,7 +43,7 @@ export default function ProfilePage() {
           <AlertCircle className="w-16 h-16 text-loss mx-auto mb-6" />
           <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Player Not Found</h2>
           <p className="text-gray-500 font-medium mb-8">
-            We couldn't find a Dota 2 profile for this account ID. Make sure the ID is correct and the profile is public.
+            We couldn&apos;t find a Dota 2 profile for this account ID. Make sure the ID is correct and the profile is public.
           </p>
         </GlassCard>
       </div>

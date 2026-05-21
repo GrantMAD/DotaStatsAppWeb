@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Image from 'next/image';
 import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
 import { useSearchPlayers, usePlayerPeers, useHeroStats } from '@/hooks/useOpenDota';
 import { useFriends } from '@/hooks/useFriends';
@@ -15,7 +16,7 @@ import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
 
 export default function SearchPage() {
   const router = useRouter();
-  const { user, steamAccountId } = useSupabaseAuth();
+  const { steamAccountId } = useSupabaseAuth();
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
   const [searchMode, setSearchMode] = useState<'global' | 'steam'>('global');
@@ -29,7 +30,7 @@ export default function SearchPage() {
   const { data: heroesData = [] } = useHeroStats();
   const { followUser, unfollowUser, isFollowing, isFriend } = useFriends();
 
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const matchingHeroes = useMemo(() => {
     if (!activeQuery || searchMode === 'steam') return [];
@@ -70,14 +71,14 @@ export default function SearchPage() {
 
       if (data && !error) {
         const map: Record<number, string> = {};
-        data.forEach(u => {
+        data.forEach((u: { steam_account_id: string; id: string }) => {
           map[Number(u.steam_account_id)] = u.id;
         });
         setAppUsersMap(map);
       }
     }
     checkAppUsers();
-  }, [globalResults, peers, searchMode]);
+  }, [globalResults, peers, searchMode, supabase]);
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -112,14 +113,14 @@ export default function SearchPage() {
           </div>
         </div>
 
-        <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)] self-start md:self-end">
+        <div className="flex bg-(--nav-hover) p-1 rounded-xl border border-(--card-border) self-start md:self-end">
           <button
             onClick={() => setSearchMode('global')}
             className={cn(
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'global' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
+                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <Globe className="w-4 h-4" />
@@ -131,7 +132,7 @@ export default function SearchPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'steam' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-[var(--glass-start)]"
+                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <Users className="w-4 h-4" />
@@ -151,7 +152,7 @@ export default function SearchPage() {
               setQuery(e.target.value);
               if (searchMode === 'steam') setActiveQuery(e.target.value);
             }}
-            className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-2xl py-4 pl-14 pr-32 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-[var(--card-bg)] transition-all shadow-xl"
+            className="w-full bg-(--nav-hover) border border-(--card-border) rounded-2xl py-4 pl-14 pr-32 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:border-gaming-accent/50 focus:bg-(--card-bg) transition-all shadow-xl"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
             {query && (
@@ -161,7 +162,7 @@ export default function SearchPage() {
                   setQuery('');
                   setActiveQuery('');
                 }}
-                className="p-2 hover:bg-[var(--nav-hover)] rounded-full transition-colors"
+                className="p-2 hover:bg-(--nav-hover) rounded-full transition-colors"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
@@ -194,7 +195,7 @@ export default function SearchPage() {
                 {searchMode === 'steam' ? (
                   "Loading Steam Friends..."
                 ) : (
-                  <>Currently searching for <span className="text-gaming-accent font-bold">"{activeQuery}"</span></>
+                  <>Currently searching for <span className="text-gaming-accent font-bold">&quot;{activeQuery}&quot;</span></>
                 )}
               </p>
             </div>
@@ -223,11 +224,14 @@ export default function SearchPage() {
                       className="glass-card p-3 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
                       onClick={() => router.push(`/hero/${hero.id}`)}
                     >
-                      <img 
-                        src={getHeroImageUrl(hero.id)} 
-                        alt={hero.localized_name}
-                        className="w-12 h-7 object-cover rounded shadow-lg"
-                      />
+                      <div className="relative h-7 w-12 rounded overflow-hidden shadow-lg">
+                        <Image
+                          src={getHeroImageUrl(hero.id)}
+                          alt={hero.localized_name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                       <span className="text-foreground font-bold group-hover:text-gaming-accent transition-colors">
                         {hero.localized_name}
                       </span>
@@ -282,7 +286,7 @@ export default function SearchPage() {
 
             {!results.length && !searching && !matchingHeroes.length && !matchingMatchId && (
               <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
-                <div className="w-24 h-24 bg-[var(--nav-hover)] rounded-full flex items-center justify-center mb-6 border border-[var(--card-border)]">
+                <div className="w-24 h-24 bg-(--nav-hover) rounded-full flex items-center justify-center mb-6 border border-(--card-border)">
                   <Search className="w-12 h-12 text-gray-500" />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground mb-2">
@@ -303,11 +307,11 @@ export default function SearchPage() {
             <AlertCircle className="w-10 h-10 text-red-500" />
             <div>
               <h3 className="text-red-500 font-bold text-lg">Search Error</h3>
-              <p className="text-gray-400 text-sm mt-1">{(error as any).message || 'An error occurred while searching'}</p>
+              <p className="text-gray-400 text-sm mt-1">{error instanceof Error ? error.message : 'An error occurred while searching'}</p>
             </div>
             <button 
               onClick={() => handleSearch()}
-              className="bg-[var(--nav-hover)] hover:bg-[var(--glass-start)] text-foreground px-6 py-2 rounded-xl text-sm font-bold transition-all border border-[var(--card-border)]"
+              className="bg-(--nav-hover) hover:bg-(--glass-start) text-foreground px-6 py-2 rounded-xl text-sm font-bold transition-all border border-(--card-border)"
             >
               Try Again
             </button>

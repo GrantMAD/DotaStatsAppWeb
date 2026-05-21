@@ -1,28 +1,26 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  Trophy, 
-  Flame, 
-  Star, 
-  Ban, 
-  Radio, 
+import {
+  Trophy,
+  Flame,
+  Star,
+  Ban,
+  Radio,
   Search,
   Users,
-  ChevronRight,
   ChevronDown,
   ChevronUp,
   LogIn,
   Link as LinkIcon,
   User as UserIcon,
-  ArrowRight
 } from 'lucide-react';
-import { 
-  useHeroStats, 
-  useProMatches, 
-  useLiveGames, 
-  usePlayerProfile 
+import {
+  useHeroStats,
+  useProMatches,
+  useLiveGames,
+  usePlayerProfile
 } from '@/hooks/useOpenDota';
 import { useActivityFeed } from '@/hooks/useActivityFeed';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -38,6 +36,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 import { STEAM_CDN_BASE } from '@/services/constants';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 
 const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
   ssr: false
@@ -50,7 +49,18 @@ const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailMod
 // Minimum picks threshold to avoid heroes with tiny sample sizes
 const MIN_PICKS = 5000;
 
-function processHeroStats(heroes: any[]) {
+type HeroStats = {
+  id: number;
+  localized_name: string;
+  img: string;
+  pub_pick: number;
+  pub_win: number;
+  pro_pick: number;
+  pro_win: number;
+  pro_ban: number;
+};
+
+function processHeroStats(heroes: HeroStats[]) {
   if (!heroes || heroes.length === 0) return { topWinRate: [], mostPicked: [], proPicks: [], proBans: [] };
 
   const eligible = heroes.filter(h => h.pub_pick >= MIN_PICKS);
@@ -110,7 +120,7 @@ export default function HomePage() {
   const { data: userProfile } = usePlayerProfile(steamAccountId || null);
   const userBracket = useMemo(() => getBracketFromRankTier(userProfile?.rank_tier), [userProfile?.rank_tier]);
   const [selectedBracket, setSelectedBracket] = useState<number | null>(null);
-  
+
   const activeBracket = selectedBracket || userBracket;
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -119,7 +129,7 @@ export default function HomePage() {
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
   const processedStats = useMemo(() => processHeroStats(heroesData), [heroesData]);
-  const { topWinRate, mostPicked, proPicks, proBans } = processedStats;
+  const { topWinRate, mostPicked, proBans } = processedStats;
 
   const tierList = useMemo(() => {
     if (!heroesData.length) return [];
@@ -128,10 +138,11 @@ export default function HomePage() {
 
   const topTier = useMemo(() => tierList.slice(0, 15), [tierList]);
 
+  const [oneDayAgo] = useState(() => Date.now() / 1000 - 24 * 60 * 60);
+
   const newHighlightsCount = useMemo(() => {
-    const oneDayAgo = (Date.now() / 1000) - (24 * 60 * 60);
     return activities.filter(a => a.timestamp > oneDayAgo).length;
-  }, [activities]);
+  }, [activities, oneDayAgo]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,14 +153,14 @@ export default function HomePage() {
   return (
     <div className="pb-20">
       {/* Hero Detail Modal */}
-      <HeroDetailModal 
+      <HeroDetailModal
         isOpen={selectedHeroId !== null}
         onClose={() => setSelectedHeroId(null)}
         heroId={selectedHeroId}
       />
 
       {/* Match Detail Modal */}
-      <MatchDetailModal 
+      <MatchDetailModal
         isOpen={selectedMatchId !== null}
         onClose={() => setSelectedMatchId(null)}
         matchId={selectedMatchId}
@@ -192,7 +203,7 @@ export default function HomePage() {
               <input
                 type="text"
                 placeholder="Search players, heroes..."
-                className="w-full h-16 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-[var(--glass-start)] transition-all"
+                className="w-full h-16 bg-(--nav-hover) border border-(--card-border) rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-(--glass-start) transition-all"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -207,11 +218,11 @@ export default function HomePage() {
       {/* Friends Activity */}
       {user && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <SectionHeader 
-            icon={Users} 
-            title="Friends Activity" 
+          <SectionHeader
+            icon={Users}
+            title="Friends Activity"
             description="Recent achievements and matches from your network."
-            color="text-win" 
+            color="text-win"
           />
           <div className="px-4 mb-4">
             <p className="text-xs font-black uppercase tracking-widest text-win bg-win/10 px-3 py-1.5 rounded-lg inline-block border border-win/20 shadow-lg shadow-win/5">
@@ -221,15 +232,15 @@ export default function HomePage() {
           <div className="relative group/feed">
             <div className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 no-scrollbar scroll-smooth">
               {loadingActivity ? (
-                [1, 2, 3].map(i => <Skeleton key={i} className="w-[320px] h-[120px] shrink-0 rounded-2xl" />)
+                [1, 2, 3].map(i => <Skeleton key={i} className="w-[320px] h-30 shrink-0 rounded-2xl" />)
               ) : activities.length > 0 ? (
                 activities.map((item, idx) => (
-                  <ActivityFeedItem 
+                  <ActivityFeedItem
                     key={item.id}
-                    item={item} 
+                    item={item}
                     index={idx}
-                    onPressPlayer={(id) => router.push(`/profile/${id}`)} 
-                    onPressMatch={(id) => router.push(`/match/${id}`)} 
+                    onPressPlayer={(id) => router.push(`/profile/${id}`)}
+                    onPressMatch={(id) => router.push(`/match/${id}`)}
                   />
                 ))
               ) : (
@@ -244,13 +255,13 @@ export default function HomePage() {
 
       {/* Meta Tier List */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
-        <SectionHeader 
-          icon={Star} 
-          title="Hero Meta Tier List" 
+        <SectionHeader
+          icon={Star}
+          title="Hero Meta Tier List"
           description="Calculated based on win rates and pick frequency in your rank."
-          color="text-gaming-accent" 
+          color="text-gaming-accent"
         />
-        
+
         <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar">
           {Object.entries(BRACKET_NAMES).map(([b, name]) => (
             <button
@@ -258,9 +269,9 @@ export default function HomePage() {
               onClick={() => setSelectedBracket(Number(b))}
               className={cn(
                 "px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all",
-                activeBracket === Number(b) 
-                  ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                  : "bg-[var(--nav-hover)] text-gray-500 hover:bg-[var(--glass-start)] hover:text-foreground"
+                activeBracket === Number(b)
+                  ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
+                  : "bg-(--nav-hover) text-gray-500 hover:bg-(--glass-start) hover:text-foreground"
               )}
             >
               {name}
@@ -270,7 +281,7 @@ export default function HomePage() {
 
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
           {loadingHeroes ? (
-            [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
+            [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
           ) : (
             topTier.map((item) => (
               <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
@@ -291,15 +302,15 @@ export default function HomePage() {
       <div className="space-y-8 mt-12">
         {/* Highest Win Rate */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-          <SectionHeader 
-            icon={Trophy} 
-            title="Highest Win Rate" 
+          <SectionHeader
+            icon={Trophy}
+            title="Highest Win Rate"
             description="Heroes with the highest win probability today."
-            color="text-amber-500" 
+            color="text-amber-500"
           />
           <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
             {loadingHeroes ? (
-              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
+              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
             ) : (
               topWinRate.map((item, idx) => (
                 <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
@@ -318,15 +329,15 @@ export default function HomePage() {
 
         {/* Most Picked */}
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-          <SectionHeader 
-            icon={Flame} 
-            title="Most Picked" 
+          <SectionHeader
+            icon={Flame}
+            title="Most Picked"
             description="The most popular heroes in pub matches."
-            color="text-loss" 
+            color="text-loss"
           />
           <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
             {loadingHeroes ? (
-              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-[180px] h-[220px] shrink-0 rounded-2xl" />)
+              [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
             ) : (
               mostPicked.map((item, idx) => (
                 <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
@@ -346,17 +357,17 @@ export default function HomePage() {
       </div>
 
       {/* Pro Scene Header */}
-      <SectionHeader 
-        icon={Star} 
-        title="Pro Scene Hub" 
+      <SectionHeader
+        icon={Star}
+        title="Pro Scene Hub"
         description="Follow the latest tournament results and pro meta trends."
-        color="text-gaming-accent" 
+        color="text-gaming-accent"
       />
 
       {/* Recent Pro Matches */}
       <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
         {loadingMatches ? (
-          [1, 2, 3].map(i => <Skeleton key={i} className="w-[300px] h-48 shrink-0 rounded-2xl" />)
+          [1, 2, 3].map(i => <Skeleton key={i} className="w-75 h-48 shrink-0 rounded-2xl" />)
         ) : (
           proMatchesData.map((item) => (
             <div key={item.match_id} onClick={() => setSelectedMatchId(item.match_id)} className="cursor-pointer">
@@ -382,7 +393,7 @@ export default function HomePage() {
         <div className="lg:col-span-1">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-[var(--nav-hover)] text-loss">
+              <div className="p-2 rounded-lg bg-(--nav-hover) text-loss">
                 <Ban className="w-5 h-5" />
               </div>
               <h3 className="text-xl font-black text-foreground">Top Pro Bans</h3>
@@ -390,15 +401,20 @@ export default function HomePage() {
           </div>
           <div className="space-y-2">
             {(isBansExpanded ? proBans : proBans.slice(0, 5)).map((hero, idx) => (
-              <GlassCard 
-                key={hero.id} 
-                hoverable 
+              <GlassCard
+                key={hero.id}
+                hoverable
                 className="p-3 flex items-center gap-4 cursor-pointer"
                 onClick={() => setSelectedHeroId(hero.id)}
               >
                 <span className="w-6 text-sm font-black text-loss italic">{idx + 1}</span>
-                <div className="w-12 h-7 rounded overflow-hidden bg-[var(--nav-hover)]">
-                  <img src={`${STEAM_CDN_BASE}${hero.img}`} alt={hero.name} className="w-full h-full object-cover" />
+                <div className="relative w-12 h-7 rounded overflow-hidden bg-(--nav-hover)">
+                  <Image
+                    src={`${STEAM_CDN_BASE}${hero.img}`}
+                    alt={hero.name}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <span className="flex-1 text-sm font-bold text-foreground truncate">{hero.name}</span>
                 <span className="text-xs font-black text-loss bg-loss/10 px-2 py-1 rounded-lg">
@@ -406,7 +422,7 @@ export default function HomePage() {
                 </span>
               </GlassCard>
             ))}
-            <button 
+            <button
               onClick={() => setIsBansExpanded(!isBansExpanded)}
               className="w-full py-3 text-xs font-black uppercase tracking-widest text-gray-500 hover:text-foreground transition-colors"
             >
@@ -417,26 +433,26 @@ export default function HomePage() {
 
         {/* Live Games & Records */}
         <div className="lg:col-span-2 space-y-8">
-           {/* Live Games */}
-           {liveGames.length > 0 && (
-             <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="p-2 rounded-lg bg-[var(--nav-hover)] text-loss">
-                    <Radio className="w-5 h-5 animate-pulse" />
-                  </div>
-                  <h3 className="text-xl font-black text-foreground">Live High-MMR</h3>
+          {/* Live Games */}
+          {liveGames.length > 0 && (
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-(--nav-hover) text-loss">
+                  <Radio className="w-5 h-5 animate-pulse" />
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-                  {liveGames.map((game) => (
-                    <LiveGameCard 
-                      key={game.match_id} 
-                      game={game} 
-                      onPress={(id) => setSelectedMatchId(id)} 
-                    />
-                  ))}
-                </div>
-             </div>
-           )}
+                <h3 className="text-xl font-black text-foreground">Live High-MMR</h3>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                {liveGames.map((game) => (
+                  <LiveGameCard
+                    key={game.match_id}
+                    game={game}
+                    onPress={(id) => setSelectedMatchId(id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
 
         </div>

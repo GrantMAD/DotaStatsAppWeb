@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { openDotaApi, LaneRoleScenario } from '@/services/opendota';
+import { openDotaApi } from '@/services/opendota';
 import { HEROES, getHeroImageUrl } from '@/services/constants';
 import { ChevronRight, Award, Users } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import Image from 'next/image';
 
 const LANE_ROLES = [
   { id: 1, name: 'Safe Lane' },
@@ -67,7 +68,7 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex gap-2 p-1 bg-[var(--nav-hover)] rounded-xl w-fit border border-[var(--card-border)]">
+      <div className="flex gap-2 p-1 bg-(--nav-hover) rounded-xl w-fit border border-(--card-border)">
         {LANE_ROLES.map((lane) => (
           <button
             key={lane.id}
@@ -85,7 +86,7 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
       </div>
 
       <div className="glass-card overflow-hidden">
-        <div className="p-4 border-b border-[var(--card-border)] bg-white/5 flex items-center justify-between">
+        <div className="p-4 border-b border-(--card-border) bg-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-amber-500" />
             <h3 className="font-bold">Top Performance by Lane</h3>
@@ -105,7 +106,7 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
                 <th className="px-6 py-4 font-medium text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--card-border)]">
+            <tbody className="divide-y divide-(--card-border)">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
@@ -116,17 +117,19 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
                 ))
               ) : data.length > 0 ? (
                 data.map((hero) => (
-                  <tr 
-                    key={hero.hero_id} 
+                  <tr
+                    key={hero.hero_id}
                     onClick={() => onHeroClick?.(hero.hero_id)}
                     className="hover:bg-white/5 transition-colors group cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
-                          <img 
-                            src={getHeroImageUrl(hero.hero_id)} 
-                            alt={HEROES[hero.hero_id]?.localized_name} 
+                          <Image
+                            src={getHeroImageUrl(hero.hero_id)}
+                            alt={HEROES[hero.hero_id]?.localized_name || 'Hero'}
+                            width={40}
+                            height={40}
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -144,7 +147,7 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
                           {hero.winRate.toFixed(1)}%
                         </span>
                         <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className={cn(
                               "h-full rounded-full",
                               hero.winRate >= 52 ? "bg-emerald-500" : "bg-gaming-accent"

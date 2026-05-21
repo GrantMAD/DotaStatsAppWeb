@@ -5,7 +5,7 @@ import { MobileHeader } from './MobileHeader';
 import { usePathname } from 'next/navigation';
 
 import { useSidebar } from '@/context/SidebarContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PageTransition } from './PageTransition';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -37,7 +37,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       
       {/* Bottom Nav for mobile */}
       <nav 
-        className="lg:hidden fixed bottom-0 left-0 right-0 h-16 rounded-none border-x-0 border-b-0 z-50 flex items-center justify-around border-t border-[var(--card-border)]"
+        className="lg:hidden fixed bottom-0 left-0 right-0 h-16 rounded-none border-x-0 border-b-0 z-50 flex items-center justify-around border-t border-(--card-border)"
         style={{ background: 'var(--sidebar-bg)' }}
       >
         {/* We can add quick links here later */}

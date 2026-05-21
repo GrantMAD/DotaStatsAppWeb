@@ -15,7 +15,7 @@ import {
   ReferenceArea,
   Label
 } from 'recharts';
-import { Info, TrendingDown, TrendingUp, Target, Clock, AlertTriangle, Zap, ShoppingCart } from 'lucide-react';
+import { Info, TrendingUp, Target, Clock, AlertTriangle, Zap, ShoppingCart } from 'lucide-react';
 
 interface ItemTimingAnalyzerProps {
   onHeroClick?: (id: number) => void;
@@ -112,10 +112,10 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
             <select
               value={selectedHero}
               onChange={(e) => setSelectedHero(parseInt(e.target.value))}
-              className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
+              className="w-full bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
             >
               {heroList.map(hero => (
-                <option key={hero.id} value={hero.id} className="bg-[var(--card-bg)] text-foreground">
+                <option key={hero.id} value={hero.id} className="bg-(--card-bg) text-foreground">
                   {hero.localized_name}
                 </option>
               ))}
@@ -133,10 +133,10 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
             <select
               value={selectedItem}
               onChange={(e) => setSelectedItem(e.target.value)}
-              className="w-full bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
+              className="w-full bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none text-foreground cursor-pointer"
             >
               {itemList.map(item => (
-                <option key={item.id} value={item.name} className="bg-[var(--card-bg)] text-foreground">
+                <option key={item.id} value={item.name} className="bg-(--card-bg) text-foreground">
                   {item.name.replace(/_/g, ' ')}
                 </option>
               ))}
@@ -193,7 +193,7 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
         </div>
       )}
 
-      <div className="glass-card p-6 min-h-[450px] flex flex-col">
+      <div className="glass-card p-6 min-h-112.5 flex flex-col">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-gaming-accent/10 flex items-center justify-center border border-gaming-accent/20">
@@ -206,7 +206,7 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
           </div>
         </div>
 
-        <div className="w-full h-[350px] relative">
+        <div className="w-full h-87.5 relative">
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gaming-accent"></div>
@@ -326,7 +326,7 @@ export function ItemTimingAnalyzer({ onHeroClick }: ItemTimingAnalyzerProps) {
         {/* Dynamic Recommendations */}
         {insights && !loading && (
           <div className="mt-6 p-4 rounded-xl bg-gaming-accent/5 border border-gaming-accent/10 flex items-start gap-4">
-            <div className="mt-1 w-8 h-8 rounded-lg bg-gaming-accent/20 flex items-center justify-center text-gaming-accent flex-shrink-0">
+            <div className="mt-1 w-8 h-8 rounded-lg bg-gaming-accent/20 flex items-center justify-center text-gaming-accent shrink-0">
               <Zap size={16} />
             </div>
             <div className="space-y-1">

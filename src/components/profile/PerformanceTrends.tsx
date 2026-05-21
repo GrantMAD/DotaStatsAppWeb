@@ -3,18 +3,16 @@
 import React, { useMemo, useState } from 'react';
 import { RecentMatch, PlayerTotal } from '@/services/opendota';
 import { RANK_PERFORMANCE_BENCHMARKS } from '@/services/constants';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  ResponsiveContainer, 
-  AreaChart, 
+import {
+  ResponsiveContainer,
+  AreaChart,
   Area,
   CartesianGrid,
+  XAxis,
+  YAxis,
   ReferenceLine,
-  Label
+  Label,
+  Tooltip
 } from 'recharts';
 import { 
   TrendingUp, 
@@ -22,16 +20,12 @@ import {
   Flame, 
   Skull, 
   Activity, 
-  Target, 
-  Crosshair,
-  Timer,
+  Target,
   Users,
-  Map,
-  Shield
+  Map
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
-import { Skeleton } from '../ui/Skeleton';
 
 interface PerformanceTrendsProps {
   matches: RecentMatch[];
@@ -127,7 +121,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
 
   if (!matches || matches.length < 3) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[var(--card-border)] rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
           Not enough match data to calculate trends. Play more matches or clear filters!
@@ -138,7 +132,14 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
 
   if (!trends) return null;
 
-  const renderTrendMetric = (label: string, recent: number, lifetime: number, icon: any, colorClass: string, isInteger: boolean = false) => {
+  const renderTrendMetric = (
+    label: string,
+    recent: number,
+    lifetime: number,
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>,
+    colorClass: string,
+    isInteger: boolean = false
+  ) => {
     const Icon = icon;
     const diff = lifetime > 0 ? ((recent - lifetime) / lifetime) * 100 : 0;
     const isPositive = diff >= 0;
@@ -147,8 +148,8 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
       <GlassCard className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className={cn("p-1.5 rounded-lg bg-[var(--nav-hover)]", colorClass)}>
-              <Icon size={16} />
+            <div className={cn("p-1.5 rounded-lg bg-(--nav-hover)", colorClass)}>
+              <Icon width={16} height={16} />
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span>
           </div>
@@ -195,7 +196,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
       </div>
 
       {trends.isOnFire && (
-        <div className="bg-gradient-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 p-6 rounded-3xl flex items-center gap-6 overflow-hidden relative group">
+        <div className="bg-linear-to-r from-orange-500/20 to-amber-500/20 border border-orange-500/30 p-6 rounded-3xl flex items-center gap-6 overflow-hidden relative group">
           <div className="bg-orange-500 p-3 rounded-2xl shadow-lg shadow-orange-500/50 group-hover:scale-110 transition-transform duration-500">
             <Flame className="w-8 h-8 text-white animate-pulse" />
           </div>
@@ -205,7 +206,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
               Your current performance is significantly above your lifetime average! Keep the momentum going.
             </p>
           </div>
-          <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-foreground/5 to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 w-32 h-full bg-linear-to-l from-foreground/5 to-transparent pointer-events-none" />
         </div>
       )}
 
@@ -218,13 +219,13 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
-          <GlassCard className="h-[350px] flex flex-col p-6">
+          <GlassCard className="h-87.5 flex flex-col p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
               <div>
                 <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Momentum Visualizer</h3>
                 <p className="text-gray-500 text-[10px] font-bold mt-1">Match by match trajectory vs. Rank Average</p>
               </div>
-              <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl">
+              <div className="flex bg-(--nav-hover) p-1 rounded-xl">
                 {(['kda', 'gpm', 'xpm'] as const).map((m) => (
                   <button
                     key={m}
@@ -290,7 +291,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="glass-card bg-[var(--card-bg)] p-2 border-[var(--card-border)] shadow-2xl">
+                          <div className="glass-card bg-(--card-bg) p-2 border-(--card-border) shadow-2xl">
                             <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
                             <p className="text-xl font-black text-foreground">
                               {payload[0].value} {activeMetric.toUpperCase()}

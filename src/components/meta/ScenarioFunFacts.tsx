@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { openDotaApi, MiscScenario } from '@/services/opendota';
+import { openDotaApi, LaneRoleScenario, MiscScenario } from '@/services/opendota';
 import { 
   Skull, 
   Package, 
@@ -10,7 +10,6 @@ import {
   TrendingUp, 
   Lightbulb,
   ArrowRight,
-  Sword,
   Target,
   ShieldAlert
 } from 'lucide-react';
@@ -91,11 +90,10 @@ export function ScenarioFunFacts() {
 
   useEffect(() => {
     async function fetchAllScenarios() {
-      setLoading(true);
       try {
         const results = await Promise.all(
           FUN_FACTS.map(fact => {
-            if (fact.type === 'lane') {
+            if (fact.type === 'lane' && fact.lane_role !== undefined) {
               return openDotaApi.getScenariosLaneRoles({ lane_role: fact.lane_role });
             }
             return openDotaApi.getScenariosMisc({ scenario: fact.scenario });
@@ -110,13 +108,12 @@ export function ScenarioFunFacts() {
           let totalWins = 0;
           let totalGames = 0;
           
-          // @ts-ignore - scenarios can be MiscScenario[] or LaneRoleScenario[]
-          scenarios.forEach(s => {
+          (scenarios as Array<LaneRoleScenario | MiscScenario>).forEach(s => {
             totalWins += Number(s.wins || 0);
             totalGames += Number(s.games || 0);
           });
           
-          if (Number(totalGames) > 0) {
+          if (totalGames > 0) {
             processedData[factId] = {
               winRate: (totalWins / totalGames) * 100,
               games: totalGames
@@ -237,9 +234,9 @@ export function ScenarioFunFacts() {
           <Zap size={32} />
         </div>
         <div className="space-y-2 flex-1 text-center md:text-left">
-          <h4 className="font-bold text-indigo-100 italic">"The Power of Momentum"</h4>
+          <h4 className="font-bold text-indigo-100 italic">&quot;The Power of Momentum&quot;</h4>
           <p className="text-sm text-indigo-300/80 leading-relaxed">
-            These statistics highlight the importance of "Winning the Laning Phase". While a 6-10% advantage might seem small, in a game as complex as Dota 2, it significantly tilts the scales. Teams that focus on these early objectives consistently outperform those who play passively.
+            These statistics highlight the importance of &quot;Winning the Laning Phase&quot;. While a 6-10% advantage might seem small, in a game as complex as Dota 2, it significantly tilts the scales. Teams that focus on these early objectives consistently outperform those who play passively.
           </p>
         </div>
         <div className="shrink-0">

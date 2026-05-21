@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { ProTeam } from '@/services/opendota';
+import Image from 'next/image';
+import { ProPlayer, ProTeam } from '@/services/opendota';
 import { useTeamRoster, useTeamMatches, useProPlayers } from '@/hooks/useOpenDota';
 import { Modal } from '../ui/Modal';
 import { ProPlayerItem } from '../ui/ProPlayerItem';
@@ -24,7 +25,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
 
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
-  const enrichedRoster = useMemo(() => {
+  const enrichedRoster = useMemo<ProPlayer[]>(() => {
     return roster.map(member => {
       const proInfo = proPlayers.find(p => p.account_id === member.account_id);
       return {
@@ -34,7 +35,7 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
         team_name: team?.name,
         team_tag: team?.tag,
         is_pro: true
-      };
+      } as ProPlayer;
     });
   }, [roster, proPlayers, team]);
 
@@ -51,10 +52,16 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
       />
       <div className="space-y-8 max-h-[80vh] overflow-y-auto pr-2 no-scrollbar">
         {/* Team Hero Section */}
-        <div className="flex flex-col items-center text-center p-6 bg-[var(--nav-hover)] rounded-3xl border border-[var(--card-border)]">
-          <div className="w-24 h-24 rounded-2xl bg-[var(--card-bg)] flex items-center justify-center border border-[var(--card-border)] shadow-2xl mb-6 overflow-hidden">
+        <div className="flex flex-col items-center text-center p-6 bg-(--nav-hover) rounded-3xl border border-(--card-border)">
+          <div className="relative w-24 h-24 rounded-2xl bg-(--card-bg) flex items-center justify-center border border-(--card-border) shadow-2xl mb-6 overflow-hidden">
             {team.logo_url ? (
-              <img src={team.logo_url} alt={team.name} className="w-full h-full object-contain p-2" />
+              <Image
+                src={team.logo_url}
+                alt={team.name}
+                fill
+                sizes="96px"
+                className="object-contain p-2"
+              />
             ) : (
               <Shield className="w-12 h-12 text-gray-700" />
             )}
@@ -72,11 +79,11 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
           </div>
           
           <div className="flex gap-4 mt-8">
-            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-6 py-3 rounded-2xl text-center">
+            <div className="bg-(--card-bg) border border-(--card-border) px-6 py-3 rounded-2xl text-center">
               <p className="text-win text-2xl font-black italic">{team.wins}</p>
               <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Wins</p>
             </div>
-            <div className="bg-[var(--card-bg)] border border-[var(--card-border)] px-6 py-3 rounded-2xl text-center">
+            <div className="bg-(--card-bg) border border-(--card-border) px-6 py-3 rounded-2xl text-center">
               <p className="text-loss text-2xl font-black italic">{team.losses}</p>
               <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Losses</p>
             </div>
@@ -102,11 +109,8 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
                   {enrichedRoster.map(player => (
                     <ProPlayerItem 
                       key={player.account_id} 
-                      player={player as any} 
-                      onClick={(id) => {
-                        // In a real app we might want to open another modal here
-                        // but for now we follow the existing pattern
-                      }} 
+                      player={player} 
+                      onClick={() => { }} 
                     />
                   ))}
                 </div>

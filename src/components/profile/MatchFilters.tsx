@@ -1,9 +1,8 @@
 'use client';
 
 import { PlayerMatchFilters } from "@/services/opendota";
-import { HEROES } from "@/services/constants";
 import { cn } from "@/utils/cn";
-import { Filter, Calendar, Award, Gamepad2 } from "lucide-react";
+import { Filter } from "lucide-react";
 
 interface MatchFiltersProps {
   filters: PlayerMatchFilters;
@@ -24,7 +23,7 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
 
       <div className="flex flex-wrap gap-2">
         {/* Outcome Filter */}
-        <div className="flex bg-[var(--nav-hover)] rounded-xl p-1 border border-[var(--card-border)]">
+        <div className="flex bg-(--nav-hover) rounded-xl p-1 border border-(--card-border)">
           {[
             { label: 'All', value: undefined },
             { label: 'Wins', value: 1 },
@@ -48,25 +47,25 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
         {/* Game Mode Filter */}
         <select 
           onChange={(e) => handleUpdate({ game_mode: e.target.value ? Number(e.target.value) : undefined })}
-          className="bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
+          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
           value={filters.game_mode || ""}
         >
-          <option value="" className="bg-[var(--card-bg)]">All Game Modes</option>
-          <option value="22" className="bg-[var(--card-bg)]">Ranked All Pick</option>
-          <option value="23" className="bg-[var(--card-bg)]">Turbo</option>
-          <option value="1" className="bg-[var(--card-bg)]">All Pick</option>
+          <option value="" className="bg-(--card-bg)">All Game Modes</option>
+          <option value="22" className="bg-(--card-bg)">Ranked All Pick</option>
+          <option value="23" className="bg-(--card-bg)">Turbo</option>
+          <option value="1" className="bg-(--card-bg)">All Pick</option>
         </select>
 
         {/* Date Filter */}
         <select 
           onChange={(e) => handleUpdate({ date: e.target.value ? Number(e.target.value) : undefined })}
-          className="bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
+          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
           value={filters.date || ""}
         >
-          <option value="" className="bg-[var(--card-bg)]">Any Time</option>
-          <option value="7" className="bg-[var(--card-bg)]">Last 7 Days</option>
-          <option value="30" className="bg-[var(--card-bg)]">Last 30 Days</option>
-          <option value="90" className="bg-[var(--card-bg)]">Last 90 Days</option>
+          <option value="" className="bg-(--card-bg)">Any Time</option>
+          <option value="7" className="bg-(--card-bg)">Last 7 Days</option>
+          <option value="30" className="bg-(--card-bg)">Last 30 Days</option>
+          <option value="90" className="bg-(--card-bg)">Last 90 Days</option>
         </select>
       </div>
     </div>

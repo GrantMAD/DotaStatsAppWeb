@@ -24,7 +24,7 @@ const COLORS = [
 const STOP_WORDS = new Set(['the', 'and', 'for', 'but', 'not', 'you', 'all', 'any', 'can', 'had']);
 
 export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
-  const { data, isLoading, error } = usePlayerWordCloud(accountId);
+  const { data, isLoading } = usePlayerWordCloud(accountId);
 
   const processedWords = useMemo(() => {
     if (!data?.my_word_counts) return [];
@@ -94,7 +94,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
 
   if (isLoading) {
     return (
-      <div className="h-64 flex flex-col items-center justify-center border border-[var(--card-border)] rounded-3xl bg-[var(--nav-hover)]">
+      <div className="h-64 flex flex-col items-center justify-center border border-(--card-border) rounded-3xl bg-(--nav-hover)">
         <div className="w-8 h-8 border-2 border-gaming-accent border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Analyzing chat history...</p>
       </div>
@@ -122,8 +122,8 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {persona && (
-        <GlassCard className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 border-[var(--card-border)]">
-          <div className={cn("p-4 rounded-2xl bg-[var(--nav-hover)]", persona.color)}>
+        <GlassCard className="flex flex-col md:flex-row items-start md:items-center gap-6 p-6 border-(--card-border)">
+          <div className={cn("p-4 rounded-2xl bg-(--nav-hover)", persona.color)}>
             <Icon size={32} />
           </div>
           <div className="flex-1">
@@ -134,11 +134,11 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
         </GlassCard>
       )}
 
-      <GlassCard className="h-[400px] flex flex-col items-center justify-center relative overflow-hidden bg-[var(--nav-hover)]">
+      <GlassCard className="h-100 flex flex-col items-center justify-center relative overflow-hidden bg-(--nav-hover)">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--color-gaming-accent)_0%,transparent_70%)]" />
         
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 max-w-4xl p-10 relative z-10">
-          {processedWords.map((word, index) => (
+          {processedWords.map((word) => (
             <span
               key={word.text}
               className={cn(

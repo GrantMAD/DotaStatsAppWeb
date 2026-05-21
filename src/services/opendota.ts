@@ -262,9 +262,14 @@ export async function searchPlayers(query: string): Promise<SearchResult[]> {
     if (!response.ok) throw new Error(`Search failed with status: ${response.status}`);
     const data = await response.json();
     return data;
-  } catch (error: any) {
+  } catch (error: unknown) {
     clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'name' in error &&
+      (error as Record<string, unknown>).name === 'AbortError'
+    ) {
       throw new Error('Search timed out. Try using a Steam ID for instant results.');
     }
     throw error;
@@ -287,7 +292,7 @@ export async function getPlayerHeroes(accountId: string | number): Promise<Playe
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/heroes`);
     if (!response.ok) return [];
     return await response.json();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -297,7 +302,7 @@ export async function getPlayerProfile(accountId: string | number): Promise<Play
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}`);
     if (!response.ok) return null;
     return await response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -308,7 +313,7 @@ export async function getPlayerWinLoss(accountId: string | number, params: Recor
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/wl${query ? `?${query}` : ''}`);
     if (!response.ok) return null;
     return await response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -319,7 +324,7 @@ export async function getPlayerTotals(accountId: string | number, params: Record
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/totals${query ? `?${query}` : ''}`);
     if (!response.ok) return [];
     return await response.json();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -339,7 +344,7 @@ export async function getPlayerCounts(accountId: string | number): Promise<Playe
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/counts`);
     if (!response.ok) return null;
     return await response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -361,7 +366,7 @@ export async function getPlayerMatches(accountId: string | number, filters: Play
     const response = await fetch(url);
     if (!response.ok) return [];
     return await response.json();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -372,7 +377,7 @@ export async function getRecentMatches(accountId: string | number, limit: number
     if (!response.ok) return [];
     const data = await response.json();
     return data.slice(0, limit);
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -382,7 +387,7 @@ export async function getPlayerPeers(accountId: string | number): Promise<Peer[]
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/peers`);
     if (!response.ok) return [];
     return await response.json();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -392,7 +397,7 @@ export async function getMatchDetails(matchId: number): Promise<MatchDetails | n
     const response = await fetch(`${OPENDOTA_BASE_URL}/matches/${matchId}`);
     if (!response.ok) return null;
     return await response.json();
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -433,10 +438,10 @@ export async function getLiveGames(): Promise<LiveGame[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/live`);
     if (!response.ok) throw new Error('Failed to fetch live games');
-    const data = await response.json();
+    const data = (await response.json()) as LiveGame[];
     return data
-      .filter((g: any) => g.average_mmr > 0)
-      .sort((a: any, b: any) => b.average_mmr - a.average_mmr)
+      .filter((g) => g.average_mmr > 0)
+      .sort((a, b) => b.average_mmr - a.average_mmr)
       .slice(0, 10);
   } catch (e) {
     console.error(e);
@@ -492,14 +497,15 @@ export interface League {
   banner: string | null;
   tier: 'premium' | 'professional' | 'amateur' | 'excluded' | null;
   name: string;
+  region?: string;
 }
 
 export async function getProPlayers(): Promise<ProPlayer[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/proPlayers`);
     if (!response.ok) throw new Error('Failed to fetch pro players');
-    const data = await response.json();
-    return Array.from(new Map(data.map((p: any) => [p.account_id, p])).values()) as ProPlayer[];
+    const data = (await response.json()) as ProPlayer[];
+    return Array.from(new Map(data.map((p) => [p.account_id, p])).values());
   } catch (e) {
     console.error(e);
     return [];
@@ -510,9 +516,9 @@ export async function getProTeams(): Promise<ProTeam[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/teams`);
     if (!response.ok) throw new Error('Failed to fetch pro teams');
-    const data = await response.json();
-    const uniqueTeams = Array.from(new Map(data.map((t: any) => [t.team_id, t])).values()) as ProTeam[];
-    return uniqueTeams.sort((a: any, b: any) => b.rating - a.rating).slice(0, 500);
+    const data = (await response.json()) as ProTeam[];
+    const uniqueTeams = Array.from(new Map(data.map((t) => [t.team_id, t])).values());
+    return uniqueTeams.sort((a, b) => b.rating - a.rating).slice(0, 500);
   } catch (e) {
     console.error(e);
     return [];
@@ -523,8 +529,8 @@ export async function getLeagues(): Promise<League[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/leagues`);
     if (!response.ok) throw new Error('Failed to fetch leagues');
-    const data = await response.json();
-    return Array.from(new Map(data.map((l: any) => [l.leagueid, l])).values()) as League[];
+    const data = (await response.json()) as League[];
+    return Array.from(new Map(data.map((l) => [l.leagueid, l])).values());
   } catch (e) {
     console.error(e);
     return [];
@@ -535,8 +541,8 @@ export async function getTeamRoster(teamId: number): Promise<ProPlayer[]> {
   try {
     const response = await fetch(`${OPENDOTA_BASE_URL}/teams/${teamId}/players`);
     if (!response.ok) throw new Error('Failed to fetch team players');
-    const data = await response.json();
-    return data.filter((p: any) => p.is_current_team_member);
+    const data = (await response.json()) as Array<ProPlayer & { is_current_team_member?: boolean }>;
+    return data.filter((p) => p.is_current_team_member) as ProPlayer[];
   } catch (e) {
     console.error(e);
     return [];

@@ -7,7 +7,8 @@ import {
   openDotaApi, 
   OPENDOTA_BASE_URL,
   isProfilePrivate,
-  isDataRestricted 
+  isDataRestricted,
+  MatchDetails
 } from '../services/opendota';
 
 export { isProfilePrivate, isDataRestricted };
@@ -372,7 +373,7 @@ export function useGlobalRecords(field: string) {
  * Hook to fetch match details.
  */
 export function useMatchDetails(matchId: number | null, options: any = {}) {
-  return useQuery({
+  return useQuery<MatchDetails | null>({
     queryKey: ['matchDetails', matchId],
     queryFn: () => (matchId ? openDotaApi.getMatchDetails(matchId) : null),
     enabled: !!matchId,

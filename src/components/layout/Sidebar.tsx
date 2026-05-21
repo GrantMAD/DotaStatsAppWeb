@@ -22,6 +22,7 @@ import { NotificationBell } from './NotificationBell';
 import { useSidebar } from '@/context/SidebarContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
@@ -38,7 +39,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { user, steamAccountId, signOut } = useSupabaseAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
 
 
@@ -47,7 +48,7 @@ export function Sidebar() {
       initial={false}
       animate={{ width: isCollapsed ? 80 : 256 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="fixed left-0 top-0 h-screen rounded-none border-y-0 border-l-0 z-50 hidden lg:flex flex-col p-4 border-r border-[var(--card-border)]"
+      className="fixed left-0 top-0 h-screen rounded-none border-y-0 border-l-0 z-50 hidden lg:flex flex-col p-4 border-r border-(--card-border)"
       style={{ background: 'var(--sidebar-bg)' }}
     >
       <div className={cn(
@@ -80,7 +81,7 @@ export function Sidebar() {
       {/* Collapse Toggle Lip */}
       <button
         onClick={toggleSidebar}
-        className="absolute top-12 -right-4 w-8 h-8 bg-gaming-accent text-white rounded-full flex items-center justify-center shadow-lg shadow-gaming-accent/40 border-2 border-foreground/20 hover:scale-110 active:scale-95 transition-all z-50 group/toggle ring-4 ring-[var(--card-bg)]"
+        className="absolute top-12 -right-4 w-8 h-8 bg-gaming-accent text-white rounded-full flex items-center justify-center shadow-lg shadow-gaming-accent/40 border-2 border-foreground/20 hover:scale-110 active:scale-95 transition-all z-50 group/toggle ring-4 ring-(--card-bg)"
       >
         {isCollapsed ? (
           <ChevronRight size={18} className="group-hover/toggle:translate-x-0.5 transition-transform" />
@@ -104,7 +105,7 @@ export function Sidebar() {
                 "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                 isActive
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
-                  : "text-gray-400 hover:bg-[var(--nav-hover)] hover:text-foreground"
+                  : "text-gray-400 hover:bg-(--nav-hover) hover:text-foreground"
               )}
             >
               <div className={cn(
@@ -113,7 +114,7 @@ export function Sidebar() {
                   ? "bg-white/20 shadow-inner"
                   : resolvedTheme === 'light'
                     ? item.bg
-                    : "bg-[var(--nav-hover)] group-hover:bg-gaming-accent/10"
+                    : "bg-(--nav-hover) group-hover:bg-gaming-accent/10"
               )}>
                 <item.icon className={cn(
                   "w-5 h-5 shrink-0 transition-colors",
@@ -142,7 +143,7 @@ export function Sidebar() {
               </AnimatePresence>
 
               {isCollapsed && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100] shadow-xl">
+                <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
                   {item.label}
                 </div>
               )}
@@ -155,7 +156,7 @@ export function Sidebar() {
         {!user ? (
           <Link
             href="/sign-in"
-            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-[var(--nav-hover)] text-gray-400 hover:bg-[var(--nav-hover)] hover:text-foreground transition-all border border-[var(--card-border)] group relative"
+            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-(--nav-hover) text-gray-400 hover:bg-(--nav-hover) hover:text-foreground transition-all border border-(--card-border) group relative"
           >
             <LogIn className={cn("w-5 h-5 shrink-0 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-gray-400")} />
             <AnimatePresence>
@@ -171,7 +172,7 @@ export function Sidebar() {
               )}
             </AnimatePresence>
             {isCollapsed && (
-              <div className="absolute left-full ml-4 px-2 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100] shadow-xl">
+              <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
                 Sign In
               </div>
             )}
@@ -184,7 +185,13 @@ export function Sidebar() {
             )}>
               <div className="w-10 h-10 rounded-full bg-gaming-accent/20 border border-gaming-accent/50 overflow-hidden shrink-0">
                 {user.user_metadata?.avatar_url ? (
-                  <img src={user.user_metadata.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+                  <Image
+                    src={user.user_metadata.avatar_url}
+                    alt="avatar"
+                    width={40}
+                    height={40}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gaming-accent font-bold">
                     {user.email?.[0].toUpperCase()}
@@ -231,7 +238,7 @@ export function Sidebar() {
                 )}
               </AnimatePresence>
               {isCollapsed && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[100] shadow-xl">
+                <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
                   Log Out
                 </div>
               )}

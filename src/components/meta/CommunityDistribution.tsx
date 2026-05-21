@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { openDotaApi, DistributionData } from '@/services/opendota';
+import { openDotaApi } from '@/services/opendota';
 import {
   BarChart,
   Bar,
@@ -13,7 +13,6 @@ import {
   Cell
 } from 'recharts';
 import { Info, Users, BarChart3, TrendingUp } from 'lucide-react';
-import { cn } from '@/utils/cn';
 
 const RANK_NAMES: Record<number, string> = {
   1: 'Herald',
@@ -26,39 +25,65 @@ const RANK_NAMES: Record<number, string> = {
   8: 'Immortal',
 };
 
+interface CommunityDistributionItem {
+  rankId: number;
+  name: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
 export function CommunityDistribution() {
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<CommunityDistributionItem[]>([]);
   const [totalPlayers, setTotalPlayers] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
-  const [mounted, setMounted] = useState(false);
+  const getRankColor = (rankId: number) => {
+    switch (rankId) {
+      case 1: return '#734d26';
+      case 2: return '#595959';
+      case 3: return '#999900';
+      case 4: return '#0099cc';
+      case 5: return '#9933ff';
+      case 6: return '#cc0066';
+      case 7: return '#ff9900';
+      case 8: return '#ff3300';
+      default: return 'var(--gaming-accent)';
+    }
+  };
 
   useEffect(() => {
-    setMounted(true);
     async function fetchData() {
-      setLoading(true);
       try {
         const distribution = await openDotaApi.getDistributions();
+
         if (distribution && distribution.ranks) {
           const total = distribution.ranks.sum.count;
           setTotalPlayers(total);
 
-          // Group by major rank (first digit of bin)
           const grouped: Record<number, number> = {};
+
           distribution.ranks.rows.forEach(row => {
             const majorRank = Math.floor(row.bin / 10);
+
             if (majorRank >= 1 && majorRank <= 8) {
               grouped[majorRank] = (grouped[majorRank] || 0) + row.count;
             }
           });
 
-          const formatted = Object.entries(grouped).map(([rank, count]) => ({
-            rankId: parseInt(rank),
-            name: RANK_NAMES[parseInt(rank)],
-            count,
-            percentage: (count / total) * 100,
-            color: getRankColor(parseInt(rank))
-          })).sort((a, b) => a.rankId - b.rankId);
+          const formatted = Object.entries(grouped)
+            .map(([rank, count]) => {
+              const rankId = parseInt(rank);
+
+              return {
+                rankId,
+                name: RANK_NAMES[rankId],
+                count,
+                percentage: total ? (count / total) * 100 : 0,
+                color: getRankColor(rankId),
+              };
+            })
+            .sort((a, b) => a.rankId - b.rankId);
 
           setData(formatted);
         }
@@ -68,22 +93,9 @@ export function CommunityDistribution() {
         setLoading(false);
       }
     }
+
     fetchData();
   }, []);
-
-  const getRankColor = (rankId: number) => {
-    switch (rankId) {
-      case 1: return '#734d26'; // Herald (Bronze-ish)
-      case 2: return '#595959'; // Guardian (Silver-ish)
-      case 3: return '#999900'; // Crusader (Gold-ish)
-      case 4: return '#0099cc'; // Archon (Blue-ish)
-      case 5: return '#9933ff'; // Legend (Purple-ish)
-      case 6: return '#cc0066'; // Ancient (Pink-ish)
-      case 7: return '#ff9900'; // Divine (Orange-ish)
-      case 8: return '#ff3300'; // Immortal (Red-ish)
-      default: return 'var(--gaming-accent)';
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -97,6 +109,7 @@ export function CommunityDistribution() {
             <h3 className="text-2xl font-bold">{totalPlayers.toLocaleString()}</h3>
           </div>
         </div>
+
         <div className="glass-card p-6 flex items-center gap-4 border-l-4 border-l-indigo-500">
           <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 shrink-0">
             <BarChart3 size={24} />
@@ -106,6 +119,7 @@ export function CommunityDistribution() {
             <h3 className="text-2xl font-bold">Archon / Legend</h3>
           </div>
         </div>
+
         <div className="glass-card p-6 flex items-center gap-4 border-l-4 border-l-emerald-500">
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
             <TrendingUp size={24} />
@@ -117,7 +131,7 @@ export function CommunityDistribution() {
         </div>
       </div>
 
-      <div className="glass-card p-6 min-h-[450px] flex flex-col">
+      <div className="glass-card p-6 min-h-112.5 flex flex-col">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-gaming-accent/10 flex items-center justify-center border border-gaming-accent/20">
@@ -130,42 +144,49 @@ export function CommunityDistribution() {
           </div>
         </div>
 
-        <div className="w-full h-[300px] relative">
+        <div className="w-full h-75 relative">
           {loading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gaming-accent"></div>
             </div>
-          ) : (data.length > 0 && mounted) ? (
+          ) : data.length > 0 ? (
             <ResponsiveContainer width="100%" height={300} minWidth={0}>
               <BarChart data={data} margin={{ top: 5, right: 30, left: 10, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
-                  stroke="#94a3b8" 
-                  fontSize={12} 
-                  tickLine={false} 
+
+                <XAxis
+                  dataKey="name"
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#94a3b8" 
-                  fontSize={12} 
-                  tickLine={false} 
+
+                <YAxis
+                  stroke="#94a3b8"
+                  fontSize={12}
+                  tickLine={false}
                   axisLine={false}
                   tickFormatter={(val) => `${val}%`}
                 />
+
                 <Tooltip
                   cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+                  contentStyle={{
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     borderRadius: '12px',
                     color: '#f8fafc',
                     backdropFilter: 'blur(8px)'
                   }}
-                  formatter={(value: number) => [`${value.toFixed(2)}%`, 'Players']}
+                  formatter={(value) => {
+                    if (typeof value !== 'number') return ['0.00%', 'Players'];
+                    return [`${value.toFixed(2)}%`, 'Players'];
+                  }}
                 />
-                <Bar 
-                  dataKey="percentage" 
+
+                <Bar
+                  dataKey="percentage"
                   radius={[8, 8, 0, 0]}
                   animationDuration={1500}
                 >
@@ -190,8 +211,8 @@ export function CommunityDistribution() {
           <div className="space-y-1">
             <h4 className="font-bold text-sm">Understanding the Curve</h4>
             <p className="text-xs text-gray-400 leading-relaxed">
-              This chart shows where players are distributed across the eight main rank tiers. 
-              The majority of players are found in the <span className="text-white font-bold">Archon</span> and <span className="text-white font-bold">Legend</span> brackets. 
+              This chart shows where players are distributed across the eight main rank tiers.
+              The majority of players are found in the <span className="text-white font-bold">Archon</span> and <span className="text-white font-bold">Legend</span> brackets.
               Breaking into <span className="text-indigo-400 font-bold">Ancient</span> and beyond puts you in the top 20% of all sampled players globally.
             </p>
           </div>

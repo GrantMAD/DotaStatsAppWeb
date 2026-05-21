@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 import { 
   Settings, 
   Mail, 
@@ -56,13 +55,13 @@ function SettingsItem({
     <div 
       onClick={loading ? undefined : onClick}
       className={cn(
-        "flex items-center gap-4 p-4 border-b border-[var(--card-border)] last:border-0 transition-colors",
-        (onClick && !loading) ? "cursor-pointer hover:bg-[var(--nav-hover)]" : ""
+        "flex items-center gap-4 p-4 border-b border-(--card-border) last:border-0 transition-colors",
+        (onClick && !loading) ? "cursor-pointer hover:bg-(--nav-hover)" : ""
       )}
     >
       <div className={cn(
         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-        type === 'danger' ? "bg-red-500/10" : "bg-[var(--nav-hover)]"
+        type === 'danger' ? "bg-red-500/10" : "bg-(--nav-hover)"
       )}>
         <Icon className={cn("w-5 h-5", type === 'danger' ? "text-red-500" : color)} />
       </div>
@@ -81,7 +80,7 @@ function SettingsItem({
             {type === 'toggle' && (
               <div className={cn(
                 "w-10 h-5 rounded-full relative transition-colors",
-                value ? "bg-gaming-accent" : "bg-[var(--nav-hover)] border border-[var(--card-border)]"
+                value ? "bg-gaming-accent" : "bg-(--nav-hover) border border-(--card-border)"
               )}>
                 <div className={cn(
                   "absolute top-1 w-3 h-3 rounded-full bg-white transition-all",
@@ -106,8 +105,6 @@ function SectionLabel({ label }: { label: string }) {
 }
 
 export default function SettingsPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const { 
     user, 
     steamAccountId, 
@@ -121,14 +118,28 @@ export default function SettingsPage() {
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isSteamModalOpen, setIsSteamModalOpen] = useState(false);
   const [isUnlinkConfirmModalOpen, setIsUnlinkConfirmModalOpen] = useState(false);
-  const [storageSize, setStorageSize] = useState('0 KB');
+  const [storageSize, setStorageSize] = useState(() => {
+    let total = 0;
+    if (typeof window !== 'undefined') {
+      for (const key in localStorage) {
+        if (Object.prototype.hasOwnProperty.call(localStorage, key)) {
+          total += (localStorage[key].length + key.length) * 2;
+        }
+      }
+      for (const key in sessionStorage) {
+        if (Object.prototype.hasOwnProperty.call(sessionStorage, key)) {
+          total += (sessionStorage[key].length + key.length) * 2;
+        }
+      }
+    }
+
+    return total < 1024 * 1024 
+      ? `${(total / 1024).toFixed(1)} KB` 
+      : `${(total / (1024 * 1024)).toFixed(1)} MB`;
+  });
 
   const queryClient = useQueryClient();
   const supabase = createClient();
-
-  useEffect(() => {
-    calculateStorage();
-  }, []);
 
   const calculateStorage = () => {
     let total = 0;
@@ -336,7 +347,7 @@ export default function SettingsPage() {
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
                 theme === option 
                   ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
-                  : "bg-[var(--nav-hover)] border-[var(--card-border)] text-gray-500 hover:border-foreground/20 hover:text-foreground"
+                  : "bg-(--nav-hover) border-(--card-border) text-gray-500 hover:border-foreground/20 hover:text-foreground"
               )}
             >
               <div className="flex items-center gap-3">
@@ -378,7 +389,7 @@ export default function SettingsPage() {
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
                 matchLimit === option 
                   ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
-                  : "bg-[var(--nav-hover)] border-[var(--card-border)] text-gray-500 hover:border-foreground/20 hover:text-foreground"
+                  : "bg-(--nav-hover) border-(--card-border) text-gray-500 hover:border-foreground/20 hover:text-foreground"
               )}
             >
               <span className="font-bold">{option} Matches</span>
@@ -407,7 +418,7 @@ export default function SettingsPage() {
                 setIsSteamModalOpen(false);
                 steamLogin();
               }}
-              className="w-full py-4 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl font-bold text-foreground hover:bg-[var(--glass-start)] transition-all flex items-center justify-center gap-2"
+              className="w-full py-4 bg-(--nav-hover) border border-(--card-border) rounded-xl font-bold text-foreground hover:bg-(--glass-start) transition-all flex items-center justify-center gap-2"
             >
               Change Account
             </button>
@@ -440,7 +451,7 @@ export default function SettingsPage() {
           <div className="w-full grid grid-cols-2 gap-3">
             <button
               onClick={() => setIsUnlinkConfirmModalOpen(false)}
-              className="py-3 bg-[var(--nav-hover)] border border-[var(--card-border)] rounded-xl font-bold text-foreground hover:bg-[var(--glass-start)] transition-all"
+              className="py-3 bg-(--nav-hover) border border-(--card-border) rounded-xl font-bold text-foreground hover:bg-(--glass-start) transition-all"
             >
               Cancel
             </button>

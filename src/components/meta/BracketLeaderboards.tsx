@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { openDotaApi, HeroStats } from '@/services/opendota';
-import { HEROES, getHeroImageUrl } from '@/services/constants';
-import { Award, Users, ChevronRight } from 'lucide-react';
+import { getHeroImageUrl } from '@/services/constants';
+import { Award, Users } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 const RANKS = [
@@ -30,7 +31,7 @@ interface BracketLeaderboardsProps {
 }
 
 export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
-  const [selectedRank, setSelectedRank] = useState<number>(8); // Default to Immortal
+  const [selectedRank, setSelectedRank] = useState<number>(8);
   const [data, setData] = useState<HeroRankData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,11 +40,9 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
       setLoading(true);
       try {
         const stats = await openDotaApi.getHeroStats();
-        
+
         const rankKey = selectedRank as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-        
-        // Special case for Immortal (8) because 8_pick/8_win often returns 0 from OpenDota API
-        // We fallback to pro_pick/pro_win for Immortal insights
+
         const isImmortal = selectedRank === 8;
         const pickKey = (isImmortal ? 'pro_pick' : `${rankKey}_pick`) as keyof HeroStats;
         const winKey = (isImmortal ? 'pro_win' : `${rankKey}_win`) as keyof HeroStats;
@@ -52,15 +51,16 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
           .map(hero => {
             const picks = Number(hero[pickKey] || 0);
             const wins = Number(hero[winKey] || 0);
+
             return {
               id: hero.id,
               localized_name: hero.localized_name,
               winRate: picks > 0 ? (wins / picks) * 100 : 0,
               pickRate: picks,
-              games: picks
+              games: picks,
             };
           })
-          .filter(h => h.games > (isImmortal ? 20 : 100)) // Lower threshold for pro stats sample size
+          .filter(h => h.games > (isImmortal ? 20 : 100))
           .sort((a, b) => b.winRate - a.winRate)
           .slice(0, 10);
 
@@ -71,13 +71,16 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
         setLoading(false);
       }
     }
+
     fetchData();
   }, [selectedRank]);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2 p-1 bg-[var(--nav-hover)] rounded-xl w-fit border border-[var(--card-border)]">
-        {RANKS.map((rank) => (
+
+      {/* Rank selector */}
+      <div className="flex flex-wrap gap-2 p-1 bg-(--nav-hover) rounded-xl w-fit border border-(--card-border)">
+        {RANKS.map(rank => (
           <button
             key={rank.id}
             onClick={() => setSelectedRank(rank.id)}
@@ -93,12 +96,16 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
         ))}
       </div>
 
+      {/* Table */}
       <div className="glass-card overflow-hidden">
-        <div className="p-4 border-b border-[var(--card-border)] bg-white/5 flex items-center justify-between">
+        <div className="p-4 border-b border-(--card-border) bg-white/5 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-gaming-accent" />
-            <h3 className="font-bold">Top Heroes in {RANKS.find(r => r.id === selectedRank)?.name}</h3>
+            <h3 className="font-bold">
+              Top Heroes in {RANKS.find(r => r.id === selectedRank)?.name}
+            </h3>
           </div>
+
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <Users size={14} />
             <span>Bracket specific win rates</span>
@@ -114,55 +121,73 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
                 <th className="px-6 py-4 font-medium text-right">Matches</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--card-border)]">
+
+            <tbody className="divide-y divide-(--card-border)">
               {loading ? (
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4"><div className="h-10 bg-white/5 rounded-lg w-32"></div></td>
-                    <td className="px-6 py-4"><div className="h-10 bg-white/5 rounded-lg w-24"></div></td>
-                    <td className="px-6 py-4"><div className="h-8 bg-white/5 rounded-lg w-8 ml-auto"></div></td>
+                    <td className="px-6 py-4">
+                      <div className="h-10 bg-white/5 rounded-lg w-32" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-10 bg-white/5 rounded-lg w-24" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-8 bg-white/5 rounded-lg w-8 ml-auto" />
+                    </td>
                   </tr>
                 ))
               ) : data.length > 0 ? (
-                data.map((hero) => (
-                  <tr 
-                    key={hero.id} 
+                data.map(hero => (
+                  <tr
+                    key={hero.id}
                     onClick={() => onHeroClick?.(hero.id)}
                     className="hover:bg-white/5 transition-colors group cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
-                          <img 
-                            src={getHeroImageUrl(hero.id)} 
-                            alt={hero.localized_name} 
-                            className="w-full h-full object-cover"
+                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-white/10 shrink-0">
+                          <Image
+                            src={getHeroImageUrl(hero.id)}
+                            alt={hero.localized_name}
+                            fill
+                            className="object-cover"
                           />
                         </div>
+
                         <span className="font-bold text-foreground group-hover:text-gaming-accent transition-colors">
                           {hero.localized_name}
                         </span>
                       </div>
                     </td>
+
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1.5">
-                        <span className={cn(
-                          "font-mono font-bold",
-                          hero.winRate >= 53 ? "text-emerald-500" : "text-foreground"
-                        )}>
+                        <span
+                          className={cn(
+                            "font-mono font-bold",
+                            hero.winRate >= 53
+                              ? "text-emerald-500"
+                              : "text-foreground"
+                          )}
+                        >
                           {hero.winRate.toFixed(1)}%
                         </span>
+
                         <div className="w-32 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                          <div 
+                          <div
                             className={cn(
                               "h-full rounded-full",
-                              hero.winRate >= 53 ? "bg-emerald-500" : "bg-gaming-accent"
+                              hero.winRate >= 53
+                                ? "bg-emerald-500"
+                                : "bg-gaming-accent"
                             )}
                             style={{ width: `${hero.winRate}%` }}
                           />
                         </div>
                       </div>
                     </td>
+
                     <td className="px-6 py-4 text-right">
                       <span className="text-xs font-bold text-gray-500 uppercase">
                         {hero.games.toLocaleString()}
@@ -172,7 +197,10 @@ export function BracketLeaderboards({ onHeroClick }: BracketLeaderboardsProps) {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-gray-400">
+                  <td
+                    colSpan={3}
+                    className="px-6 py-12 text-center text-gray-400"
+                  >
                     No data found for this bracket
                   </td>
                 </tr>

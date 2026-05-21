@@ -1,24 +1,25 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import Image from 'next/image';
 import { MatchDetails } from '@/services/opendota';
 import { getHeroImageUrl, getItemImageUrlByName } from '@/services/constants';
 import { GlassCard } from '../ui/GlassCard';
+
+interface TimelineEvent {
+  time: number;
+  type: 'purchase' | 'buyback' | 'milestone';
+  key?: string;
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  label?: string;
+  color?: string;
+}
 import { cn } from '@/utils/cn';
-import { Activity, Timer, Zap, Shield, Swords, Castle, Crown, TrendingUp, Skull, RotateCcw, Check, Minus, X, Package, Trophy } from 'lucide-react';
+import { Activity, Castle, TrendingUp, Skull, RotateCcw, Check, Minus, X, Package, Trophy } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
 import { calculateLaningGrade } from '@/utils/matchAnalytics';
 
 export function MatchTimeline({ match }: { match: MatchDetails }) {
-  if (!match.version) {
-    return (
-      <div className="py-20 flex flex-col items-center justify-center border border-[var(--overlay-border)] rounded-3xl">
-        <Activity className="w-12 h-12 text-gray-700 mb-4" />
-        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Parsed data required for timeline</p>
-      </div>
-    );
-  }
-
   const durationMins = Math.ceil(match.duration / 60);
 
   // Prepare advantage data for the background waveform
@@ -42,7 +43,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
       let color = 'text-gray-400';
       let bgColor = 'bg-gray-500/10';
       let label = 'Objective';
-      let teamColor = obj.team === 2 ? 'text-win' : obj.team === 3 ? 'text-loss' : 'text-gray-400';
+      const teamColor = obj.team === 2 ? 'text-win' : obj.team === 3 ? 'text-loss' : 'text-gray-400';
 
       if (obj.type.includes('roshan')) {
         icon = Skull;
@@ -70,6 +71,15 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
     });
   }, [match.objectives]);
 
+  if (!match.version) {
+    return (
+      <div className="py-20 flex flex-col items-center justify-center border border-(--overlay-border) rounded-3xl">
+        <Activity className="w-12 h-12 text-gray-700 mb-4" />
+        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Parsed data required for timeline</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between px-4">
@@ -92,7 +102,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
             <span className="text-[9px] font-black text-gray-500 uppercase">Roshan</span>
           </div>
           <div className="flex items-center gap-2">
-            <img src={getItemImageUrlByName('aegis')} className="w-4 h-3 object-contain" alt="aegis" />
+            <Image src={getItemImageUrlByName('aegis')} width={16} height={12} className="w-4 h-3 object-contain" alt="aegis" />
             <span className="text-[9px] font-black text-gray-500 uppercase">Aegis</span>
           </div>
           <div className="flex items-center gap-2">
@@ -106,10 +116,10 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
         </div>
       </div>
 
-      <GlassCard className="p-0 overflow-x-auto no-scrollbar bg-[var(--tech-bg)] border-[var(--overlay-border)] relative">
-        <div className="min-w-[1200px] p-6 relative">
+      <GlassCard className="p-0 overflow-x-auto no-scrollbar bg-(--tech-bg) border-(--overlay-border) relative">
+        <div className="min-w-300 p-6 relative">
           {/* Background Momentum Waveform */}
-          <div className="absolute top-24 left-[246px] right-6 bottom-6 opacity-[0.07] pointer-events-none">
+          <div className="absolute top-24 left-61.5 right-6 bottom-6 opacity-[0.07] pointer-events-none">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={advantageData} margin={{ left: 0, right: 0, top: 0, bottom: 0 }}>
                 <defs>
@@ -133,12 +143,12 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
           </div>
 
           {/* Time scale */}
-          <div className="relative h-10 border-b border-[var(--overlay-border)] mb-4">
+          <div className="relative h-10 border-b border-(--overlay-border) mb-4">
             <div className="absolute left-48 right-0 h-full">
               {/* Pre-game buffer indicator */}
               <div className="absolute left-0 top-0 flex flex-col items-center -translate-x-1/2" style={{ left: '5%' }}>
                 <span className="text-[10px] font-black text-gray-700 uppercase">Start</span>
-                <div className="w-px h-2 bg-[var(--overlay-border)] mt-1" />
+                <div className="w-px h-2 bg-(--overlay-border) mt-1" />
               </div>
 
               {Array.from({ length: Math.ceil(durationMins / 5) }).map((_, i) => (
@@ -147,8 +157,8 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   className="absolute top-0 flex flex-col items-center -translate-x-1/2"
                   style={{ left: `${5 + ((i + 1) * 5 / durationMins) * 95}%` }}
                 >
-                  <span className="text-[10px] font-black text-gray-600">{(i + 1) * 5}'</span>
-                  <div className="w-px h-2 bg-[var(--overlay-border)] mt-1" />
+                  <span className="text-[10px] font-black text-gray-600">{(i + 1) * 5}&#39;</span>
+                  <div className="w-px h-2 bg-(--overlay-border) mt-1" />
                 </div>
               ))}
             </div>
@@ -157,7 +167,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
           {/* Advantage Ribbon (Momentum Overlay) */}
           <div className="flex items-center gap-4 mb-8">
             <div className="w-48 flex items-center gap-3 shrink-0">
-              <div className="w-12 h-7 rounded border border-[var(--overlay-border)] bg-[var(--overlay-light)] flex items-center justify-center">
+              <div className="w-12 h-7 rounded border border-(--overlay-border) bg-(--overlay-light) flex items-center justify-center">
                 <TrendingUp className="w-4 h-4 text-gray-400" />
               </div>
               <div>
@@ -197,7 +207,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
           {/* Objectives Row */}
           <div className="flex items-center gap-4 mb-8">
             <div className="w-48 flex items-center gap-3 shrink-0">
-              <div className="w-12 h-7 rounded border border-[var(--overlay-border)] bg-[var(--overlay-light)] flex items-center justify-center">
+              <div className="w-12 h-7 rounded border border-(--overlay-border) bg-(--overlay-light) flex items-center justify-center">
                 <Castle className="w-4 h-4 text-gray-400" />
               </div>
               <div>
@@ -205,8 +215,8 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                 <p className="text-[8px] font-bold text-gray-600 uppercase">Global Events</p>
               </div>
             </div>
-            <div className="flex-1 h-12 relative bg-[var(--overlay-light)] rounded-lg border border-[var(--overlay-border)] overflow-hidden">
-              <div className="absolute top-1/2 left-0 right-0 h-px bg-[var(--overlay-medium)] -translate-y-1/2" />
+            <div className="flex-1 h-12 relative bg-(--overlay-light) rounded-lg border border-(--overlay-border) overflow-hidden">
+              <div className="absolute top-1/2 left-0 right-0 h-px bg-(--overlay-medium) -translate-y-1/2" />
 
               {objectives.map((obj, oIdx) => {
                 const leftPos = 5 + (obj.time / 60 / durationMins) * 95;
@@ -223,7 +233,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                       obj.type.includes('roshan') ? "border-amber-500/50" : obj.type.includes('aegis') ? "border-purple-500/50" : "border-white/10"
                     )}>
                       {obj.imageUrl ? (
-                        <img src={obj.imageUrl} className="w-5 h-4 object-contain" alt="obj" />
+                        <Image src={obj.imageUrl} width={20} height={16} className="w-5 h-4 object-contain" alt="obj" />
                       ) : Icon && (
                         <Icon className={cn("w-3.5 h-3.5", obj.color)} />
                       )}
@@ -249,7 +259,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
           <div className="space-y-4">
             {match.players.map((p, pIdx) => {
               const laningGrade = calculateLaningGrade(p.lane_efficiency_pct || null, p.benchmarks?.lhten?.pct || null);
-              const events: { time: number; type: 'purchase' | 'buyback' | 'milestone'; key?: string; icon?: any; label?: string; color?: string }[] = [];
+              const events: TimelineEvent[] = [];
 
               if (p.purchase_log) {
                 p.purchase_log.forEach(item => {
@@ -291,7 +301,6 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
               });
 
               // Collision handling logic similar to mobile
-              const bucketSize = 12; // pixels roughly
               const usedPositions: Record<number, number> = {};
 
               return (
@@ -299,9 +308,9 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   {/* Player Info */}
                   <div className="w-48 flex items-center gap-3 shrink-0">
                     <div className="relative shrink-0">
-                      <img src={getHeroImageUrl(p.hero_id)} className="w-12 h-7 rounded border border-[var(--overlay-border)]" alt="hero" />
+                      <Image src={getHeroImageUrl(p.hero_id)} width={48} height={28} className="w-12 h-7 rounded border border-(--overlay-border)" alt="hero" />
                       {p.avatar && (
-                        <img src={p.avatar} className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-black shadow-lg" alt="av" />
+                        <Image src={p.avatar} width={16} height={16} className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border border-black shadow-lg" alt="av" />
                       )}
                     </div>
                     <div className="min-w-0">
@@ -311,9 +320,9 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                   </div>
 
                   {/* Event Lane */}
-                  <div className="flex-1 h-12 relative bg-[var(--overlay-light)] rounded-lg border border-[var(--overlay-light)] group-hover:bg-[var(--overlay-medium)] transition-colors overflow-hidden">
+                  <div className="flex-1 h-12 relative bg-(--overlay-light) rounded-lg border border-(--overlay-light) group-hover:bg-(--overlay-medium) transition-colors overflow-hidden">
                     {/* Horizontal grid line */}
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-[var(--overlay-medium)] -translate-y-1/2" />
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-(--overlay-medium) -translate-y-1/2" />
 
                     {/* Lane Outcome Marker at 10m */}
                     {laningGrade && durationMins >= 10 && (
@@ -350,7 +359,7 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                       const leftPos = baseLeft + (offsetCount * 0.8); // Offset by 0.8% per item in same bucket
 
                       const BuybackIcon = RotateCcw;
-                      const MilestoneIcon = event.icon;
+                      const MilestoneIcon = event.icon || null;
                       const itemUrl = (event.type === 'buyback' || event.type === 'milestone') ? null : getItemImageUrlByName(event.key || '');
 
                       return (
@@ -367,11 +376,11 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
                           )}>
                             {event.type === 'buyback' ? (
                               <BuybackIcon className="w-6 h-4 p-0.5 text-white" />
-                            ) : event.type === 'milestone' ? (
+                            ) : event.type === 'milestone' && MilestoneIcon ? (
                               <MilestoneIcon className={cn("w-6 h-4 p-0.5", event.color)} />
-                            ) : (
-                              <img src={itemUrl || ''} className="w-6 h-4 rounded-[1px] object-cover" alt="ev" />
-                            )}
+                            ) : itemUrl ? (
+                              <Image src={itemUrl} width={24} height={16} className="w-6 h-4 rounded-[1px] object-cover" alt="ev" />
+                            ) : null}
                           </div>
 
                           {/* Tooltip */}

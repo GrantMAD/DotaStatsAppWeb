@@ -44,12 +44,12 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
   }, [data, type]);
 
   if (loading) {
-    return <Skeleton className="h-[600px] w-full rounded-3xl" />;
+    return <Skeleton className="h-150 w-full rounded-3xl" />;
   }
 
   if (!data || (Object.keys(data.obs).length === 0 && Object.keys(data.sen).length === 0)) {
     return (
-      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-[var(--card-border)] rounded-3xl">
+      <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <MapIcon className="w-12 h-12 text-gray-700 mb-4" />
         <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
           No warding data found. OpenDota only generates ward maps for parsed matches.
@@ -66,7 +66,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
           <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Aggregated ward placements from parsed games</p>
         </div>
         
-        <div className="flex bg-[var(--nav-hover)] p-1 rounded-xl border border-[var(--card-border)]">
+        <div className="flex bg-(--nav-hover) p-1 rounded-xl border border-(--card-border)">
           <button
             onClick={() => setType('obs')}
             className={cn(
@@ -90,7 +90,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <GlassCard className="p-2 aspect-square relative overflow-hidden bg-black border-2 border-[var(--card-border)]">
+          <GlassCard className="p-2 aspect-square relative overflow-hidden bg-black border-2 border-(--card-border)">
             {/* Map Image Layer */}
             <div 
               className="absolute inset-0 opacity-60 mix-blend-screen bg-cover bg-center grayscale contrast-125"
@@ -148,7 +148,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
                  <li className="flex gap-3">
                     <div className="w-1 h-1 rounded-full bg-gaming-accent mt-1.5 shrink-0" />
                     <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed">
-                       Avoid placing wards in common "Sentry spots" indicated by clusters on your sentry heatmap.
+                       Avoid placing wards in common Sentry spots indicated by clusters on your sentry heatmap.
                     </p>
                  </li>
                  <li className="flex gap-3">
@@ -160,7 +160,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
                  <li className="flex gap-3">
                     <div className="w-1 h-1 rounded-full bg-gaming-accent mt-1.5 shrink-0" />
                     <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed">
-                       Look for "unconventional" spots that still provide vision of key chokepoints.
+                       Look for unconventional spots that still provide vision of key chokepoints.
                     </p>
                  </li>
               </ul>

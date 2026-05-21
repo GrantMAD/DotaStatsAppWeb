@@ -27,6 +27,7 @@ export interface AppNotification {
   type: string;
   message: string;
   related_user_id: string | null;
+  related_match_id: string | null;
   is_read: boolean;
   created_at: string;
 }

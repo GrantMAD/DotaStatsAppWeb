@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useLeagueMatches } from '@/hooks/useOpenDota';
+import { League } from '@/services/opendota';
 import { Modal } from '../ui/Modal';
 import { ProMatchCard } from '../ui/ProMatchCard';
 import { MatchDetailModal } from '../match/MatchDetailModal';
@@ -12,12 +14,13 @@ import { getLeagueImageUrl } from '@/services/constants';
 interface LeagueDetailModalProps {
   isOpen: boolean;
   onClose: () => void;
-  league: any | null;
+  league: League | null;
   isActive?: boolean;
 }
 
 export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueDetailModalProps) {
-  const [imageError, setImageError] = React.useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [recentThreshold] = useState(() => Date.now() - 7 * 24 * 60 * 60 * 1000);
   const { data: matches = [], isLoading: loading } = useLeagueMatches(isOpen && league ? league.leagueid : null);
   const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
 
@@ -49,20 +52,24 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
       />
       <div className="space-y-8 max-h-[80vh] overflow-y-auto pr-2 no-scrollbar">
         {/* League Hero Section */}
-        <div className="relative rounded-3xl overflow-hidden border border-[var(--card-border)] group">
+        <div className="relative rounded-3xl overflow-hidden border border-(--card-border) group">
           {bannerUrl && !imageError ? (
-            <img 
-              src={bannerUrl} 
-              alt={league.name} 
-              onError={() => setImageError(true)}
-              className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" 
-            />
+            <div className="relative w-full h-64">
+              <Image
+                src={bannerUrl}
+                alt={league.name}
+                fill
+                sizes="100vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                onError={() => setImageError(true)}
+              />
+            </div>
           ) : (
-            <div className="h-64 bg-[var(--nav-hover)] flex items-center justify-center">
+            <div className="h-64 bg-(--nav-hover) flex items-center justify-center">
               <Trophy className="w-20 h-20 text-foreground/5" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
           
           <div className="absolute bottom-6 left-6 right-6">
             <div className="flex items-center gap-2 mb-3">
@@ -94,8 +101,8 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-           <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+           <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
                  <Info size={16} />
               </div>
               <div>
@@ -103,8 +110,8 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
                  <p className="text-foreground font-bold">{league.leagueid}</p>
               </div>
            </div>
-           <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+           <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
+              <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
                  <Map size={16} />
               </div>
               <div>
@@ -114,8 +121,8 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
            </div>
            {stats && (
              <>
-               <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+               <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
                      <Timer size={16} />
                   </div>
                   <div>
@@ -123,14 +130,14 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
                      <p className="text-foreground font-bold">{Math.floor(stats.avgDuration / 60)}m</p>
                   </div>
                </div>
-               <div className="bg-[var(--nav-hover)] border border-[var(--card-border)] p-4 rounded-2xl flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-[var(--card-bg)] text-gray-500">
+               <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
+                  <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
                      <Trophy size={16} />
                   </div>
                   <div>
                      <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Status</p>
                      <p className="text-foreground font-bold uppercase">
-                        {stats.endDate > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) ? 'Recent' : 'Archived'}
+                        {stats.endDate.getTime() > recentThreshold ? 'Recent' : 'Archived'}
                      </p>
                   </div>
                </div>
@@ -175,7 +182,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center bg-[var(--nav-hover)] rounded-3xl border border-dashed border-[var(--card-border)] p-8">
+              <div className="flex flex-col items-center justify-center py-20 text-center bg-(--nav-hover) rounded-3xl border border-dashed border-(--card-border) p-8">
                  <AlertCircle className="w-16 h-16 text-amber-500 mb-4 opacity-50" />
                  <h4 className="text-foreground font-bold uppercase tracking-tight text-xl">Limited Data Coverage</h4>
                  <p className="text-gray-500 text-sm max-w-sm mx-auto mt-2 italic leading-relaxed">

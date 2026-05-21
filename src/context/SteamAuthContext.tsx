@@ -44,14 +44,19 @@ function SteamAuthHandler({ children, handleCallback, isAuthLoading }: { childre
 }
 
 export function SteamAuthProvider({ children }: { children: ReactNode }) {
-  const [accountId, setAccountId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [localAccountId, setLocalAccountId] = useState<string | null>(() => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(STORAGE_KEY);
+  });
+  const [internalLoading, setInternalLoading] = useState(false);
   const { user, refreshProfile, steamAccountId, isLoading: isAuthLoading } = useSupabaseAuth();
   const supabase = createClient();
+  const accountId = steamAccountId || localAccountId;
+  const isLoading = isAuthLoading || internalLoading;
 
   const handleCallback = useCallback(async (urlParams: URLSearchParams) => {
     try {
-      setIsLoading(true);
+      setInternalLoading(true);
       const claimedId = urlParams.get('openid.claimed_id');
       
       if (claimedId) {
@@ -61,7 +66,7 @@ export function SteamAuthProvider({ children }: { children: ReactNode }) {
           const accId = BigInt(steamId64) - BigInt('76561197960265728');
           const accountIdStr = accId.toString();
 
-          setAccountId(accountIdStr);
+          setLocalAccountId(accountIdStr);
           localStorage.setItem(STORAGE_KEY, accountIdStr);
 
           if (user) {
@@ -94,21 +99,9 @@ export function SteamAuthProvider({ children }: { children: ReactNode }) {
       console.error('Steam callback handling failed', e);
       toast.error('An error occurred during Steam authentication', { id: 'steam-auth' });
     } finally {
-      setIsLoading(false);
+      setInternalLoading(false);
     }
-  }, [user, isAuthLoading, refreshProfile, supabase]);
-
-  // Sync with Supabase profile
-  useEffect(() => {
-    if (steamAccountId) {
-      setAccountId(steamAccountId);
-      localStorage.setItem(STORAGE_KEY, steamAccountId);
-    } else {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) setAccountId(stored);
-    }
-    setIsLoading(false);
-  }, [steamAccountId]);
+  }, [user, refreshProfile, supabase]);
 
   const login = useCallback(() => {
     setIsLoading(true);
@@ -130,7 +123,7 @@ export function SteamAuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     localStorage.removeItem(STORAGE_KEY);
-    setAccountId(null);
+    setLocalAccountId(null);
     
     if (user) {
       await supabase
