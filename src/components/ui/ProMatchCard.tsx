@@ -3,6 +3,7 @@
 import { GlassCard } from "./GlassCard";
 import { cn } from "@/utils/cn";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 
 interface ProMatchCardProps {
   radiantName: string | null;
@@ -36,9 +37,9 @@ export function ProMatchCard({
   };
 
   return (
-    <GlassCard hoverable className="w-[300px] shrink-0 p-5 flex flex-col gap-4 group">
+    <GlassCard hoverable className="w-75 shrink-0 p-5 flex flex-col gap-4 group">
       <div className="flex items-center justify-between mb-1">
-        <div className="px-2 py-0.5 rounded bg-[var(--nav-hover)] border border-[var(--card-border)] text-[10px] text-muted-foreground font-bold uppercase tracking-wider truncate max-w-[180px]">
+        <div className="px-2 py-0.5 rounded bg-(--nav-hover) border border-(--card-border) text-[10px] text-muted-foreground font-bold uppercase tracking-wider truncate max-w-45">
           {leagueName}
         </div>
         <div className="text-[10px] text-gray-500 font-medium">
@@ -48,9 +49,15 @@ export function ProMatchCard({
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex-1 flex flex-col items-center gap-2">
-          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-radiant overflow-hidden">
+          <div className="w-12 h-12 rounded-xl bg-(--nav-hover) border border-(--card-border) flex items-center justify-center font-bold text-lg text-radiant overflow-hidden">
             {radiantLogo ? (
-              <img src={radiantLogo} alt={radiantName || 'R'} className="w-full h-full object-contain p-1" />
+              <Image
+                src={radiantLogo}
+                alt={radiantName || "R"}
+                fill
+                unoptimized
+                className="object-contain p-1"
+              />
             ) : (
               radiantName?.[0] || 'R'
             )}
@@ -65,15 +72,21 @@ export function ProMatchCard({
         </div>
 
         <div className="flex flex-col items-center gap-1">
-          <div className="px-2 py-1 rounded-full bg-[var(--nav-hover)] text-[10px] font-black text-muted-foreground uppercase">VS</div>
-          <div className="h-10 w-px bg-gradient-to-b from-transparent via-[var(--card-border)] to-transparent" />
+          <div className="px-2 py-1 rounded-full bg-(--nav-hover) text-[10px] font-black text-muted-foreground uppercase">VS</div>
+          <div className="h-10 w-px bg-linear-to-b from-transparent via-(--card-border) to-transparent" />
           <p className="text-[10px] font-bold text-gray-500">{formatDuration(duration)}</p>
         </div>
 
         <div className="flex-1 flex flex-col items-center gap-2">
-          <div className="w-12 h-12 rounded-xl bg-[var(--nav-hover)] border border-[var(--card-border)] flex items-center justify-center font-bold text-lg text-dire overflow-hidden">
+          <div className="w-12 h-12 rounded-xl bg-(--nav-hover) border border-(--card-border) flex items-center justify-center font-bold text-lg text-dire overflow-hidden">
             {direLogo ? (
-              <img src={direLogo} alt={direName || 'D'} className="w-full h-full object-contain p-1" />
+              <Image
+                src={direLogo}
+                alt={direName || "D"}
+                fill
+                unoptimized
+                className="object-contain p-1"
+              />
             ) : (
               direName?.[0] || 'D'
             )}
@@ -88,19 +101,19 @@ export function ProMatchCard({
         </div>
       </div>
 
-      <div className="mt-auto pt-4 border-t border-[var(--card-border)] flex items-center justify-between">
-         <div className={cn(
-           "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
-           radiantWin ? "bg-win/20 text-win" : "bg-[var(--overlay-medium)] text-muted-foreground"
-         )}>
-           {radiantWin ? "Winner" : "Radiant"}
-         </div>
-         <div className={cn(
-           "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
-           radiantWin === false ? "bg-win/20 text-win" : "bg-[var(--overlay-medium)] text-muted-foreground"
-         )}>
-           {radiantWin === false ? "Winner" : "Dire"}
-         </div>
+      <div className="mt-auto pt-4 border-t border-(--card-border) flex items-center justify-between">
+        <div className={cn(
+          "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
+          radiantWin ? "bg-win/20 text-win" : "bg-(--overlay-medium) text-muted-foreground"
+        )}>
+          {radiantWin ? "Winner" : "Radiant"}
+        </div>
+        <div className={cn(
+          "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
+          radiantWin === false ? "bg-win/20 text-win" : "bg-(--overlay-medium) text-muted-foreground"
+        )}>
+          {radiantWin === false ? "Winner" : "Dire"}
+        </div>
       </div>
     </GlassCard>
   );

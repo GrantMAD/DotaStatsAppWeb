@@ -3,6 +3,7 @@
 import React from 'react';
 import { User, ChevronRight, EyeOff } from 'lucide-react';
 import { usePlayerProfile, isProfilePrivate } from '@/hooks/useOpenDota';
+import Image from "next/image";
 
 interface UserListItemProps {
   user: {
@@ -21,17 +22,19 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
   const isPrivate = isProfilePrivate(profile ?? null);
 
   return (
-    <div 
+    <div
       onClick={onClick}
       className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
     >
       <div className="relative">
         <div className="w-12 h-12 rounded-full overflow-hidden border border-(--card-border) bg-(--nav-hover)">
           {avatarUrl ? (
-            <img 
-              src={avatarUrl} 
+            <Image
+              src={avatarUrl}
               alt={appUser.steam_name}
-              className="w-full h-full object-cover"
+              fill
+              unoptimized
+              className="object-cover"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
@@ -66,8 +69,8 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
             </p>
             {isPrivate && !isLoading && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-500 text-[8px] font-black uppercase tracking-tighter">
-                 <EyeOff size={8} />
-                 Private
+                <EyeOff size={8} />
+                Private
               </div>
             )}
           </div>

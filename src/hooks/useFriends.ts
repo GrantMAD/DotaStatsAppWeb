@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 export type FriendshipStatus = 'pending' | 'accepted' | 'declined';
 
@@ -39,14 +39,22 @@ export interface Follow {
   created_at: string;
 }
 
+type SupabaseFriendRow = {
+  requester_id: string;
+  addressee_id: string;
+  requester: Record<string, unknown>;
+  addressee: Record<string, unknown>;
+};
+
 export const useFriends = () => {
   const { user } = useSupabaseAuth();
+  const userId = user?.id;
   const queryClient = useQueryClient();
-  const supabase = createClient();
-  const { current: instanceId } = useRef(Math.random().toString(36).substring(7));
+  const supabase = useMemo(() => createClient(), []);
+  const instanceIdRef = useRef<string | null>(null);
 
   const { data: friends = [], isLoading: friendsLoading } = useQuery({
-    queryKey: ['friends', user?.id],
+    queryKey: ['friends', userId],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -56,7 +64,7 @@ export const useFriends = () => {
         .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
 
       if (error) throw error;
-      return (data || []).map((f: any) => ({
+      return ((data || []) as SupabaseFriendRow[]).map((f) => ({
         ...f,
         users: f.requester_id === user.id ? f.addressee : f.requester
       }));
@@ -65,7 +73,7 @@ export const useFriends = () => {
   });
 
   const { data: following = [], isLoading: followingLoading } = useQuery({
-    queryKey: ['following', user?.id],
+    queryKey: ['following', userId],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -80,9 +88,12 @@ export const useFriends = () => {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
+    if (!instanceIdRef.current) {
+      instanceIdRef.current = Math.random().toString(36).substring(7);
+    }
 
-    const channelName = `friends_updates_${user.id}_${instanceId}`;
+    const channelName = `friends_updates_${userId}_${instanceIdRef.current}`;
     const channel = supabase.channel(channelName);
     
     channel
@@ -92,10 +103,10 @@ export const useFriends = () => {
           event: '*',
           schema: 'public',
           table: 'friendships',
-          filter: `or(requester_id.eq.${user.id},addressee_id.eq.${user.id})`,
+          filter: `or(requester_id.eq.${userId},addressee_id.eq.${userId})`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+          queryClient.invalidateQueries({ queryKey: ['friends', userId] });
         }
       )
       .on(
@@ -104,10 +115,10 @@ export const useFriends = () => {
           event: '*',
           schema: 'public',
           table: 'follows',
-          filter: `follower_id=eq.${user.id}`,
+          filter: `follower_id=eq.${userId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['following', user?.id] });
+          queryClient.invalidateQueries({ queryKey: ['following', userId] });
         }
       )
       .subscribe();
@@ -115,7 +126,7 @@ export const useFriends = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, instanceId]);
+  }, [userId, queryClient, supabase]);
 
   const followMutation = useMutation({
     mutationFn: async ({ steamAccountId, steamName }: { steamAccountId: string, steamName?: string }) => {
@@ -130,7 +141,7 @@ export const useFriends = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['following', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['following', userId] });
     },
   });
 
@@ -145,7 +156,7 @@ export const useFriends = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['following', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['following', userId] });
     },
   });
 
@@ -158,7 +169,7 @@ export const useFriends = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['friends', userId] });
     },
   });
 
@@ -184,12 +195,13 @@ export const useFriends = () => {
 
 export const useNotifications = () => {
   const { user } = useSupabaseAuth();
+  const userId = user?.id;
   const queryClient = useQueryClient();
-  const supabase = createClient();
-  const { current: instanceId } = useRef(Math.random().toString(36).substring(7));
+  const supabase = useMemo(() => createClient(), []);
+  const instanceIdRef = useRef<string | null>(null);
 
   const { data: notifications = [], isLoading } = useQuery({
-    queryKey: ['notifications', user?.id],
+    queryKey: ['notifications', userId],
     queryFn: async () => {
       if (!user) return [];
       const { data, error } = await supabase
@@ -206,9 +218,12 @@ export const useNotifications = () => {
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
+    if (!instanceIdRef.current) {
+      instanceIdRef.current = Math.random().toString(36).substring(7);
+    }
 
-    const channelName = `notifications_${user.id}_${instanceId}`;
+    const channelName = `notifications_${userId}_${instanceIdRef.current}`;
     const channel = supabase.channel(channelName);
     
     channel
@@ -218,10 +233,10 @@ export const useNotifications = () => {
           event: '*',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
+          filter: `user_id=eq.${userId}`,
         },
         () => {
-          queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+          queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
         }
       )
       .subscribe();
@@ -229,7 +244,7 @@ export const useNotifications = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, queryClient, instanceId]);
+  }, [userId, queryClient, supabase]);
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
@@ -240,22 +255,22 @@ export const useNotifications = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: async () => {
-      if (!user) return;
+      if (!userId) return;
       const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('is_read', false);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   });
 
@@ -284,9 +299,9 @@ export const useNotifications = () => {
     },
     onSuccess: (data) => {
       if (data?.accept) {
-        queryClient.invalidateQueries({ queryKey: ['friends', user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['friends', userId] });
       }
-      queryClient.invalidateQueries({ queryKey: ['notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   });
 

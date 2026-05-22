@@ -3,12 +3,10 @@
 import { ActivityItem } from "@/hooks/useActivityFeed";
 import { GlassCard } from "./GlassCard";
 import { formatDistanceToNow } from "date-fns";
-import { 
-  Trophy, 
-  Zap, 
-  TrendingUp, 
-  Gamepad2, 
-  CheckCircle2, 
+import {
+  Zap,
+  TrendingUp,
+  CheckCircle2,
   XCircle,
   ArrowRight,
   Flame,
@@ -23,7 +21,8 @@ import {
 import { cn } from "@/utils/cn";
 import { useHeroStats } from "@/hooks/useOpenDota";
 import { STEAM_CDN_BASE } from "@/services/constants";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import Image from 'next/image';
 
 interface ActivityFeedItemProps {
   item: ActivityItem;
@@ -175,10 +174,10 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
       whileHover={{ y: -4 }}
       className="shrink-0"
     >
-      <GlassCard 
-        hoverable 
+      <GlassCard
+        hoverable
         className={cn(
-          "relative w-[320px] h-[120px] p-4 flex items-center gap-4 cursor-pointer overflow-hidden group transition-all duration-300",
+          "relative w-[320px] h-30 p-4 flex items-center gap-4 cursor-pointer overflow-hidden group transition-all duration-300",
           theme.glow,
           theme.border
         )}
@@ -186,36 +185,45 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
       >
         {/* Ghost Background Hero Portrait */}
         {heroImg && (
-          <div className="absolute right-[-20px] top-[-20px] opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500 blur-sm pointer-events-none grayscale group-hover:grayscale-0">
-            <img 
-              src={heroImg} 
-              alt="" 
-              className="w-40 h-40 object-cover rotate-[-10deg] scale-125" 
+          <div className="absolute -right-5 -top-5 opacity-[0.07] group-hover:opacity-[0.12] transition-opacity duration-500 blur-sm pointer-events-none grayscale group-hover:grayscale-0">
+            <Image
+              src={heroImg}
+              alt=""
+              width={160}
+              height={160}
+              className="w-40 h-40 object-cover rotate-[-10deg] scale-125"
             />
           </div>
         )}
 
         {/* Hero + Player Avatar Stack */}
         <div className="relative shrink-0">
-          <div 
-            className="w-16 h-16 rounded-full overflow-hidden border-2 border-[var(--card-border)] bg-[var(--nav-hover)] group-hover:border-gaming-accent/50 transition-colors"
+          <div
+            className="w-16 h-16 rounded-full overflow-hidden border-2 border-(--card-border) bg-(--nav-hover) group-hover:border-gaming-accent/50 transition-colors"
           >
-            <img 
-              src={heroImg || item.player.avatar} 
-              alt={hero?.localized_name || item.player.name} 
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+            <Image
+              src={heroImg || item.player.avatar}
+              alt={hero?.localized_name || item.player.name}
+              width={64}
+              height={64}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           </div>
           {/* Player Avatar Overlay */}
-          <div 
-            className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full overflow-hidden border-2 border-[var(--background)] shadow-xl cursor-pointer hover:scale-110 transition-transform"
+          <div
+            className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full overflow-hidden border-2 border-(--background) shadow-xl cursor-pointer hover:scale-110 transition-transform"
             onClick={(e) => {
               e.stopPropagation();
               onPressPlayer(item.player.account_id);
             }}
           >
-            <img src={item.player.avatar} alt={item.player.name} className="w-full h-full object-cover" />
-          </div>
+            <Image
+              src={item.player.avatar}
+              alt={item.player.name}
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />          </div>
         </div>
 
         {/* Content */}
@@ -232,17 +240,17 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
                 </span>
               )}
             </div>
-            
+
             <p className="text-xs text-foreground leading-snug line-clamp-2 pr-4">
               <span className="font-bold text-gaming-accent group-hover:text-foreground transition-colors">{item.player.name}</span> {getMessage()}
             </p>
           </div>
-          
+
           <div className="flex items-center justify-between mt-auto">
             <p className="text-[10px] text-gray-500 font-medium">
               {formatDistanceToNow(new Date(item.timestamp * 1000), { addSuffix: true })}
             </p>
-            
+
             <div className="opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-300">
               <ArrowRight className="w-4 h-4 text-gaming-accent" />
             </div>

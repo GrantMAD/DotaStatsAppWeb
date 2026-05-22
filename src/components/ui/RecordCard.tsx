@@ -20,7 +20,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   heart: Activity
 };
 
-export function RecordCard({ title, record, icon, color, onPress }: RecordCardProps) {
+export function RecordCard({ title, record, icon, onPress }: RecordCardProps) {
   if (!record) return null;
 
   const IconComponent = ICON_MAP[icon];
@@ -55,13 +55,13 @@ export function RecordCard({ title, record, icon, color, onPress }: RecordCardPr
 
         <div className="text-right">
           <p className="text-xs font-bold text-gray-500 mb-2">Match ID</p>
-          <p className="text-sm font-black text-foreground bg-[var(--overlay-medium)] px-3 py-1 rounded-lg border border-[var(--overlay-border)] group-hover:border-gaming-accent transition-colors">
+          <p className="text-sm font-black text-foreground bg-(--overlay-medium) px-3 py-1 rounded-lg border border-(--overlay-border) group-hover:border-gaming-accent transition-colors">
             {record.match_id}
           </p>
         </div>
       </div>
 
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[var(--overlay-light)] to-transparent -translate-y-16 translate-x-16 rotate-45 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-(--overlay-light) to-transparent -translate-y-16 translate-x-16 rotate-45 pointer-events-none" />
     </GlassCard>
   );
 }

@@ -86,7 +86,7 @@ export function DataPrivacyIndicator({
             <Button 
               variant="secondary"
               className={cn(
-                "w-full md:w-auto gap-2 border-[var(--card-border)]",
+                "w-full md:w-auto gap-2 border-(--card-border)",
                 isPrivate ? "hover:border-red-500/50" : "hover:border-amber-500/50"
               )}
               onClick={() => {

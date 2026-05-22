@@ -5,6 +5,7 @@ import { LiveGame } from "@/services/opendota";
 import { STEAM_CDN_BASE } from "@/services/constants";
 import { Users } from "lucide-react";
 import { useHeroStats } from "@/hooks/useOpenDota";
+import Image from 'next/image';
 
 interface LiveGameCardProps {
   game: LiveGame;
@@ -25,10 +26,10 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
   };
 
   return (
-    <GlassCard 
-      hoverable 
+    <GlassCard
+      hoverable
       onClick={() => onPress(game.match_id)}
-      className="w-[280px] shrink-0 p-4 cursor-pointer"
+      className="w-70 shrink-0 p-4 cursor-pointer"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2 px-2 py-1 rounded bg-red-500/20 border border-red-500/30">
@@ -42,25 +43,39 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
 
       <div className="grid grid-cols-5 gap-1 mb-3">
         {game.players.slice(0, 5).map((p, idx) => (
-          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-[var(--overlay-medium)] border border-[var(--overlay-border)]">
+          <div key={idx} className="aspect-4/3 rounded overflow-hidden bg-(--overlay-medium) border border-(--overlay-border)">
             {getHeroImg(p.hero_id) && (
-              <img src={getHeroImg(p.hero_id)!} alt="hero" className="w-full h-full object-cover" />
+              <Image
+                src={getHeroImg(p.hero_id)!}
+                alt="hero"
+                width={64}
+                height={48}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
         ))}
       </div>
 
       <div className="flex items-center justify-center gap-2 mb-3">
-        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[var(--overlay-border)]" />
+        <div className="h-px flex-1 bg-linear-to-r from-transparent to-(--overlay-border)" />
         <span className="text-[10px] font-black text-gray-600 uppercase">VS</span>
-        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[var(--overlay-border)]" />
+        <div className="h-px flex-1 bg-linear-to-l from-transparent to-(--overlay-border)" />
       </div>
 
       <div className="grid grid-cols-5 gap-1 mb-4">
         {game.players.slice(5, 10).map((p, idx) => (
-          <div key={idx} className="aspect-[4/3] rounded overflow-hidden bg-[var(--overlay-medium)] border border-[var(--overlay-border)]">
+          <div key={idx} className="aspect-4/3 rounded overflow-hidden bg-(--overlay-medium) border border-(--overlay-border)">
             {getHeroImg(p.hero_id) && (
-              <img src={getHeroImg(p.hero_id)!} alt="hero" className="w-full h-full object-cover" />
+              <Image
+                src={getHeroImg(p.hero_id)!}
+                alt="hero"
+                width={64}
+                height={48}
+                unoptimized
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
         ))}
@@ -68,8 +83,8 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
 
       <div className="flex items-center justify-between text-gray-500">
         <div className="flex items-center gap-1.5">
-           <Users className="w-3.5 h-3.5" />
-           <span className="text-[10px] font-bold">Watch Live</span>
+          <Users className="w-3.5 h-3.5" />
+          <span className="text-[10px] font-bold">Watch Live</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-widest text-gaming-accent">Spectate</span>
       </div>

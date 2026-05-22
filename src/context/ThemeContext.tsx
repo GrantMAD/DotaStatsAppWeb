@@ -14,49 +14,48 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+// ✅ Stable supabase instance (prevents dependency warnings)
+const supabase = createClient();
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useSupabaseAuth();
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
-  const [isInitialized, setIsInitialized] = useState(false);
-  const supabase = createClient();
 
-  // Load initial theme
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme-preference') as Theme;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-    }
-    setIsInitialized(true);
-  }, []);
+  // ✅ FIX: initialize from localStorage safely (no useEffect needed)
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'dark';
+
+    const savedTheme = localStorage.getItem('theme-preference') as Theme | null;
+    return savedTheme || 'dark';
+  });
+
+  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
 
   // Fetch theme from Supabase when user logs in
   useEffect(() => {
     async function fetchUserTheme() {
-      if (user) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('theme')
-          .eq('id', user.id)
-          .single();
+      if (!user) return;
 
-        if (data && !error && data.theme) {
-          setThemeState(data.theme as Theme);
-        }
+      const { data, error } = await supabase
+        .from('users')
+        .select('theme')
+        .eq('id', user.id)
+        .single();
+
+      if (data && !error && data.theme) {
+        setThemeState(data.theme as Theme);
       }
     }
-    if (isInitialized) fetchUserTheme();
-  }, [user, isInitialized]);
+
+    fetchUserTheme();
+  }, [user]);
 
   // Handle theme changes
   useEffect(() => {
-    if (!isInitialized) return;
-
     localStorage.setItem('theme-preference', theme);
 
     // Update Supabase if user is logged in
     if (user) {
-      supabase.from('users').update({ theme }).eq('id', user.id).then();
+      supabase.from('users').update({ theme }).eq('id', user.id);
     }
 
     const updateResolvedTheme = () => {
@@ -72,6 +71,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
     const handleChange = () => {
       if (theme === 'system') {
         setResolvedTheme(mediaQuery.matches ? 'dark' : 'light');
@@ -79,12 +79,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     };
 
     mediaQuery.addEventListener('change', handleChange);
-    return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme, user, isInitialized]);
 
-  // Apply class to document
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange);
+    };
+  }, [theme, user]);
+
+  // Apply theme to document
   useEffect(() => {
     const root = window.document.documentElement;
+
     root.classList.remove('light', 'dark');
     root.classList.add(resolvedTheme);
     root.style.colorScheme = resolvedTheme;
@@ -101,7 +105,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;

@@ -33,8 +33,8 @@ const forwardRequest = async (request: NextRequest, pathSegments: string[]) => {
     })
 
     upstreamResponse.headers.forEach((value, key) => {
-      if (key.toLowerCase() === 'content-encoding') return
-      if (key.toLowerCase() === 'transfer-encoding') return
+      const lowerKey = key.toLowerCase();
+      if (lowerKey === 'transfer-encoding' || lowerKey === 'content-encoding' || lowerKey === 'content-length') return
       response.headers.set(key, value)
     })
 

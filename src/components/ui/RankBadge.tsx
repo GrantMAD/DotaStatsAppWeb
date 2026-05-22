@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { getRankBadgeUrl, getRankStarsUrl, RANK_NAMES } from '../../services/constants';
-import { cn } from '@/utils/cn';
+import Image from "next/image";
 
 interface RankBadgeProps {
   rankTier: number | null;
@@ -11,11 +11,11 @@ interface RankBadgeProps {
   showText?: boolean;
 }
 
-export default function RankBadge({ 
-  rankTier, 
-  leaderboardRank, 
+export default function RankBadge({
+  rankTier,
+  leaderboardRank,
   size = 60,
-  showText = true 
+  showText = true
 }: RankBadgeProps) {
   if (!rankTier && !leaderboardRank) return null;
 
@@ -27,21 +27,25 @@ export default function RankBadge({
 
   return (
     <div className="flex flex-col items-center shrink-0">
-      <div 
-        style={{ width: size, height: size }} 
+      <div
+        style={{ width: size, height: size }}
         className="relative flex items-center justify-center"
       >
-        <img 
-          src={badgeUrl} 
+        <Image
+          src={badgeUrl}
           alt={rankName}
-          className="absolute inset-0 w-full h-full object-contain"
+          fill
+          unoptimized
+          className="object-contain"
         />
-        
+
         {starsUrl && rankDigit < 8 && (
-          <img 
-            src={starsUrl} 
+          <Image
+            src={starsUrl}
             alt="stars"
-            className="absolute inset-0 w-full h-full object-contain"
+            fill
+            unoptimized
+            className="object-contain"
           />
         )}
 
@@ -51,7 +55,7 @@ export default function RankBadge({
           </div>
         )}
       </div>
-      
+
       {showText && (
         <span className="text-gaming-accent text-[10px] font-black mt-1 uppercase tracking-widest whitespace-nowrap">
           {rankName} {rankDigit < 8 && starsDigit > 0 ? starsDigit : ''}

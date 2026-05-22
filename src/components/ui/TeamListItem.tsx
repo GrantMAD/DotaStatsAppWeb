@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { Shield } from 'lucide-react';
+import { cn } from '@/utils/cn';
+import Image from "next/image";
 
 import { ProTeam } from '@/services/opendota';
 
@@ -17,7 +19,7 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
     : '0.0';
 
   return (
-    <div 
+    <div
       onClick={() => onClick(team.team_id)}
       className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
     >
@@ -30,12 +32,14 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
         </span>
       </div>
 
-      <div className="w-14 h-14 bg-[var(--nav-hover)] rounded-xl border border-[var(--card-border)] p-2 flex items-center justify-center overflow-hidden">
+      <div className="w-14 h-14 bg-(--nav-hover) rounded-xl border border-(--card-border) p-2 flex items-center justify-center overflow-hidden">
         {team.logo_url ? (
-          <img 
-            src={team.logo_url} 
+          <Image
+            src={team.logo_url}
             alt={team.name}
-            className="w-full h-full object-contain"
+            fill
+            unoptimized
+            className="object-contain"
           />
         ) : (
           <Shield className="w-6 h-6 text-foreground/10" />
@@ -70,4 +74,3 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
   );
 }
 
-import { cn } from '@/utils/cn';

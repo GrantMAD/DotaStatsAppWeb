@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useFriends } from './useFriends';
 import { openDotaApi } from '../services/opendota';
 import { useMemo, useEffect, useRef } from 'react';
@@ -33,8 +33,8 @@ export interface ActivityItem {
 export const useActivityFeed = () => {
   const { following, friends, loading: friendsLoading } = useFriends();
   const { user } = useSupabaseAuth();
-  const queryClient = useQueryClient();
-  const { current: instanceId } = useRef(Math.random().toString(36).substring(7));
+  const userId = user?.id;
+  const instanceIdRef = useRef<string | null>(null);
 
   const playerIds = useMemo(() => {
     const ids = new Set<string>();
@@ -76,7 +76,7 @@ export const useActivityFeed = () => {
             }
 
             return { id, profile, matches, latestMatchDetails };
-          } catch (err) {
+          } catch {
             return { id, profile: null, matches: [], latestMatchDetails: null };
           }
         })
@@ -158,7 +158,7 @@ export const useActivityFeed = () => {
               }
               // Top 1% Benchmark
               if (p.benchmarks) {
-                const topMetric = Object.entries(p.benchmarks).find(([_, val]) => val.pct >= 0.99);
+                const topMetric = Object.entries(p.benchmarks).find(([, val]) => val.pct >= 0.99);
                 if (topMetric) {
                   activityList.push({
                     id: `benchmark-${accountId}-${latestMatch.match_id}`,
@@ -275,10 +275,13 @@ export const useActivityFeed = () => {
   });
 
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
+    if (!instanceIdRef.current) {
+      instanceIdRef.current = Math.random().toString(36).substring(7);
+    }
 
     const supabase = createClient();
-    const channelName = `activity_feed_sync_${user.id}_${instanceId}`;
+    const channelName = `activity_feed_sync_${userId}_${instanceIdRef.current}`;
     const channel = supabase.channel(channelName);
     
     channel
@@ -288,7 +291,7 @@ export const useActivityFeed = () => {
           event: 'INSERT',
           schema: 'public',
           table: 'notifications',
-          filter: `user_id=eq.${user.id}`,
+          filter: `user_id=eq.${userId}`,
         },
         () => {
           // New notification might mean a friend's match was parsed or milestone hit
@@ -300,7 +303,7 @@ export const useActivityFeed = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user?.id, refetch, instanceId]);
+  }, [userId, refetch]);
 
   return {
     activities,

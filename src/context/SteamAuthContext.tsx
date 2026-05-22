@@ -104,7 +104,7 @@ export function SteamAuthProvider({ children }: { children: ReactNode }) {
   }, [user, refreshProfile, supabase]);
 
   const login = useCallback(() => {
-    setIsLoading(true);
+    setInternalLoading(true);
     const host = window.location.origin;
     const currentPath = window.location.pathname;
     const redirectUrl = `${host}/api/auth/steam?next=${encodeURIComponent(currentPath)}`;

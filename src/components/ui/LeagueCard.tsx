@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Trophy, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Trophy, ChevronRight } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { getLeagueImageUrl } from '@/services/constants';
+import Image from 'next/image';
 
 interface League {
   leagueid: number;
@@ -32,24 +33,26 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
   const bannerUrl = getLeagueImageUrl(league.banner);
 
   return (
-    <div 
+    <div
       onClick={() => onClick(league.leagueid)}
       className="glass-card overflow-hidden hover:border-gaming-accent/50 transition-all cursor-pointer group flex flex-col h-full"
     >
       <div className="relative aspect-video w-full bg-black/40 overflow-hidden">
         {bannerUrl && !imageError ? (
-          <img 
-            src={bannerUrl} 
+          <Image
+            src={bannerUrl}
             alt={league.name}
+            fill
+            unoptimized
             onError={() => setImageError(true)}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <Trophy className="w-12 h-12 text-white/10" />
           </div>
         )}
-        
+
         {/* Status & Tier Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           <span className={cn(
@@ -58,11 +61,11 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
           )}>
             {league.tier || 'Unknown'}
           </span>
-          
+
           <div className={cn(
             "px-2 py-1 rounded text-[8px] font-black uppercase border backdrop-blur-md flex items-center gap-1 w-fit",
-            isActive 
-              ? "bg-win/20 text-win border-win/30 animate-pulse" 
+            isActive
+              ? "bg-win/20 text-win border-win/30 animate-pulse"
               : "bg-gray-500/20 text-gray-400 border-gray-500/30"
           )}>
             <div className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-win" : "bg-gray-500")} />
@@ -75,7 +78,7 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
         <h3 className="text-foreground font-bold text-lg line-clamp-2 mb-4 group-hover:text-gaming-accent transition-colors">
           {league.name}
         </h3>
-        
+
         <div className="mt-auto flex items-center justify-between">
           <span className="text-xs text-gray-500 font-medium">ID: {league.leagueid}</span>
           <div className="flex items-center gap-1 text-gaming-accent text-xs font-black uppercase tracking-wider">
