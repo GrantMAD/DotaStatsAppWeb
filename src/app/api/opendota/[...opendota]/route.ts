@@ -13,6 +13,7 @@ const forwardRequest = async (request: NextRequest, pathSegments: string[]) => {
 
   const forwardedHeaders = new Headers(request.headers)
   forwardedHeaders.delete('host')
+  forwardedHeaders.delete('accept-encoding') // Avoid compression issues in proxy
 
   const body = ['GET', 'HEAD'].includes(request.method)
     ? undefined

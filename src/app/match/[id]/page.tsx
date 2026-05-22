@@ -26,7 +26,8 @@ export default function MatchPage() {
   const [parseRequested, setParseRequested] = useState(false);
   
   const { data: match, isLoading, error } = useMatchDetails(matchId, {
-    refetchInterval: (data: { version?: unknown } | undefined) => {
+    refetchInterval: (query) => {
+      const data = query.state.data as { version?: unknown } | undefined;
       // If we requested a parse and don't have a version yet, poll every 20s
       if (parseRequested && !data?.version) return 20000;
       return false;

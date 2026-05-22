@@ -29,22 +29,16 @@ export function calculateLaningGrade(efficiency: number | null, percentile: numb
 
 /**
  * Normalizes a draft advantage score into a percentage for Radiant.
- * @param scores Array of matchup winrate differences
+ * @param matchups Array of matchup winrate differences
+ * @param radiantPicks Array of Radiant hero IDs
+ * @param direPicks Array of Dire hero IDs
  */
-export function calculateDraftAdvantage(matchups: any[], radiantPicks: number[], direPicks: number[]) {
+export function calculateDraftAdvantage(matchups: unknown[], radiantPicks: number[], direPicks: number[]) {
   if (!matchups || matchups.length === 0 || radiantPicks.length === 0 || direPicks.length === 0) {
     return 50;
   }
 
-  let totalRadiantAdvantage = 0;
-  let comparisonCount = 0;
-
-  // radiantPicks and direPicks are arrays of hero IDs
-  // matchups is expected to be a map or array of matchup data for these heroes
-  // For simplicity in this implementation, we assume we have a way to look up winrates
-  // In the real implementation, we'll fetch these or pass a pre-processed map
-  
-  // This is a placeholder for the logic that will be used inside the component
+  // Placeholder for the logic that will be used inside the component
   // where the data is actually available.
   return 50; 
 }

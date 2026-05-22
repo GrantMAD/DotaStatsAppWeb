@@ -36,14 +36,24 @@ export interface Follow {
   id: string;
   follower_id: string;
   followed_steam_id: string;
+  steam_name?: string;
   created_at: string;
 }
 
+type SupabaseUser = {
+  id: string;
+  steam_account_id: string;
+  steam_name: string;
+};
+
 type SupabaseFriendRow = {
+  id: string;
   requester_id: string;
   addressee_id: string;
-  requester: Record<string, unknown>;
-  addressee: Record<string, unknown>;
+  status: FriendshipStatus;
+  created_at: string;
+  requester: SupabaseUser;
+  addressee: SupabaseUser;
 };
 
 export const useFriends = () => {

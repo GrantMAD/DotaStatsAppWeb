@@ -347,7 +347,6 @@ export default function HomePage() {
                     winRate={item.winRate}
                     pickCount={item.picks}
                     rank={idx + 1}
-                    mode="picks"
                   />
                 </div>
               ))

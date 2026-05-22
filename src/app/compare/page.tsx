@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState, useContext, useMemo } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { 
   usePlayerProfile, 
   usePlayerWinLoss, 
@@ -12,18 +13,34 @@ import {
   isProfilePrivate,
   isDataRestricted
 } from '@/hooks/useOpenDota';
+import { 
+  PlayerProfile, 
+  WinLossStats, 
+  PlayerHero, 
+  PlayerTotal,
+  Peer
+} from '@/services/opendota';
 import CompareStatRow from '@/components/compare/CompareStatRow';
 import RankBadge from '@/components/ui/RankBadge';
 import { getHeroImageUrl } from '@/services/constants';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { Plus, BarChart2, User } from 'lucide-react';
-import Image from 'next/image';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 import { SteamAuthContext } from '@/context/SteamAuthContext';
 import { DataPrivacyIndicator } from '@/components/ui/DataPrivacyIndicator';
 import { EyeOff } from 'lucide-react';
+
+interface RecentMatch {
+  player_slot: number;
+  radiant_win: boolean;
+}
+
+type HeroStat = PlayerHero & {
+  avg_kills?: number;
+  avg_deaths?: number;
+  avg_assists?: number;
+};
 
 function CompareContent() {
   const searchParams = useSearchParams();
@@ -33,8 +50,10 @@ function CompareContent() {
   const p2 = searchParams.get('p2');
 
   const [mounted, setMounted] = useState(false);
+  // Using a separate effect for mounting to avoid sync state update warning
   React.useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const steamAuth = useContext(SteamAuthContext);
@@ -54,7 +73,7 @@ function CompareContent() {
   const { data: heroes2 } = usePlayerHeroes(p2);
   const { data: totals2, isLoading: loadingTotals2 } = usePlayerTotals(p2);
   const { data: recent2, isLoading: loadingRecent2 } = useRecentMatches(p2, 20);
-  const { data: peers2, isLoading: loadingPeers2 } = usePlayerPeers(p2);
+  const { isLoading: loadingPeers2 } = usePlayerPeers(p2);
   
   const isP1Private = useMemo(() => isProfilePrivate(profile1 ?? null), [profile1]);
   const isP1Restricted = useMemo(() => isDataRestricted(profile1 ?? null, recent1?.length || 0), [profile1, recent1]);
@@ -111,12 +130,12 @@ function CompareContent() {
     setTimeout(() => setIsAddingMe(false), 2000);
   };
 
-  const getWR = (wl: any) => {
-    if (!wl || (wl.win + wl.lose) === 0) return 0;
+  const getWR = (wl: WinLossStats | undefined | null) => {
+    if (!wl || (wl.win + wl.lose) === 0) return "0.0";
     return ((wl.win / (wl.win + wl.lose)) * 100).toFixed(1);
   };
 
-  const getKDA = (heroes: any[]) => {
+  const getKDA = (heroes: HeroStat[] | undefined | null) => {
     if (!heroes || heroes.length === 0) return "0.00";
     const totals = heroes.reduce((acc, h) => {
       acc.kills += (h.avg_kills || 0) * h.games;
@@ -130,14 +149,14 @@ function CompareContent() {
     return ((totals.kills + totals.assists) / Math.max(1, totals.deaths)).toFixed(2);
   };
 
-  const getAvg = (totals: any[], field: string) => {
+  const getAvg = (totals: PlayerTotal[] | undefined | null, field: string) => {
     const entry = totals?.find(t => t.field === field);
     if (!entry || entry.n === 0) return 0;
     return Math.round(entry.sum / entry.n);
   };
 
-  const getRecentWR = (matches: any[]) => {
-    if (!matches || matches.length === 0) return 0;
+  const getRecentWR = (matches: RecentMatch[] | undefined | null) => {
+    if (!matches || matches.length === 0) return "0.0";
     const wins = matches.filter(m => {
       const isRadiant = m.player_slot < 128;
       return (isRadiant && m.radiant_win) || (!isRadiant && !m.radiant_win);
@@ -145,11 +164,11 @@ function CompareContent() {
     return ((wins / matches.length) * 100).toFixed(1);
   };
 
-  const getVersatility = (heroes: any[]) => {
+  const getVersatility = (heroes: HeroStat[] | undefined | null) => {
     return heroes?.filter(h => h.games > 0).length || 0;
   };
 
-  const getMatchup = (peers: any[], targetId: string) => {
+  const getMatchup = (peers: Peer[] | undefined | null, targetId: string) => {
     if (!targetId) return null;
     const peer = peers?.find(p => p.account_id.toString() === targetId);
     if (!peer) return null;
@@ -160,7 +179,7 @@ function CompareContent() {
     };
   };
 
-  const renderPlayerHeader = (profile: any, target: 'p1' | 'p2') => {
+  const renderPlayerHeader = (profile: PlayerProfile | undefined | null, target: 'p1' | 'p2') => {
     if (!profile) {
       return (
         <div 
@@ -201,11 +220,14 @@ function CompareContent() {
         </button>
 
         <div className="relative">
-          <img 
-            src={profile.profile.avatarfull} 
-            alt={profile.profile.personaname}
-            className="w-24 h-24 rounded-2xl border-2 border-purple-500/50 shadow-2xl shadow-purple-500/20 group-hover:scale-105 transition-transform"
-          />
+          <div className="w-24 h-24 rounded-2xl border-2 border-purple-500/50 shadow-2xl shadow-purple-500/20 group-hover:scale-105 transition-transform overflow-hidden relative">
+            <Image 
+              src={profile.profile.avatarfull} 
+              alt={profile.profile.personaname}
+              fill
+              className="object-cover"
+            />
+          </div>
           <div className="absolute -bottom-4 -right-4 scale-110">
             <RankBadge rankTier={profile.rank_tier} size={60} />
           </div>
@@ -388,11 +410,14 @@ function CompareContent() {
                     <div className="flex-1 flex items-center gap-4">
                       {h1 ? (
                         <>
-                          <img 
-                            src={getHeroImageUrl(Number(h1.hero_id))} 
-                            className="w-16 h-16 rounded-xl border-2 border-(--card-border) group-hover:border-purple-500/50 transition-colors"
-                            alt="Hero"
-                          />
+                          <div className="relative w-16 h-16 rounded-xl border-2 border-(--card-border) group-hover:border-purple-500/50 transition-colors overflow-hidden">
+                            <Image 
+                              src={getHeroImageUrl(Number(h1.hero_id))} 
+                              alt="Hero"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                           <div>
                             <p className="text-xl font-black italic">{(h1.win / h1.games * 100).toFixed(0)}% WR</p>
                             <p className="text-foreground/40 text-xs font-bold">{h1.games} games</p>
@@ -413,11 +438,14 @@ function CompareContent() {
                             <p className="text-xl font-black italic">{(h2.win / h2.games * 100).toFixed(0)}% WR</p>
                             <p className="text-foreground/40 text-xs font-bold">{h2.games} games</p>
                           </div>
-                          <img 
-                            src={getHeroImageUrl(Number(h2.hero_id))} 
-                            className="w-16 h-16 rounded-xl border-2 border-(--card-border) group-hover:border-purple-500/50 transition-colors"
-                            alt="Hero"
-                          />
+                          <div className="relative w-16 h-16 rounded-xl border-2 border-(--card-border) group-hover:border-purple-500/50 transition-colors overflow-hidden">
+                            <Image 
+                              src={getHeroImageUrl(Number(h2.hero_id))} 
+                              alt="Hero"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
                         </>
                       ) : (
                         <div className="w-16 h-16 rounded-xl bg-(--nav-hover)" />

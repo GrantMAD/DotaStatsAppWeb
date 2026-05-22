@@ -235,7 +235,7 @@ export const CHATWHEEL_MAPPING: Record<string, string> = {
  * Helper to get the phrase from a key.
  * If the key is not found, it returns the key itself.
  */
-export function getChatWheelPhrase(key: any): string {
+export function getChatWheelPhrase(key: string | number | null | undefined): string {
   if (key === undefined || key === null) return '';
   
   const cleanKey = String(key).trim();

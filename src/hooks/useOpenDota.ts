@@ -1,17 +1,44 @@
 'use client';
 
-import { useMemo } from 'react';
-import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData, UseQueryOptions } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
 import { 
   openDotaApi, 
   OPENDOTA_BASE_URL,
   isProfilePrivate,
   isDataRestricted,
-  MatchDetails
+  MatchDetails,
+  PlayerHero,
+  PlayerMatchFilters
 } from '../services/opendota';
 
 export { isProfilePrivate, isDataRestricted };
+
+interface MatchStat {
+  hero_id: number;
+  kills: number;
+  deaths: number;
+  assists: number;
+}
+
+interface AppUser {
+  id: string;
+  steam_account_id: string;
+  steam_name: string | null;
+}
+
+interface SearchPlayerResult {
+  account_id: number;
+  personaname: string;
+  avatarfull: string;
+  last_match_time?: string;
+  isAppUser?: boolean;
+  appUserId?: string;
+  isPro?: boolean;
+  team_tag?: string;
+  name?: string;
+  avatar?: string;
+}
 
 /**
  * Hook to fetch a player's profile data.
@@ -45,15 +72,15 @@ export function usePlayerHeroes(accountId: string | number | null) {
         }).then(res => {
           clearTimeout(timeoutId);
           if (!res.ok) return [];
-          return res.json();
+          return res.json() as Promise<MatchStat[]>;
         }).catch(() => {
           clearTimeout(timeoutId);
-          return [];
+          return [] as MatchStat[];
         })
       ]);
       // Aggregate KDA per hero
       const matchStats: Record<number, { kills: number; deaths: number; assists: number; count: number }> = {};
-      matches.forEach((m: any) => {
+      matches.forEach((m) => {
         if (!matchStats[m.hero_id]) {
           matchStats[m.hero_id] = { kills: 0, deaths: 0, assists: 0, count: 0 };
         }
@@ -64,7 +91,7 @@ export function usePlayerHeroes(accountId: string | number | null) {
       });
 
       // Combine and return
-      return heroes.map(h => {
+      return heroes.map((h: PlayerHero) => {
         const stats = matchStats[Number(h.hero_id)];
         return {
           ...h,
@@ -173,7 +200,7 @@ export function useSearchPlayers(query: string) {
       if (!trimmedQuery || trimmedQuery.length < 3) return [];
 
       // 1. Search Registered App Users in Supabase
-      let appUsers: any[] = [];
+      let appUsers: SearchPlayerResult[] = [];
       try {
         const { data, error } = await supabase
           .from('users')
@@ -183,7 +210,7 @@ export function useSearchPlayers(query: string) {
           .limit(10);
         
         if (!error && data) {
-          appUsers = await Promise.all(data.map(async u => {
+          appUsers = await Promise.all((data as AppUser[]).map(async u => {
             let avatar = '';
             try {
               const profile = await openDotaApi.getPlayerProfile(u.steam_account_id);
@@ -208,14 +235,14 @@ export function useSearchPlayers(query: string) {
       }
 
       // 2. Search Notable/Pro Players
-      let proPlayers: any[] = [];
+      let proPlayers: SearchPlayerResult[] = [];
       try {
         const proPlayersData = await openDotaApi.getProPlayers();
         const qLower = trimmedQuery.toLowerCase();
         proPlayers = proPlayersData
-          .filter((p: any) => p.personaname?.toLowerCase().includes(qLower) || p.name?.toLowerCase().includes(qLower))
+          .filter((p) => p.personaname?.toLowerCase().includes(qLower) || p.name?.toLowerCase().includes(qLower))
           .slice(0, 10)
-          .map((p: any) => ({
+          .map((p) => ({
             account_id: p.account_id,
             personaname: p.name || p.personaname,
             avatarfull: p.avatarfull || p.avatar,
@@ -228,7 +255,7 @@ export function useSearchPlayers(query: string) {
       }
 
       // Merge initial fast results
-      const mergedResultsMap = new Map<number, any>();
+      const mergedResultsMap = new Map<number, SearchPlayerResult>();
       appUsers.forEach(p => mergedResultsMap.set(p.account_id, p));
       proPlayers.forEach(p => {
         if (mergedResultsMap.has(p.account_id)) {
@@ -244,17 +271,17 @@ export function useSearchPlayers(query: string) {
       // 3. Fire Async Global Search to not block immediate local results
       openDotaApi.searchPlayers(trimmedQuery)
         .then((globalResults) => {
-          queryClient.setQueryData(['searchPlayers', query], (oldData: any) => {
-            const currentMap = new Map<number, any>();
-            (oldData || []).forEach((p: any) => currentMap.set(p.account_id, p));
+          queryClient.setQueryData(['searchPlayers', query], (oldData: SearchPlayerResult[] | undefined) => {
+            const currentMap = new Map<number, SearchPlayerResult>();
+            (oldData || []).forEach((p) => currentMap.set(p.account_id, p));
             
-            globalResults.forEach((p: any) => {
+            globalResults.forEach((p) => {
               if (currentMap.has(p.account_id)) {
                 const existing = currentMap.get(p.account_id)!;
                 currentMap.set(p.account_id, {
+                  ...existing,
                   avatarfull: p.avatarfull || existing.avatarfull,
                   last_match_time: p.last_match_time || existing.last_match_time,
-                  ...existing,
                 });
               } else {
                 currentMap.set(p.account_id, p);
@@ -372,7 +399,7 @@ export function useGlobalRecords(field: string) {
 /**
  * Hook to fetch match details.
  */
-export function useMatchDetails(matchId: number | null, options: any = {}) {
+export function useMatchDetails(matchId: number | null, options: Partial<UseQueryOptions<MatchDetails | null>> = {}) {
   return useQuery<MatchDetails | null>({
     queryKey: ['matchDetails', matchId],
     queryFn: () => (matchId ? openDotaApi.getMatchDetails(matchId) : null),
@@ -407,7 +434,7 @@ export function usePlayerCounts(accountId: string | number | null) {
 /**
  * Hook to fetch filtered player matches.
  */
-export function usePlayerMatches(accountId: string | number | null, filters: any = {}) {
+export function usePlayerMatches(accountId: string | number | null, filters: PlayerMatchFilters = {}) {
   return useQuery({
     queryKey: ['playerMatches', accountId, filters],
     queryFn: () => (accountId ? openDotaApi.getPlayerMatches(accountId, filters) : []),

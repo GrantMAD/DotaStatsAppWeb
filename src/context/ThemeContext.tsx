@@ -53,11 +53,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     localStorage.setItem('theme-preference', theme);
 
-    // Update Supabase if user is logged in
-    if (user) {
-      supabase.from('users').update({ theme }).eq('id', user.id);
-    }
-
     const updateResolvedTheme = () => {
       if (theme === 'system') {
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -94,7 +89,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.style.colorScheme = resolvedTheme;
   }, [resolvedTheme]);
 
-  const setTheme = (newTheme: Theme) => setThemeState(newTheme);
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
+    if (user) {
+      // Only update database when user explicitly changes theme
+      supabase.from('users').update({ theme: newTheme }).eq('id', user.id).then();
+    }
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, setTheme, resolvedTheme }}>

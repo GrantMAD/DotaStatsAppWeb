@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Mail, Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function SignUpPage() {
@@ -15,7 +14,6 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
   const supabase = createClient();
 
   const handleSignUp = async (e: React.FormEvent) => {

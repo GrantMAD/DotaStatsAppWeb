@@ -34,10 +34,16 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
+  const userRef = React.useRef<User | null>(null);
 
-  // ✅ FIX: memoized refreshProfile (Option 1)
+  // Sync ref with state
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
+
+  // ✅ FIX: removed user dependency to break infinite loop
   const refreshProfile = useCallback(async (currentUser?: User | null) => {
-    const activeUser = currentUser ?? user;
+    const activeUser = currentUser ?? userRef.current;
 
     if (!activeUser) {
       setSteamAccountId(null);
@@ -61,16 +67,17 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.error("Error fetching user profile:", e);
     }
-  }, [user, supabase]);
+  }, [supabase]);
 
   useEffect(() => {
     // Initial session fetch
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
 
-      if (session?.user) {
-        refreshProfile(session.user).finally(() => setIsLoading(false));
+      if (currentUser) {
+        refreshProfile(currentUser).finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
       }
@@ -79,10 +86,11 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      setUser(session?.user ?? null);
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
 
-      if (session?.user) {
-        refreshProfile(session.user).finally(() => setIsLoading(false));
+      if (currentUser) {
+        refreshProfile(currentUser).finally(() => setIsLoading(false));
       } else {
         setSteamAccountId(null);
         setMatchLimit(20);
