@@ -1,42 +1,41 @@
-'use client';
-
 import React from 'react';
-import { useParams } from 'next/navigation';
-import { usePlayerProfile, usePlayerWinLoss } from '@/hooks/useOpenDota';
-import { useFriends } from '@/hooks/useFriends';
-import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
-import { PlayerOverviewContent } from '@/components/profile/PlayerOverviewContent';
-import { Skeleton } from '@/components/ui/Skeleton';
+import { getServerPlayerProfile, getServerPlayerWinLoss } from '@/services/opendota';
+import { ProfilePageClient } from '@/components/profile/ProfilePageClient';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { AlertCircle } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server';
+import { Metadata } from 'next';
 
-export default function ProfilePage() {
-  const params = useParams();
-  const id = params.id as string;
-  const { steamAccountId } = useSupabaseAuth();
+export const revalidate = 600; // Update player data every 10 minutes
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const profile = await getServerPlayerProfile(id);
   
-  const { data: profile, isLoading: profileLoading, error: profileError } = usePlayerProfile(id);
-  const { data: wl, isLoading: wlLoading } = usePlayerWinLoss(id);
-  const { friends, following } = useFriends();
+  const playerName = profile?.profile?.personaname || 'Unknown Player';
+  
+  return {
+    title: `${playerName} - Dota 2 Player Profile | Dota Intelligence`,
+    description: `View Dota 2 match history, win/loss stats, and hero performance for ${playerName}.`,
+  };
+}
 
-  const isCurrentUser = steamAccountId === id;
+export default async function ProfilePage({ params }: PageProps) {
+  const { id } = await params;
+  
+  // 1. Fetch data on the server
+  const [profile, wl, supabase] = await Promise.all([
+    getServerPlayerProfile(id),
+    getServerPlayerWinLoss(id),
+    createClient()
+  ]);
 
-  if (profileLoading || wlLoading) {
-    return (
-      <div className="space-y-8 animate-pulse">
-        <Skeleton className="h-64 w-full rounded-3xl" />
-        <Skeleton className="h-16 w-full rounded-2xl" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-           <div className="lg:col-span-2 space-y-4">
-              {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
-           </div>
-           <Skeleton className="h-96 w-full rounded-2xl" />
-        </div>
-      </div>
-    );
-  }
-
-  if (profileError || !profile) {
+  // 2. Handle errors / Not found
+  if (!profile) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
         <GlassCard className="p-10 border-dashed max-w-md">
@@ -50,15 +49,39 @@ export default function ProfilePage() {
     );
   }
 
+  // 3. Get Auth state for friends/following counts
+  const { data: { user } } = await supabase.auth.getUser();
+  let friendsCount = 0;
+  let followingCount = 0;
+  let isCurrentUser = false;
+
+  if (user) {
+    const { data: appUser } = await supabase
+      .from('users')
+      .select('steam_account_id')
+      .eq('id', user.id)
+      .single();
+    
+    isCurrentUser = appUser?.steam_account_id === id;
+
+    // Fetch following/friends counts from DB if logged in
+    const [{ count: following }, { count: friends }] = await Promise.all([
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id)
+    ]);
+    
+    followingCount = following || 0;
+    friendsCount = friends || 0;
+  }
+
   return (
-    <PlayerOverviewContent
+    <ProfilePageClient
       accountId={id}
-      profile={profile}
-      wl={wl || null}
+      initialProfile={profile}
+      initialWL={wl}
       isCurrentUser={isCurrentUser}
-      friendsCount={friends.length}
-      followingCount={following.length}
-      isPrivate={!profile.profile}
+      friendsCount={friendsCount}
+      followingCount={followingCount}
     />
   );
 }

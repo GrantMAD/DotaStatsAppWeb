@@ -109,10 +109,35 @@ export async function getPlayerProfile(accountId: string | number): Promise<Play
   }
 }
 
+export async function getServerPlayerProfile(accountId: string | number): Promise<PlayerProfile | null> {
+  try {
+    const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}`, {
+      next: { revalidate: 600 } // Cache for 10 minutes
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 export async function getPlayerWinLoss(accountId: string | number, params: Record<string, string> = {}): Promise<WinLossStats | null> {
   try {
     const query = new URLSearchParams(params).toString();
     const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/wl${query ? `?${query}` : ''}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getServerPlayerWinLoss(accountId: string | number, params: Record<string, string> = {}): Promise<WinLossStats | null> {
+  try {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${OPENDOTA_BASE_URL}/players/${accountId}/wl${query ? `?${query}` : ''}`, {
+      next: { revalidate: 600 } // Cache for 10 minutes
+    });
     if (!response.ok) return null;
     return await response.json();
   } catch {
