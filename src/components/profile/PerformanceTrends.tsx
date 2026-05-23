@@ -23,7 +23,7 @@ import {
   Target,
   Users,
   Map
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
 

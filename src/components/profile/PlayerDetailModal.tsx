@@ -6,7 +6,7 @@ import { useFriends } from '@/hooks/useFriends';
 import { Modal } from '../ui/Modal';
 import { PlayerOverviewContent } from './PlayerOverviewContent';
 import { Skeleton } from '../ui/Skeleton';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/components/ui/Icons';
 
 interface PlayerDetailModalProps {
   isOpen: boolean;

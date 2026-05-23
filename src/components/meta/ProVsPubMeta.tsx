@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { openDotaApi, HeroStats } from '@/services/opendota';
 import { getHeroImageUrl } from '@/services/constants';
-import { GitCompare, Trophy, Users, Info, TrendingUp, ArrowUpRight } from 'lucide-react';
+import { GitCompare, Trophy, Users, Info, TrendingUp, ArrowUpRight } from '@/components/ui/Icons';
 import Image from 'next/image';
 
 interface ProVsPubMetaProps {

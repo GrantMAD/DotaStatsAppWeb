@@ -20,7 +20,7 @@ import {
   Moon,
   Monitor,
   Loader2
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useSteamAuth } from '@/hooks/useSteamAuth';

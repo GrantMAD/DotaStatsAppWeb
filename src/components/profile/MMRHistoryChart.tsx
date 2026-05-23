@@ -11,7 +11,7 @@ import {
   Area,
   CartesianGrid
 } from 'recharts';
-import { TrendingUp, Activity } from 'lucide-react';
+import { TrendingUp, Activity } from '@/components/ui/Icons';
 import { GlassCard } from '../ui/GlassCard';
 import { Skeleton } from '../ui/Skeleton';
 import { format } from 'date-fns';

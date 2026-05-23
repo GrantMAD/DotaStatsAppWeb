@@ -33,7 +33,7 @@ import {
   Heart,
   Eye,
   type LucideIcon
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import RankBadge from '../ui/RankBadge';
 import { GlassCard } from '../ui/GlassCard';
 import { Button } from '../ui/Button';

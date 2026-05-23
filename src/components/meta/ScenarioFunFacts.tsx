@@ -12,7 +12,7 @@ import {
   ArrowRight,
   Target,
   ShieldAlert
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 interface FunFact {

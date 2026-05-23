@@ -12,7 +12,7 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
-import { Info, Users, BarChart3, TrendingUp } from 'lucide-react';
+import { Info, Users, BarChart3, TrendingUp } from '@/components/ui/Icons';
 
 const RANK_NAMES: Record<number, string> = {
   1: 'Herald',

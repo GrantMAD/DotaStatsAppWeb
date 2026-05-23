@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { getHeroImageUrl, HEROES } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import { motion } from 'framer-motion';
-import { Swords, ShieldAlert } from 'lucide-react';
+import { Swords, ShieldAlert } from '@/components/ui/Icons';
 import Image from 'next/image';
 
 interface MatchupItemProps {

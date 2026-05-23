@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { ArrowLeft, Mail, Lock, Loader2, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, Loader2, Eye, EyeOff } from '@/components/ui/Icons';
 import Link from 'next/link';
 
 export default function SignUpPage() {

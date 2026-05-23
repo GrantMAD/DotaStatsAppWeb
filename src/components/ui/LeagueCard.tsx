@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Trophy, ChevronRight } from 'lucide-react';
+import { Trophy, ChevronRight } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { getLeagueImageUrl } from '@/services/constants';
 import Image from 'next/image';

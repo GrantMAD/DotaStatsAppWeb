@@ -12,7 +12,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { GlassCard } from '../ui/GlassCard';
-import { TrendingUp, Zap, Activity } from 'lucide-react';
+import { TrendingUp, Zap, Activity } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useTheme } from '@/context/ThemeContext';
 

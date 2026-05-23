@@ -4,7 +4,7 @@ import { MatchPageClient } from '@/components/match/MatchPageClient';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
-import { Timer, Radio, Users, AlertCircle, ChevronLeft } from 'lucide-react';
+import { Timer, Radio, Users, AlertCircle, ChevronLeft } from '@/components/ui/Icons';
 import Link from 'next/link';
 
 interface PageProps {

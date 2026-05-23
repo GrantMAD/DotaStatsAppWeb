@@ -6,7 +6,7 @@ import { MatchDetails, PickBan, PermanentBuff } from '@/services/opendota';
 import { HEROES, getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from '@/services/constants';
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
-import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from 'lucide-react';
+import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from '@/components/ui/Icons';
 import Link from 'next/link';
 import { usePlayerPeers } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { EyeOff, AlertTriangle, ShieldAlert, ExternalLink, Info } from 'lucide-react';
+import { EyeOff, AlertTriangle, ShieldAlert, ExternalLink, Info } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { GlassCard } from './GlassCard';
 import { Button } from './Button';

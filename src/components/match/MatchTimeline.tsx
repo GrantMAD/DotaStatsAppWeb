@@ -15,7 +15,7 @@ interface TimelineEvent {
   color?: string;
 }
 import { cn } from '@/utils/cn';
-import { Activity, Castle, TrendingUp, Skull, RotateCcw, Check, Minus, X, Package, Trophy } from 'lucide-react';
+import { Activity, Castle, TrendingUp, Skull, RotateCcw, Check, Minus, X, Package, Trophy } from '@/components/ui/Icons';
 import { AreaChart, Area, ResponsiveContainer, YAxis } from 'recharts';
 import { calculateLaningGrade } from '@/utils/matchAnalytics';
 

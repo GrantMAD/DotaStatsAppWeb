@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Trophy, Search, X } from 'lucide-react';
+import { Trophy, Search, X } from '@/components/ui/Icons';
 import { LeagueCard } from '@/components/ui/LeagueCard';
 import { TeamListItem } from '@/components/ui/TeamListItem';
 import { ProPlayerItem } from '@/components/ui/ProPlayerItem';

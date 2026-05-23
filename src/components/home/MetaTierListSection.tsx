@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Star } from 'lucide-react';
+import { Star } from '@/components/ui/Icons';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
 import { cn } from '@/utils/cn';

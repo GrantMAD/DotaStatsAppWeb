@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { usePlayerWordCloud } from '@/hooks/useOpenDota';
-import { MessageSquare, Eye, Trophy, Map as MapIcon, MessageCircle, Flame } from 'lucide-react';
+import { MessageSquare, Eye, Trophy, Map as MapIcon, MessageCircle, Flame } from '@/components/ui/Icons';
 import { GlassCard } from '../ui/GlassCard';
 import { cn } from '@/utils/cn';
 

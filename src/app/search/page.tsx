@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
-import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle, Loader2 } from '@/components/ui/Icons';
 import { useSearchPlayers, usePlayerPeers, useHeroStats } from '@/hooks/useOpenDota';
 import { useFriends } from '@/hooks/useFriends';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';

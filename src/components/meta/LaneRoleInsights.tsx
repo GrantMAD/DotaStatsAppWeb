@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { openDotaApi } from '@/services/opendota';
 import { HEROES, getHeroImageUrl } from '@/services/constants';
-import { ChevronRight, Award, Users } from 'lucide-react';
+import { ChevronRight, Award, Users } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import Image from 'next/image';
 

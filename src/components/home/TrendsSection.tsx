@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Trophy, Flame } from 'lucide-react';
+import { Trophy, Flame } from '@/components/ui/Icons';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
 import { HeroStats } from '@/types';

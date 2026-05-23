@@ -6,7 +6,7 @@ import { getHeroImageUrl } from '@/services/constants';
 import { getChatWheelPhrase } from '@/services/chatwheel';
 import { GlassCard } from '../ui/GlassCard';
 import { cn } from '@/utils/cn';
-import { Eye, EyeOff, Activity } from 'lucide-react';
+import { Eye, EyeOff, Activity } from '@/components/ui/Icons';
 import Image from 'next/image';
 
 export function MatchChat({ match }: { match: MatchDetails }) {

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Users, UserCheck, UserPlus, Search, X, GitCompare } from 'lucide-react';
+import { Users, UserCheck, UserPlus, Search, X, GitCompare } from '@/components/ui/Icons';
 import { useFriends } from '@/hooks/useFriends';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { UserListItem } from '@/components/ui/UserListItem';

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { User, ChevronRight, EyeOff } from 'lucide-react';
+import { User, ChevronRight, EyeOff } from '@/components/ui/Icons';
 import { usePlayerProfile, isProfilePrivate } from '@/hooks/useOpenDota';
 import Image from "next/image";
 

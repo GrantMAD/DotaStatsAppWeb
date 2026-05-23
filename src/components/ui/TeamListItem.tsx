@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { Shield } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import Image from "next/image";
 

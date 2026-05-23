@@ -3,7 +3,7 @@
 import { GlassCard } from "./GlassCard";
 import { LiveGame } from "@/services/opendota";
 import { STEAM_CDN_BASE } from "@/services/constants";
-import { Users } from "lucide-react";
+import { Users } from "@/components/ui/Icons";
 import { useHeroStats } from "@/hooks/useOpenDota";
 import Image from 'next/image';
 

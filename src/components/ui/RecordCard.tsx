@@ -3,7 +3,7 @@
 import { GlassCard } from "./GlassCard";
 import { GlobalRecord } from "@/services/opendota";
 import { cn } from "@/utils/cn";
-import { LucideIcon, Trophy, Skull, Activity } from "lucide-react";
+import { LucideIcon, Trophy, Skull, Activity } from "@/components/ui/Icons";
 
 interface RecordCardProps {
   title: string;

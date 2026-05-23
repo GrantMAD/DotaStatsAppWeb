@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';

@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users } from 'lucide-react';
+import { Users } from '@/components/ui/Icons';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ActivityFeedItem } from '@/components/ui/ActivityFeedItem';
 import { GlassCard } from '@/components/ui/GlassCard';

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { openDotaApi, HeroStats } from '@/services/opendota';
 import { getHeroImageUrl } from '@/services/constants';
-import { Award, Users } from 'lucide-react';
+import { Award, Users } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 const RANKS = [

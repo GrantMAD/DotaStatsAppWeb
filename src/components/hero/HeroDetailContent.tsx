@@ -17,7 +17,7 @@ import {
   Swords,
   ShoppingCart,
   Zap
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { useHeroStats, usePlayerHeroes } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { STEAM_CDN_BASE } from '@/services/constants';

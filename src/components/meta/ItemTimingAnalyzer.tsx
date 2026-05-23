@@ -15,7 +15,7 @@ import {
   ReferenceArea,
   Label
 } from 'recharts';
-import { Info, TrendingUp, Target, Clock, AlertTriangle, Zap, ShoppingCart } from 'lucide-react';
+import { Info, TrendingUp, Target, Clock, AlertTriangle, Zap, ShoppingCart } from '@/components/ui/Icons';
 
 interface ItemTimingAnalyzerProps {
   onHeroClick?: (id: number) => void;

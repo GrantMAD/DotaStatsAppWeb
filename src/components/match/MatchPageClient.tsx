@@ -9,7 +9,7 @@ import { MatchTimeline } from '@/components/match/MatchTimeline';
 import { MatchChat } from '@/components/match/MatchChat';
 import { requestMatchParse } from '@/services/opendota';
 import { cn } from '@/utils/cn';
-import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Lock, type LucideIcon } from 'lucide-react';
+import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Lock, type LucideIcon } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { MatchDetails } from '@/types';
 

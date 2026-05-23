@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { Menu } from '@/components/ui/Icons';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { NotificationBell } from './NotificationBell';
 import { useTheme } from '@/context/ThemeContext';

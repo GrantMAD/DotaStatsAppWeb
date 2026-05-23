@@ -2,7 +2,7 @@ import React from 'react';
 import { getServerPlayerProfile, getServerPlayerWinLoss } from '@/services/opendota';
 import { ProfilePageClient } from '@/components/profile/ProfilePageClient';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle } from '@/components/ui/Icons';
 import { createClient } from '@/utils/supabase/server';
 import { Metadata } from 'next';
 

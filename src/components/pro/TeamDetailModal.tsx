@@ -9,7 +9,7 @@ import { ProPlayerItem } from '../ui/ProPlayerItem';
 import { ProMatchCard } from '../ui/ProMatchCard';
 import { MatchDetailModal } from '../match/MatchDetailModal';
 import { Skeleton } from '../ui/Skeleton';
-import { Shield, Trophy, TrendingUp } from 'lucide-react';
+import { Shield, Trophy, TrendingUp } from '@/components/ui/Icons';
 
 interface TeamDetailModalProps {
   isOpen: boolean;

@@ -15,7 +15,7 @@ import {
   ChevronRight,
   LogOut,
   Zap
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { NotificationBell } from './NotificationBell';

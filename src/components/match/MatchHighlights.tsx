@@ -18,7 +18,7 @@ import {
   Shield,
   Activity,
   LucideIcon,
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 
 interface HighlightItemProps {
   icon: LucideIcon;

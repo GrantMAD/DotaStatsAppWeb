@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { User } from 'lucide-react';
+import { User } from '@/components/ui/Icons';
 import { ProPlayer } from '@/services/opendota';
 
 interface ProPlayerItemProps {

@@ -16,7 +16,7 @@ import {
   MessageSquare, 
   CheckCircle2,
   Clock
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/utils/cn';
 import { useRouter } from 'next/navigation';

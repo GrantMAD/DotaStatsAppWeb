@@ -25,11 +25,10 @@ import RankBadge from '@/components/ui/RankBadge';
 import { getHeroImageUrl } from '@/services/constants';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { Plus, BarChart2, User } from 'lucide-react';
+import { Plus, BarChart2, User, EyeOff } from '@/components/ui/Icons';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 import { SteamAuthContext } from '@/context/SteamAuthContext';
 import { DataPrivacyIndicator } from '@/components/ui/DataPrivacyIndicator';
-import { EyeOff } from 'lucide-react';
 
 interface RecentMatch {
   player_slot: number;

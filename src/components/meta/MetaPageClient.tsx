@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb, GitCompare } from 'lucide-react';
+import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb, GitCompare } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 // Dynamic imports for tab components

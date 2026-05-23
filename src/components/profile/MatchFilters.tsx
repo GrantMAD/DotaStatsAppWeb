@@ -2,7 +2,7 @@
 
 import { PlayerMatchFilters } from "@/services/opendota";
 import { cn } from "@/utils/cn";
-import { Filter } from "lucide-react";
+import { Filter } from "@/components/ui/Icons";
 
 interface MatchFiltersProps {
   filters: PlayerMatchFilters;

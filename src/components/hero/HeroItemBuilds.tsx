@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { getItemImageUrl, ITEM_IDS } from '@/services/constants';
 import { motion } from 'framer-motion';
-import { type LucideIcon, ShoppingCart, Zap, Sword, Trophy } from 'lucide-react';
+import { type LucideIcon, ShoppingCart, Zap, Sword, Trophy } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 interface ItemIconProps {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { User, Plus, Check, UserPlus, ChevronRight } from 'lucide-react';
+import { User, Plus, Check, UserPlus, ChevronRight } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 interface PlayerListItemProps {

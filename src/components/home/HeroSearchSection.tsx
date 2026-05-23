@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, LogIn, Link as LinkIcon, User as UserIcon } from 'lucide-react';
+import { Search, LogIn, Link as LinkIcon, User as UserIcon } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 

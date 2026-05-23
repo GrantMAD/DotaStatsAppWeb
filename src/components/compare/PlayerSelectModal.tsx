@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Users, Globe, ChevronRight, User } from 'lucide-react';
+import { Search, Users, Globe, ChevronRight, User } from '@/components/ui/Icons';
 import { Modal } from '@/components/ui/Modal';
 import { useSearchPlayers } from '@/hooks/useOpenDota';
 import { useFriends } from '@/hooks/useFriends';

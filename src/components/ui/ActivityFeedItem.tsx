@@ -7,7 +7,7 @@ import {
   Zap,
   TrendingUp,
   CheckCircle2,
-  XCircle,
+  X,
   ArrowRight,
   Flame,
   Skull,
@@ -16,8 +16,9 @@ import {
   ShieldAlert,
   Sword,
   Crown,
-  Award
-} from "lucide-react";
+  Award,
+  XCircle
+} from "@/components/ui/Icons";
 import { cn } from "@/utils/cn";
 import { useHeroStats } from "@/hooks/useOpenDota";
 import { STEAM_CDN_BASE } from "@/services/constants";

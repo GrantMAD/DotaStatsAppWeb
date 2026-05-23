@@ -8,7 +8,7 @@ import { Modal } from '../ui/Modal';
 import { ProMatchCard } from '../ui/ProMatchCard';
 import { MatchDetailModal } from '../match/MatchDetailModal';
 import { Skeleton } from '../ui/Skeleton';
-import { Trophy, Calendar, Info, Map, Timer, AlertCircle } from 'lucide-react';
+import { Trophy, Calendar, Info, Map, Timer, AlertCircle } from '@/components/ui/Icons';
 import { getLeagueImageUrl } from '@/services/constants';
 
 interface LeagueDetailModalProps {

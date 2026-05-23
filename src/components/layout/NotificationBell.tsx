@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell } from '@/components/ui/Icons';
 import { useNotifications } from '@/hooks/useFriends';
 import { cn } from '@/utils/cn';
 import Link from 'next/link';

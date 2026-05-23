@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from '@/components/ui/Icons';
 import { HeroDetailContent } from '@/components/hero/HeroDetailContent';
 
 interface HeroDetailPageClientProps {

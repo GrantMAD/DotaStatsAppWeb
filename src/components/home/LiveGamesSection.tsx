@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Radio } from 'lucide-react';
+import { Radio } from '@/components/ui/Icons';
 import { LiveGameCard } from '@/components/ui/LiveGameCard';
 import { useLiveGames } from '@/hooks/useOpenDota';
 import dynamic from 'next/dynamic';

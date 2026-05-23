@@ -18,7 +18,7 @@ import {
   AlertCircle,
   Lock,
   type LucideIcon,
-} from 'lucide-react';
+} from '@/components/ui/Icons';
 import { Button } from '../ui/Button';
 import { useRouter } from 'next/navigation';
 

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { Button } from '@/components/ui/Button';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { Link as LinkIcon, LogIn } from 'lucide-react';
+import { Link as LinkIcon, LogIn } from '@/components/ui/Icons';
 import { useSteamAuth } from '@/hooks/useSteamAuth';
 
 export default function MyProfilePage() {

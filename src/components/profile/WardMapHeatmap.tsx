@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { WardMapData } from '@/services/opendota';
 import { GlassCard } from '../ui/GlassCard';
 import { Skeleton } from '../ui/Skeleton';
-import { Eye, EyeOff, Map as MapIcon, Layers } from 'lucide-react';
+import { Eye, EyeOff, Map as MapIcon, Layers } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 
 interface WardMapHeatmapProps {

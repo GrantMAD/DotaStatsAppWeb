@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Star, Ban, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, Ban, ChevronDown, ChevronUp } from '@/components/ui/Icons';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ProMatchCard } from '@/components/ui/ProMatchCard';
 import { GlassCard } from '@/components/ui/GlassCard';
