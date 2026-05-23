@@ -41,9 +41,11 @@ import { Skeleton } from '../ui/Skeleton';
 import MatchFilters from './MatchFilters';
 import PerformanceTrends from './PerformanceTrends';
 import { WordCloud } from './WordCloud';
-import MMRHistoryChart from './MMRHistoryChart';
-import WardMapHeatmap from './WardMapHeatmap';
-import { HeroDetailModal } from '../hero/HeroDetailModal';
+import dynamic from 'next/dynamic';
+
+const MMRHistoryChart = dynamic(() => import('./MMRHistoryChart'), { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> });
+const WardMapHeatmap = dynamic(() => import('./WardMapHeatmap'), { ssr: false, loading: () => <Skeleton className="h-64 w-full" /> });
+const HeroDetailModal = dynamic(() => import('../hero/HeroDetailModal').then(mod => mod.HeroDetailModal), { ssr: false });
 import {
   usePlayerHeroes,
   usePlayerPeers,

@@ -2,16 +2,18 @@
 
 import React, { useState } from 'react';
 import { useMatchDetails } from '@/hooks/useOpenDota';
-import { MatchScoreboard } from '@/components/match/MatchScoreboard';
-import { MatchHighlights } from '@/components/match/MatchHighlights';
-import { MatchEconomy } from '@/components/match/MatchEconomy';
-import { MatchTimeline } from '@/components/match/MatchTimeline';
-import { MatchChat } from '@/components/match/MatchChat';
-import { requestMatchParse } from '@/services/opendota';
 import { cn } from '@/utils/cn';
+import { requestMatchParse } from '@/services/opendota';
 import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Lock, type LucideIcon } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { MatchDetails } from '@/types';
+import dynamic from 'next/dynamic';
+
+const MatchScoreboard = dynamic(() => import('@/components/match/MatchScoreboard').then(mod => mod.MatchScoreboard), { ssr: false });
+const MatchHighlights = dynamic(() => import('@/components/match/MatchHighlights').then(mod => mod.MatchHighlights), { ssr: false });
+const MatchEconomy = dynamic(() => import('@/components/match/MatchEconomy').then(mod => mod.MatchEconomy), { ssr: false });
+const MatchTimeline = dynamic(() => import('@/components/match/MatchTimeline').then(mod => mod.MatchTimeline), { ssr: false });
+const MatchChat = dynamic(() => import('@/components/match/MatchChat').then(mod => mod.MatchChat), { ssr: false });
 
 type MatchTab = 'Scoreboard' | 'Highlights' | 'Economy' | 'Timeline' | 'Chat';
 

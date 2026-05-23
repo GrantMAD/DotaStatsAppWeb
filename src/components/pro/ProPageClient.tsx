@@ -7,14 +7,15 @@ import { TeamListItem } from '@/components/ui/TeamListItem';
 import { ProPlayerItem } from '@/components/ui/ProPlayerItem';
 import { cn } from '@/utils/cn';
 import { ProTeam, LiveGame, ProMatch, League, ProPlayer } from '@/types';
+import dynamic from 'next/dynamic';
+
+const TeamDetailModal = dynamic(() => import('@/components/pro/TeamDetailModal').then(mod => mod.TeamDetailModal), { ssr: false });
+const LeagueDetailModal = dynamic(() => import('@/components/pro/LeagueDetailModal').then(mod => mod.LeagueDetailModal), { ssr: false });
+const PlayerDetailModal = dynamic(() => import('@/components/profile/PlayerDetailModal').then(mod => mod.PlayerDetailModal), { ssr: false });
+const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailModal').then(mod => mod.MatchDetailModal), { ssr: false });
 
 type TabType = 'Tournaments' | 'Teams' | 'Players';
 type SubTabType = 'Premium' | 'Professional' | 'Amateur';
-
-import { TeamDetailModal } from '@/components/pro/TeamDetailModal';
-import { LeagueDetailModal } from '@/components/pro/LeagueDetailModal';
-import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
-import { MatchDetailModal } from '@/components/match/MatchDetailModal';
 
 interface ProPageClientProps {
   initialLeagues: League[];
