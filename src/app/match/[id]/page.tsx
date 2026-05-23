@@ -1,72 +1,29 @@
-'use client';
-
-import React, { useState, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useMatchDetails, useLiveGames } from '@/hooks/useOpenDota';
-import { MatchScoreboard } from '@/components/match/MatchScoreboard';
-import { MatchHighlights } from '@/components/match/MatchHighlights';
-import { MatchEconomy } from '@/components/match/MatchEconomy';
-import { MatchTimeline } from '@/components/match/MatchTimeline';
-import { MatchChat } from '@/components/match/MatchChat';
-import { Skeleton } from '@/components/ui/Skeleton';
+import React from 'react';
+import { getServerMatchDetails, getLiveGames, GAME_MODES } from '@/services/opendota';
+import { MatchPageClient } from '@/components/match/MatchPageClient';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { GAME_MODES, requestMatchParse } from '@/services/opendota';
-import { cn } from '@/utils/cn';
-import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Radio, Users, Lock, ChevronLeft, type LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/utils/cn';
+import { Timer, Radio, Users, AlertCircle, ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
 
-type MatchTab = 'Scoreboard' | 'Highlights' | 'Economy' | 'Timeline' | 'Chat';
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
 
-export default function MatchPage() {
-  const params = useParams();
-  const router = useRouter();
-  const matchId = Number(params.id);
-  const [activeTab, setActiveTab] = useState<MatchTab>('Scoreboard');
-  const [isParsing, setIsParsing] = useState(false);
-  const [parseRequested, setParseRequested] = useState(false);
-  
-  const { data: match, isLoading, error } = useMatchDetails(matchId, {
-    refetchInterval: (query) => {
-      const data = query.state.data as { version?: unknown } | undefined;
-      // If we requested a parse and don't have a version yet, poll every 20s
-      if (parseRequested && !data?.version) return 20000;
-      return false;
-    }
-  });
+export default async function MatchPage({ params }: PageProps) {
+  const { id } = await params;
+  const matchId = Number(id);
 
-  const { data: liveGames = [] } = useLiveGames();
+  // 1. Concurrent fetching of match data and live games
+  const [match, liveGames] = await Promise.all([
+    getServerMatchDetails(matchId),
+    getLiveGames()
+  ]);
 
-  const handleRequestParse = async () => {
-    if (!matchId || isParsing) return;
-    setIsParsing(true);
-    try {
-      const result = await requestMatchParse(matchId);
-      if (result) {
-        setParseRequested(true);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsParsing(false);
-    }
-  };
+  const liveGame = liveGames.find(g => g.match_id === matchId);
 
-  const liveGame = useMemo(() => {
-    return liveGames.find(g => g.match_id === matchId);
-  }, [liveGames, matchId]);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-8 animate-pulse">
-        <Skeleton className="h-48 w-full rounded-3xl" />
-        <Skeleton className="h-16 w-full rounded-2xl" />
-        <div className="space-y-4">
-           {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
-        </div>
-      </div>
-    );
-  }
-
+  // 2. Handle Live Match Case
   if (!match && liveGame) {
     return (
       <div className="max-w-6xl mx-auto space-y-8 pb-20">
@@ -111,9 +68,11 @@ export default function MatchPage() {
                  <Radio className="w-6 h-6 animate-pulse" />
                  Watch Live in Game
                </Button>
-               <Button variant="secondary" size="lg" className="px-10 h-16 text-lg font-black italic uppercase tracking-wider" onClick={() => router.refresh()}>
-                 Refresh Data
-               </Button>
+               <Link href={`/match/${matchId}`}>
+                 <Button variant="secondary" size="lg" className="px-10 h-16 text-lg font-black italic uppercase tracking-wider">
+                   Refresh Data
+                 </Button>
+               </Link>
             </div>
           </div>
         </GlassCard>
@@ -151,7 +110,8 @@ export default function MatchPage() {
     );
   }
 
-  if (error || !match) {
+  // 3. Handle Not Found Case
+  if (!match) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
         <GlassCard className="p-10 border-dashed max-w-md">
@@ -160,29 +120,26 @@ export default function MatchPage() {
           <p className="text-gray-500 font-medium mb-8">
             We couldn&apos;t retrieve details for Match ID: {matchId}. It might be too old or private.
           </p>
-          <Button onClick={() => router.back()} variant="secondary">
-            Go Back
-          </Button>
+          <Link href="/">
+            <Button variant="secondary">
+              Go Home
+            </Button>
+          </Link>
         </GlassCard>
       </div>
     );
   }
 
-  const TABS: { id: MatchTab; label: string; icon: LucideIcon }[] = [
-    { id: 'Scoreboard', label: 'Scoreboard', icon: LayoutGrid },
-    { id: 'Highlights', label: 'Highlights', icon: Trophy },
-    { id: 'Economy', label: 'Economy', icon: BarChart2 },
-    { id: 'Timeline', label: 'Timeline', icon: Timer },
-    { id: 'Chat', label: 'Chat Log', icon: MessageSquare },
-  ];
-
+  // 4. Render Server-Side Match Header
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
       <div className="flex items-center justify-between gap-4">
-        <Button variant="secondary" size="sm" onClick={() => router.back()} className="inline-flex items-center gap-2">
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </Button>
+        <Link href="/">
+          <Button variant="secondary" size="sm" className="inline-flex items-center gap-2">
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </Button>
+        </Link>
       </div>
 
       {/* Match Hero Header - Immersive Redesign */}
@@ -256,72 +213,8 @@ export default function MatchPage() {
         </div>
       </GlassCard>
 
-      {!match.version && (
-        <div className="bg-amber-500/10 border border-amber-500/20 p-6 rounded-3xl flex items-center gap-6 group animate-in slide-in-from-top-4 duration-500">
-          <div className="p-4 rounded-2xl bg-amber-500/20 text-amber-500 group-hover:scale-110 transition-transform">
-            <AlertCircle size={24} />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-amber-500 font-black uppercase tracking-widest text-sm mb-1">Parsed Data Required</h3>
-            <p className="text-gray-400 font-medium text-sm leading-relaxed">
-              This match has not been fully parsed yet. Economy trends, timeline events, and detailed combat logs will be available once the parsing process is complete.
-            </p>
-          </div>
-          {!parseRequested ? (
-            <Button 
-              onClick={handleRequestParse} 
-              disabled={isParsing}
-              variant="secondary"
-              className="border-amber-500/20 text-amber-500 hover:bg-amber-500/10"
-            >
-              Start Parsing
-            </Button>
-          ) : (
-            <div className="flex flex-col items-end gap-1">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 border border-green-500/20">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Polling Data...</span>
-              </div>
-              <span className="text-[9px] font-bold text-gray-500 uppercase italic">This may take a few minutes</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tab Nav */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-(--card-bg) backdrop-blur-xl border border-(--card-border) rounded-2xl sticky top-4 z-40 shadow-2xl">
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          const isLocked = ['Economy', 'Timeline', 'Chat'].includes(tab.id) && !match.version;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "flex-1 min-w-30 flex items-center justify-center gap-2 px-6 py-4 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-widest",
-                isActive 
-                  ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]" 
-                  : "text-gray-500 hover:text-foreground hover:bg-(--nav-hover)",
-                isLocked && "opacity-40"
-              )}
-            >
-              <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
-              {tab.label}
-              {isLocked && <Lock size={10} className="ml-1" />}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tab Content */}
-      <div className="animate-in fade-in duration-500">
-        {activeTab === 'Scoreboard' && <MatchScoreboard match={match} />}
-        {activeTab === 'Highlights' && <MatchHighlights match={match} />}
-        {activeTab === 'Economy' && <MatchEconomy match={match} />}
-        {activeTab === 'Timeline' && <MatchTimeline match={match} />}
-        {activeTab === 'Chat' && <MatchChat match={match} />}
-      </div>
+      {/* Client Logic (Tabs & Polling) */}
+      <MatchPageClient initialMatch={match} />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { HeroStats } from './opendota';
+import { HeroStats } from '@/types';
 
 export type Tier = 'S' | 'A' | 'B' | 'C' | 'D';
 

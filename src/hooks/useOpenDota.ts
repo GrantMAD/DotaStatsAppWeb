@@ -9,7 +9,9 @@ import {
   isDataRestricted,
   MatchDetails,
   PlayerHero,
-  PlayerMatchFilters
+  PlayerMatchFilters,
+  HeroStats,
+  ProMatch
 } from '../services/opendota';
 
 export { isProfilePrivate, isDataRestricted };
@@ -158,21 +160,23 @@ export function useEncounterHistory(accountId: string | number | null, targetId:
 /**
  * Hook to fetch global hero statistics.
  */
-export function useHeroStats() {
+export function useHeroStats(options: Partial<UseQueryOptions<HeroStats[]>> = {}) {
   return useQuery({
     queryKey: ['heroStats'],
     queryFn: openDotaApi.getHeroStats,
     staleTime: 1000 * 60 * 60, // Hero stats change slowly, cache for 1 hour
+    ...options
   });
 }
 
 /**
  * Hook to fetch professional matches.
  */
-export function useProMatches(limit: number = 20) {
+export function useProMatches(limit: number = 20, options: Partial<UseQueryOptions<ProMatch[]>> = {}) {
   return useQuery({
     queryKey: ['proMatches', limit],
     queryFn: () => openDotaApi.getProMatches(limit),
+    ...options
   });
 }
 
