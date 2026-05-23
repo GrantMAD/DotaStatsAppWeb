@@ -4,22 +4,17 @@ import React, { useState, useMemo } from 'react';
 import { Star } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
 import { calculateTierList, BRACKET_NAMES } from '@/services/tierList';
 import { HeroStats } from '@/types';
 import dynamic from 'next/dynamic';
+import { MetaTierSkeleton } from '../ui/HomeSkeletons';
 
 const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
   ssr: false
 });
 
-interface MetaTierListSectionProps {
-  initialHeroesData: HeroStats[];
-  userBracket: number | null;
-}
-
-export function MetaTierListSection({ initialHeroesData, userBracket }: MetaTierListSectionProps) {
+export function MetaTierListSection({ initialHeroesData, userBracket }: { initialHeroesData: HeroStats[], userBracket: number | null }) {
   const [selectedBracket, setSelectedBracket] = useState<number | null>(null);
   const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
 
@@ -66,7 +61,7 @@ export function MetaTierListSection({ initialHeroesData, userBracket }: MetaTier
 
       <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
         {topTier.length === 0 ? (
-          [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
+          <MetaTierSkeleton />
         ) : (
           topTier.map((item) => (
             <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">

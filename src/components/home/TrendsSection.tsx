@@ -4,10 +4,10 @@ import React, { useState, useMemo } from 'react';
 import { Trophy, Flame } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { HeroStatsCard } from '@/components/ui/HeroStatsCard';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { HeroStats } from '@/types';
 import { processHeroStats } from '@/utils/heroStats';
 import dynamic from 'next/dynamic';
+import { HeroTrendsSkeleton } from '../ui/HomeSkeletons';
 
 const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
   ssr: false
@@ -41,7 +41,7 @@ export function TrendsSection({ initialHeroesData }: TrendsSectionProps) {
         />
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
           {topWinRate.length === 0 ? (
-            [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
+            <HeroTrendsSkeleton />
           ) : (
             topWinRate.map((item, idx) => (
               <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">
@@ -68,7 +68,7 @@ export function TrendsSection({ initialHeroesData }: TrendsSectionProps) {
         />
         <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
           {mostPicked.length === 0 ? (
-            [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="w-45 h-55 shrink-0 rounded-2xl" />)
+            <HeroTrendsSkeleton />
           ) : (
             mostPicked.map((item, idx) => (
               <div key={item.id} onClick={() => setSelectedHeroId(item.id)} className="cursor-pointer">

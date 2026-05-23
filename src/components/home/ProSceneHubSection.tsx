@@ -5,12 +5,12 @@ import { Star, Ban, ChevronDown, ChevronUp } from 'lucide-react';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ProMatchCard } from '@/components/ui/ProMatchCard';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { STEAM_CDN_BASE } from '@/services/constants';
 import { HeroStats, ProMatch } from '@/types';
 import { processHeroStats } from '@/utils/heroStats';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
+import { ProMatchSkeleton } from '../ui/HomeSkeletons';
 
 const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
   ssr: false
@@ -56,7 +56,7 @@ export function ProSceneHubSection({ initialHeroesData, initialProMatches }: Pro
       {/* Recent Pro Matches */}
       <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
         {initialProMatches.length === 0 ? (
-          [1, 2, 3].map(i => <Skeleton key={i} className="w-75 h-48 shrink-0 rounded-2xl" />)
+          <ProMatchSkeleton />
         ) : (
           initialProMatches.map((item) => (
             <div key={item.match_id} onClick={() => setSelectedMatchId(item.match_id)} className="cursor-pointer">

@@ -28,7 +28,9 @@ const forwardRequest = async (request: NextRequest, pathSegments: string[]) => {
       cache: 'no-store',
     })
 
-    const response = new NextResponse(upstreamResponse.body, {
+    const data = await upstreamResponse.arrayBuffer()
+
+    const response = new NextResponse(data, {
       status: upstreamResponse.status,
       statusText: upstreamResponse.statusText,
     })
