@@ -114,7 +114,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
     return (
       <div className="py-20 flex flex-col items-center justify-center">
         <div className="w-10 h-10 border-4 border-gaming-accent border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 font-bold mt-4 uppercase tracking-widest text-xs">Analyzing trends...</p>
+        <p className="text-muted-foreground font-bold mt-4 uppercase tracking-widest text-xs">Analyzing trends...</p>
       </div>
     );
   }
@@ -123,7 +123,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
     return (
       <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
-        <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
+        <p className="text-muted-foreground font-bold text-center px-10 max-w-sm">
           Not enough match data to calculate trends. Play more matches or clear filters!
         </p>
       </div>
@@ -151,7 +151,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
             <div className={cn("p-1.5 rounded-lg bg-(--nav-hover)", colorClass)}>
               <Icon width={16} height={16} />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{label}</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{label}</span>
           </div>
           {lifetime > 0 && (
             <div className={cn(
@@ -168,10 +168,10 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
             <h4 className="text-3xl font-black text-foreground leading-none">
               {isInteger ? Math.round(recent).toLocaleString() : recent.toFixed(1)}
             </h4>
-            <p className="text-[10px] font-bold text-gray-500 uppercase mt-1">Recent Avg</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase mt-1">Recent Avg</p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-black text-gray-400">
+            <p className="text-sm font-black text-muted-foreground">
               {isInteger ? Math.round(lifetime).toLocaleString() : lifetime.toFixed(1)}
             </p>
             <p className="text-[8px] font-bold text-gray-600 uppercase">Lifetime</p>
@@ -188,7 +188,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-black text-foreground tracking-tight uppercase">Form Analysis</h2>
-          <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Performance trend over last 20 matches</p>
+          <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mt-1">Performance trend over last 20 matches</p>
         </div>
         <div className="p-3 bg-gaming-accent/10 text-gaming-accent rounded-2xl">
           <TrendingUp size={24} />
@@ -223,7 +223,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
               <div>
                 <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Momentum Visualizer</h3>
-                <p className="text-gray-500 text-[10px] font-bold mt-1">Match by match trajectory vs. Rank Average</p>
+                <p className="text-muted-foreground text-[10px] font-bold mt-1">Match by match trajectory vs. Rank Average</p>
               </div>
               <div className="flex bg-(--nav-hover) p-1 rounded-xl">
                 {(['kda', 'gpm', 'xpm'] as const).map((m) => (
@@ -234,7 +234,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
                       "px-4 py-1.5 rounded-lg text-[10px] font-black uppercase transition-all duration-300",
                       activeMetric === m 
                         ? "bg-gaming-accent text-white shadow-lg" 
-                        : "text-gray-500 hover:text-gray-300"
+                        : "text-muted-foreground hover:text-gray-300"
                     )}
                   >
                     {m}
@@ -292,7 +292,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
                       if (active && payload && payload.length) {
                         return (
                           <div className="glass-card bg-(--card-bg) p-2 border-(--card-border) shadow-2xl">
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
+                            <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
                             <p className="text-xl font-black text-foreground">
                               {payload[0].value} {activeMetric.toUpperCase()}
                             </p>
@@ -312,7 +312,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
           <GlassCard className="flex flex-col gap-3">
              <div className="flex items-center gap-2">
                 <Users size={16} className="text-blue-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Diversity</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Diversity</span>
              </div>
              <h4 className="text-2xl font-black text-foreground">{trends.uniqueHeroes} Heroes</h4>
              <div className="bg-blue-500/10 px-2 py-1 rounded-lg self-start">
@@ -324,7 +324,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
 
           <GlassCard className="flex flex-col gap-3 text-right items-end">
              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Current Role</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current Role</span>
                 <Map size={16} className="text-gaming-accent" />
              </div>
              <h4 className="text-2xl font-black text-foreground">

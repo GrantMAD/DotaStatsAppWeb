@@ -75,7 +75,7 @@ export function PlayerListItem({
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             ID: {player.account_id}
             {player.last_match_time && (
               <> • Last match: {new Date(player.last_match_time).toLocaleDateString()}</>
@@ -89,7 +89,7 @@ export function PlayerListItem({
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
                   isFollowing 
-                    ? "bg-(--nav-hover) text-gray-400 hover:bg-(--glass-start) hover:text-foreground" 
+                    ? "bg-(--nav-hover) text-muted-foreground hover:bg-(--glass-start) hover:text-foreground" 
                     : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
                 )}
               >

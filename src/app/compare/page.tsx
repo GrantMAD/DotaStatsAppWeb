@@ -272,7 +272,7 @@ function CompareContent() {
             <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Player <span className="text-gaming-accent">Comparison</span>
             </h1>
-            <p className="text-gray-400">Compare statistics and head-to-head performance</p>
+            <p className="text-muted-foreground">Compare statistics and head-to-head performance</p>
           </div>
         </div>
       </div>

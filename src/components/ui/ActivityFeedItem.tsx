@@ -120,9 +120,9 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
         label: "Rank Milestone"
       };
       default: return {
-        color: "text-gray-400",
-        bg: "bg-gray-400/10",
-        border: "border-gray-400/20",
+        color: "text-muted-foreground",
+        bg: "bg-muted/30",
+        border: "border-muted/20",
         glow: "shadow-transparent",
         icon: item.details.win ? <CheckCircle2 className="w-3.5 h-3.5 text-win" /> : <XCircle className="w-3.5 h-3.5 text-loss" />,
         label: "Recent Match"
@@ -230,7 +230,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
                 {theme.label}
               </div>
               {getBadge() && (
-                <span className="text-[9px] font-black text-gray-500 opacity-50 tracking-tighter uppercase">
+                <span className="text-[9px] font-black text-muted-foreground opacity-50 tracking-tighter uppercase">
                   {getBadge()}
                 </span>
               )}
@@ -242,7 +242,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
           </div>
 
           <div className="flex items-center justify-between mt-auto">
-            <p className="text-[10px] text-gray-500 font-medium">
+            <p className="text-[10px] text-muted-foreground font-medium">
               {formatDistanceToNow(new Date(item.timestamp * 1000), { addSuffix: true })}
             </p>
 

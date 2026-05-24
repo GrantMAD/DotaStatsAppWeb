@@ -42,19 +42,19 @@ export function RecordCard({ title, record, icon, onPress }: RecordCardProps) {
         </div>
 
         <div className="flex-1">
-          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{title}</p>
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{title}</p>
           <div className="flex items-baseline gap-2">
             <h3 className="text-3xl font-black text-foreground leading-none">
               {record.score.toLocaleString()}
             </h3>
-            <span className="text-xs font-bold text-gray-500">
+            <span className="text-xs font-bold text-muted-foreground">
               {icon === 'cash' ? 'GPM' : icon === 'skull' ? 'Kills' : 'Healing'}
             </span>
           </div>
         </div>
 
         <div className="text-right">
-          <p className="text-xs font-bold text-gray-500 mb-2">Match ID</p>
+          <p className="text-xs font-bold text-muted-foreground mb-2">Match ID</p>
           <p className="text-sm font-black text-foreground bg-(--overlay-medium) px-3 py-1 rounded-lg border border-(--overlay-border) group-hover:border-gaming-accent transition-colors">
             {record.match_id}
           </p>

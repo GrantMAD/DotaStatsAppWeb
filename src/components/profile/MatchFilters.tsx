@@ -17,8 +17,8 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
   return (
     <div className="mt-6 space-y-4">
       <div className="flex items-center gap-2 mb-2">
-        <Filter className="w-4 h-4 text-gray-500" />
-        <span className="text-xs font-black uppercase tracking-widest text-gray-500">Filter Matches</span>
+        <Filter className="w-4 h-4 text-muted-foreground" />
+        <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">Filter Matches</span>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -36,7 +36,7 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
                 "px-4 py-1.5 rounded-lg text-xs font-bold transition-all",
                 filters.win === opt.value 
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                  : "text-gray-500 hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               {opt.label}
@@ -47,7 +47,7 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
         {/* Game Mode Filter */}
         <select 
           onChange={(e) => handleUpdate({ game_mode: e.target.value ? Number(e.target.value) : undefined })}
-          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
+          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
           value={filters.game_mode || ""}
         >
           <option value="" className="bg-(--card-bg)">All Game Modes</option>
@@ -59,7 +59,7 @@ export default function MatchFilters({ filters, onFilterChange }: MatchFiltersPr
         {/* Date Filter */}
         <select 
           onChange={(e) => handleUpdate({ date: e.target.value ? Number(e.target.value) : undefined })}
-          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-gray-400 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
+          className="bg-(--nav-hover) border border-(--card-border) rounded-xl px-4 py-1.5 text-xs font-bold text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 appearance-none"
           value={filters.date || ""}
         >
           <option value="" className="bg-(--card-bg)">Any Time</option>

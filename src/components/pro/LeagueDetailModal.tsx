@@ -92,7 +92,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
               {league.name}
             </h2>
             {stats && (
-              <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
+              <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
                 <Calendar size={14} className="text-gaming-accent" />
                 {stats.startDate.toLocaleDateString()} — {stats.endDate.toLocaleDateString()}
               </p>
@@ -102,7 +102,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
            <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
+              <div className="p-2 rounded-lg bg-(--card-bg) text-muted-foreground">
                  <Info size={16} />
               </div>
               <div>
@@ -111,7 +111,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
               </div>
            </div>
            <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
-              <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
+              <div className="p-2 rounded-lg bg-(--card-bg) text-muted-foreground">
                  <Map size={16} />
               </div>
               <div>
@@ -122,7 +122,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
            {stats && (
              <>
                <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
+                  <div className="p-2 rounded-lg bg-(--card-bg) text-muted-foreground">
                      <Timer size={16} />
                   </div>
                   <div>
@@ -131,7 +131,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
                   </div>
                </div>
                <div className="bg-(--nav-hover) border border-(--card-border) p-4 rounded-2xl flex items-center gap-4">
-                  <div className="p-2 rounded-lg bg-(--card-bg) text-gray-500">
+                  <div className="p-2 rounded-lg bg-(--card-bg) text-muted-foreground">
                      <Trophy size={16} />
                   </div>
                   <div>
@@ -185,7 +185,7 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
               <div className="flex flex-col items-center justify-center py-20 text-center bg-(--nav-hover) rounded-3xl border border-dashed border-(--card-border) p-8">
                  <AlertCircle className="w-16 h-16 text-amber-500 mb-4 opacity-50" />
                  <h4 className="text-foreground font-bold uppercase tracking-tight text-xl">Limited Data Coverage</h4>
-                 <p className="text-gray-500 text-sm max-w-sm mx-auto mt-2 italic leading-relaxed">
+                 <p className="text-muted-foreground text-sm max-w-sm mx-auto mt-2 italic leading-relaxed">
                     Historical or lower-tier tournament data may be incomplete or restricted in the public archives. 
                     Detailed match records are primarily maintained for Premium and Professional tier events.
                  </p>

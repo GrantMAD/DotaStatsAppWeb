@@ -57,7 +57,7 @@ export function ProPlayerItem({ player, onClick }: ProPlayerItemProps) {
             {player.personaname}
           </h3>
 
-          <p className="text-gray-500 text-xs mt-1 truncate">
+          <p className="text-muted-foreground text-xs mt-1 truncate">
             {player.full_name || 'Professional Player'}
           </p>
         </div>
@@ -67,7 +67,7 @@ export function ProPlayerItem({ player, onClick }: ProPlayerItemProps) {
             {player.team_tag || 'Free Agent'}
           </div>
 
-          <div className="text-[10px] text-gray-500 font-bold uppercase truncate max-w-25">
+          <div className="text-[10px] text-muted-foreground font-bold uppercase truncate max-w-25">
             {player.team_name || 'NO TEAM'}
           </div>
         </div>

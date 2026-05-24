@@ -51,7 +51,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
     return (
       <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <MapIcon className="w-12 h-12 text-gray-700 mb-4" />
-        <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
+        <p className="text-muted-foreground font-bold text-center px-10 max-w-sm">
           No warding data found. OpenDota only generates ward maps for parsed matches.
         </p>
       </div>
@@ -63,7 +63,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-foreground tracking-tight uppercase">Vision Heatmap</h2>
-          <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Aggregated ward placements from parsed games</p>
+          <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mt-1">Aggregated ward placements from parsed games</p>
         </div>
         
         <div className="flex bg-(--nav-hover) p-1 rounded-xl border border-(--card-border)">
@@ -71,7 +71,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
             onClick={() => setType('obs')}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-              type === 'obs' ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20" : "text-gray-500 hover:text-foreground"
+              type === 'obs' ? "bg-amber-500 text-white shadow-lg shadow-amber-500/20" : "text-muted-foreground hover:text-foreground"
             )}
           >
             <Eye size={14} /> Observer
@@ -80,7 +80,7 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
             onClick={() => setType('sen')}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-              type === 'sen' ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-gray-500 hover:text-foreground"
+              type === 'sen' ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-muted-foreground hover:text-foreground"
             )}
           >
             <EyeOff size={14} /> Sentry
@@ -133,11 +133,11 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
                  <Layers className="text-amber-500" />
                  <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Density Analysis</h3>
               </div>
-              <p className="text-xs font-bold text-gray-500 leading-relaxed mb-4">
+              <p className="text-xs font-bold text-muted-foreground leading-relaxed mb-4">
                  The heatmap visualizes your most frequent warding locations. Brighter and larger circles indicate high-priority spots you favor in your games.
               </p>
               <div className="flex items-center justify-between p-3 bg-black/20 rounded-xl">
-                 <span className="text-[10px] font-black text-gray-400 uppercase">Parsed Data Points</span>
+                 <span className="text-[10px] font-black text-muted-foreground uppercase">Parsed Data Points</span>
                  <span className="text-sm font-black text-foreground">{points.length.toLocaleString()}</span>
               </div>
            </GlassCard>
@@ -147,19 +147,19 @@ export default function WardMapHeatmap({ data, loading }: WardMapHeatmapProps) {
               <ul className="space-y-4">
                  <li className="flex gap-3">
                     <div className="w-1 h-1 rounded-full bg-gaming-accent mt-1.5 shrink-0" />
-                    <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">
                        Avoid placing wards in common Sentry spots indicated by clusters on your sentry heatmap.
                     </p>
                  </li>
                  <li className="flex gap-3">
                     <div className="w-1 h-1 rounded-full bg-gaming-accent mt-1.5 shrink-0" />
-                    <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">
                        Diverse warding makes it harder for the enemy to deward you.
                     </p>
                  </li>
                  <li className="flex gap-3">
                     <div className="w-1 h-1 rounded-full bg-gaming-accent mt-1.5 shrink-0" />
-                    <p className="text-[10px] font-bold text-gray-500 uppercase leading-relaxed">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase leading-relaxed">
                        Look for unconventional spots that still provide vision of key chokepoints.
                     </p>
                  </li>

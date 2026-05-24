@@ -180,7 +180,7 @@ export function ProPageClient({
             <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Pro <span className="text-gaming-accent">Scene</span>
             </h1>
-            <p className="text-gray-400">Track professional matches and player performances</p>
+            <p className="text-muted-foreground">Track professional matches and player performances</p>
           </div>
         </div>
 
@@ -197,7 +197,7 @@ export function ProPageClient({
                   "px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
                   activeTab === tab 
                     ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                    : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                    : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
                 )}
               >
                 {tab}
@@ -220,7 +220,7 @@ export function ProPageClient({
                 "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
                 subTab === tab 
                   ? "bg-gaming-accent text-white" 
-                  : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                  : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
               )}
             >
               {tab}
@@ -238,7 +238,7 @@ export function ProPageClient({
                   "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
                   statusFilter === status 
                     ? "bg-win text-white shadow-lg shadow-win/20" 
-                    : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                    : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
                 )}
               >
                 {status}
@@ -248,7 +248,7 @@ export function ProPageClient({
         )}
 
         <div className="relative w-full max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder={`Search ${subTab} ${activeTab.toLowerCase()}...`}
@@ -261,7 +261,7 @@ export function ProPageClient({
               onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-(--nav-hover) rounded-full transition-colors"
             >
-              <X className="w-4 h-4 text-gray-500" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
         </div>
@@ -310,7 +310,7 @@ export function ProPageClient({
             <Search className="w-10 h-10 text-gray-700" />
           </div>
           <h3 className="text-xl font-bold text-foreground mb-2">No results found</h3>
-          <p className="text-gray-500 max-w-xs">
+          <p className="text-muted-foreground max-w-xs">
             We couldn&apos;t find any {activeTab.toLowerCase()} matching &quot;{searchQuery}&quot; in the {subTab} tier.
           </p>
         </div>

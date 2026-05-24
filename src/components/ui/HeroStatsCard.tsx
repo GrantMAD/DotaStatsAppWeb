@@ -58,7 +58,7 @@ export function HeroStatsCard({
           <h4 className="text-sm font-bold text-foreground truncate group-hover:text-gaming-accent transition-colors">
             {heroName}
           </h4>
-          <div className="mt-1 flex items-center justify-between text-[10px] text-gray-400 font-medium">
+          <div className="mt-1 flex items-center justify-between text-[10px] text-muted-foreground font-medium">
             <span>{pickCount.toLocaleString()} matches</span>
           </div>
         </div>
@@ -77,7 +77,7 @@ export function HeroStatsCard({
             "text-sm font-black mt-1",
             winRate >= 50 ? "text-win" : "text-loss"
           )}>
-            {winRate.toFixed(1)}% <span className="text-[10px] font-bold text-gray-500 uppercase ml-1">Win Rate</span>
+            {winRate.toFixed(1)}% <span className="text-[10px] font-bold text-muted-foreground uppercase ml-1">Win Rate</span>
           </p>
         </div>
       </GlassCard>

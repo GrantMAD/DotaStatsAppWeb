@@ -17,7 +17,10 @@ export function MobileHeader() {
       style={{ background: 'var(--sidebar-bg)' }}
     >
       <div className="flex items-center gap-3">
-        <button className={cn("p-1 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-gray-400")}>
+        <button 
+          aria-label="Toggle navigation menu"
+          className={cn("p-1 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-muted-foreground")}
+        >
           <Menu className="w-6 h-6" />
         </button>
         <h1 className="text-lg font-bold text-gradient">DotaApp</h1>

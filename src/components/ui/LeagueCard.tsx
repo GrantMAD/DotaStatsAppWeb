@@ -27,7 +27,7 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
     switch (tier) {
       case 'premium': return 'text-purple-400 border-purple-400/30 bg-purple-400/10';
       case 'professional': return 'text-blue-400 border-blue-400/30 bg-blue-400/10';
-      default: return 'text-gray-400 border-gray-400/30 bg-gray-400/10';
+      default: return 'text-muted-foreground border-muted/30 bg-muted/30';
     }
   };
 
@@ -68,7 +68,7 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
               "px-2 py-1 rounded text-[8px] font-black uppercase border backdrop-blur-md flex items-center gap-1 w-fit",
               isActive
                 ? "bg-win/20 text-win border-win/30 animate-pulse"
-                : "bg-gray-500/20 text-gray-400 border-gray-500/30"
+                : "bg-muted/20 text-muted-foreground border-muted/30"
             )}>
               <div className={cn("w-1.5 h-1.5 rounded-full", isActive ? "bg-win" : "bg-gray-500")} />
               {isActive ? 'Live / Active' : 'Archived'}
@@ -82,7 +82,7 @@ export function LeagueCard({ league, isActive, onClick }: LeagueCardProps) {
           </h3>
 
           <div className="mt-auto flex items-center justify-between">
-            <span className="text-xs text-gray-500 font-medium">ID: {league.leagueid}</span>
+            <span className="text-xs text-muted-foreground font-medium">ID: {league.leagueid}</span>
             <div className="flex items-center gap-1 text-gaming-accent text-xs font-black uppercase tracking-wider">
               View Matches
               <ChevronRight className="w-4 h-4" />

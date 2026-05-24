@@ -56,7 +56,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
           </h3>
           {stackMetadata ? (
             <div className="mt-1 space-y-1">
-              <p className="text-gray-500 text-xs">ID: {appUser.steam_account_id}</p>
+              <p className="text-muted-foreground text-xs">ID: {appUser.steam_account_id}</p>
               {isPrivate && !isLoading && (
                 <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-500 text-[8px] font-black uppercase tracking-tighter">
                   <EyeOff size={8} />
@@ -66,7 +66,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
             </div>
           ) : (
             <div className="flex items-center gap-2 mt-1">
-              <p className="text-gray-500 text-xs">
+              <p className="text-muted-foreground text-xs">
                 ID: {appUser.steam_account_id}
               </p>
               {isPrivate && !isLoading && (

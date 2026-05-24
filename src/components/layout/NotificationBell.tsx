@@ -16,7 +16,8 @@ export function NotificationBell({ className }: NotificationBellProps) {
   return (
     <Link 
       href="/notifications" 
-      className={cn("relative p-2 text-gray-400 hover:text-foreground hover:bg-(--nav-hover) rounded-xl transition-all group", className)}
+      aria-label={`${unreadCount > 0 ? unreadCount : 'No'} unread notifications`}
+      className={cn("relative p-2 text-muted-foreground hover:text-foreground hover:bg-(--nav-hover) rounded-xl transition-all group", className)}
     >
       <Bell className="w-6 h-6 group-hover:scale-110 transition-transform" />
       {unreadCount > 0 && (

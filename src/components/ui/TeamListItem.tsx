@@ -54,12 +54,12 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
               {team.name}
             </h3>
             {team.tag && (
-              <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">
+              <span className="text-muted-foreground text-xs font-bold uppercase tracking-widest">
                 [{team.tag}]
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-xs mt-1">
+          <p className="text-muted-foreground text-xs mt-1">
             {winRate}% Win Rate • {team.wins + team.losses} Games
           </p>
         </div>

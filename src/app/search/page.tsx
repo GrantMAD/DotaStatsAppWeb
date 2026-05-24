@@ -109,7 +109,7 @@ export default function SearchPage() {
             <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Player <span className="text-gaming-accent">Search</span>
             </h1>
-            <p className="text-gray-400">Find players, heroes, or match IDs from the archives</p>
+            <p className="text-muted-foreground">Find players, heroes, or match IDs from the archives</p>
           </div>
         </div>
 
@@ -120,7 +120,7 @@ export default function SearchPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'global' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <Globe className="w-4 h-4" />
@@ -132,7 +132,7 @@ export default function SearchPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               searchMode === 'steam' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <Users className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function SearchPage() {
 
       <div className="max-w-3xl mx-auto space-y-8">
         <form onSubmit={handleSearch} className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
             placeholder={searchMode === 'global' ? "Search by name or Steam ID..." : "Filter teammates by name..."}
@@ -164,7 +164,7 @@ export default function SearchPage() {
                 }}
                 className="p-2 hover:bg-(--nav-hover) rounded-full transition-colors"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                <X className="w-5 h-5 text-muted-foreground" />
               </button>
             )}
             {searchMode === 'global' && (
@@ -287,12 +287,12 @@ export default function SearchPage() {
             {!results.length && !searching && !matchingHeroes.length && !matchingMatchId && (
               <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
                 <div className="w-24 h-24 bg-(--nav-hover) rounded-full flex items-center justify-center mb-6 border border-(--card-border)">
-                  <Search className="w-12 h-12 text-gray-500" />
+                  <Search className="w-12 h-12 text-muted-foreground" />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground mb-2">
                   {searchMode === 'global' ? "Who are you looking for?" : "No Friends Found"}
                 </h3>
-                <p className="text-gray-500 max-w-xs mx-auto">
+                <p className="text-muted-foreground max-w-xs mx-auto">
                   {searchMode === 'global' 
                     ? "Search for players by name or Steam ID, or look up heroes and matches."
                     : "Link your Steam account to find your frequent teammates here."}
@@ -307,7 +307,7 @@ export default function SearchPage() {
             <AlertCircle className="w-10 h-10 text-red-500" />
             <div>
               <h3 className="text-red-500 font-bold text-lg">Search Error</h3>
-              <p className="text-gray-400 text-sm mt-1">{error instanceof Error ? error.message : 'An error occurred while searching'}</p>
+              <p className="text-muted-foreground text-sm mt-1">{error instanceof Error ? error.message : 'An error occurred while searching'}</p>
             </div>
             <button 
               onClick={() => handleSearch()}

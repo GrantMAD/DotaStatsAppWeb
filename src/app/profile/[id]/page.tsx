@@ -41,7 +41,7 @@ export default async function ProfilePage({ params }: PageProps) {
         <GlassCard className="p-10 border-dashed max-w-md">
           <AlertCircle className="w-16 h-16 text-loss mx-auto mb-6" />
           <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Player Not Found</h2>
-          <p className="text-gray-500 font-medium mb-8">
+          <p className="text-muted-foreground font-medium mb-8">
             We couldn&apos;t find a Dota 2 profile for this account ID. Make sure the ID is correct and the profile is public.
           </p>
         </GlassCard>

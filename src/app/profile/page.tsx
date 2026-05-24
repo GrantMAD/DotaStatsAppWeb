@@ -33,7 +33,7 @@ export default function MyProfilePage() {
         <GlassCard className="p-10 max-w-md border-white/20">
           <LogIn className="w-16 h-16 text-gaming-accent mx-auto mb-6" />
           <h2 className="text-3xl font-black text-white mb-4 tracking-tight uppercase">Authentication Required</h2>
-          <p className="text-gray-500 font-medium mb-8">
+          <p className="text-muted-foreground font-medium mb-8">
             Sign in to access your personalized Dota 2 statistics, match history, and social features.
           </p>
           <Button onClick={() => router.push('/sign-in')} className="w-full h-14 text-lg">
@@ -55,7 +55,7 @@ export default function MyProfilePage() {
                <LinkIcon className="w-10 h-10 text-amber-500" />
             </div>
             <h2 className="text-3xl font-black text-white mb-4 tracking-tight uppercase">Link Your Legend</h2>
-            <p className="text-gray-400 font-medium mb-10 leading-relaxed">
+            <p className="text-muted-foreground font-medium mb-10 leading-relaxed">
               Connect your Steam account to unlock advanced performance analytics, hero trends, and compare your stats with friends.
             </p>
             <Button onClick={signInWithSteam} className="w-full h-14 text-lg bg-[#171a21] hover:bg-[#2a475e] border-none shadow-xl">

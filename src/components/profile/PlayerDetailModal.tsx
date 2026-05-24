@@ -50,7 +50,7 @@ export function PlayerDetailModal({
             <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">
               {profileError ? "Search Error" : "Player Not Found"}
             </h2>
-            <p className="text-gray-500 font-medium max-w-xs mx-auto">
+            <p className="text-muted-foreground font-medium max-w-xs mx-auto">
               {profileError 
                 ? "There was an issue connecting to the archives. Please try again later."
                 : "We couldn't retrieve profile details for this account ID."}

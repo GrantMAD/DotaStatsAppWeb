@@ -61,7 +61,7 @@ export default function FriendsPage() {
             <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
               Community <span className="text-gaming-accent">Network</span>
             </h1>
-            <p className="text-gray-400">Manage your friends and followed players</p>
+            <p className="text-muted-foreground">Manage your friends and followed players</p>
           </div>
         </div>
 
@@ -75,7 +75,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Friends' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <UserCheck className="w-4 h-4" />
@@ -90,7 +90,7 @@ export default function FriendsPage() {
               "flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all",
               activeTab === 'Following' 
                 ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20" 
-                : "text-gray-500 hover:text-foreground hover:bg-(--glass-start)"
+                : "text-muted-foreground hover:text-foreground hover:bg-(--glass-start)"
             )}
           >
             <UserPlus className="w-4 h-4" />
@@ -102,7 +102,7 @@ export default function FriendsPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder={activeTab === 'Friends' ? "Search by name or ID..." : "Search by ID..."}
@@ -115,7 +115,7 @@ export default function FriendsPage() {
               onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 hover:bg-(--nav-hover) rounded-full transition-colors"
             >
-              <X className="w-4 h-4 text-gray-500" />
+              <X className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
         </div>
@@ -165,7 +165,7 @@ export default function FriendsPage() {
                       )}
                       <button
                         onClick={() => unfollowUser(follow.followed_steam_id)}
-                        className="px-3 py-2 bg-(--nav-hover) border border-(--card-border) rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
+                        className="px-3 py-2 bg-(--nav-hover) border border-(--card-border) rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-500 transition-all"
                       >
                         Unfollow
                       </button>
@@ -183,7 +183,7 @@ export default function FriendsPage() {
         ) && (
           <div className="flex flex-col items-center justify-center py-20 text-center opacity-40">
             <div className="w-24 h-24 bg-(--nav-hover) rounded-full flex items-center justify-center mb-6 border border-(--card-border)">
-              <Users className="w-12 h-12 text-gray-500" />
+              <Users className="w-12 h-12 text-muted-foreground" />
             </div>
             <h3 className="text-2xl font-bold text-foreground mb-2">
               {searchQuery 
@@ -192,7 +192,7 @@ export default function FriendsPage() {
                     ? "No friends yet" 
                     : "You aren't following anyone yet")}
             </h3>
-            <p className="text-gray-500 max-w-xs mx-auto">
+            <p className="text-muted-foreground max-w-xs mx-auto">
               {searchQuery 
                 ? "Try searching for a different name or ID."
                 : (activeTab === 'Friends' 

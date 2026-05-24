@@ -39,26 +39,26 @@ export default async function MatchPage({ params }: PageProps) {
               <h1 className="text-5xl font-black text-foreground italic uppercase tracking-tighter mb-4">
                 Match {matchId}
               </h1>
-              <p className="text-gray-400 font-bold max-w-lg mx-auto">
+              <p className="text-muted-foreground font-bold max-w-lg mx-auto">
                 This match is currently being played at a high level. Detailed analytics will be available once the match is parsed by OpenDota.
               </p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
               <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Avg MMR</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Avg MMR</p>
                 <p className="text-2xl font-black text-amber-500 italic">{liveGame.average_mmr}</p>
               </div>
               <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Duration</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Duration</p>
                 <p className="text-2xl font-black text-foreground italic">{Math.floor(liveGame.game_time / 60)}m</p>
               </div>
               <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Players</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Players</p>
                 <p className="text-2xl font-black text-foreground italic">{liveGame.players.length}</p>
               </div>
               <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Server</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Server</p>
                 <p className="text-2xl font-black text-foreground italic">#{liveGame.server_id.slice(-4)}</p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default async function MatchPage({ params }: PageProps) {
         <GlassCard className="p-10 border-dashed max-w-md">
           <AlertCircle className="w-16 h-16 text-loss mx-auto mb-6" />
           <h2 className="text-2xl font-black text-foreground mb-2 uppercase tracking-tight">Match Not Found</h2>
-          <p className="text-gray-500 font-medium mb-8">
+          <p className="text-muted-foreground font-medium mb-8">
             We couldn&apos;t retrieve details for Match ID: {matchId}. It might be too old or private.
           </p>
           <Link href="/">
@@ -174,12 +174,12 @@ export default async function MatchPage({ params }: PageProps) {
                   <div className="absolute -inset-8 bg-gaming-accent/10 rounded-full blur-2xl group-hover:bg-gaming-accent/20 transition-colors" />
                   <div className="relative bg-zinc-900/80 border border-white/10 px-8 py-4 rounded-3xl backdrop-blur-2xl shadow-2xl flex flex-col items-center min-w-45">
                      <div className="flex items-center gap-2 mb-1">
-                        <Timer className="w-3 h-3 text-gray-500" />
+                        <Timer className="w-3 h-3 text-muted-foreground" />
                         <span className="text-xl font-black text-foreground italic tracking-tight">
                           {Math.floor(match.duration / 60)}:{String(match.duration % 60).padStart(2, '0')}
                         </span>
                      </div>
-                     <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Game Duration</p>
+                     <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Game Duration</p>
                      
                      <div className="w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent my-3" />
                      
@@ -194,7 +194,7 @@ export default async function MatchPage({ params }: PageProps) {
                
                <div className="mt-8 text-center">
                   <p className="text-foreground font-black text-sm uppercase tracking-[0.2em] italic mb-1">{GAME_MODES[match.game_mode] || 'Standard Match'}</p>
-                  <p className="text-gray-500 font-bold text-[9px] uppercase tracking-widest">Match ID: {match.match_id}</p>
+                  <p className="text-muted-foreground font-bold text-[9px] uppercase tracking-widest">Match ID: {match.match_id}</p>
                </div>
             </div>
 

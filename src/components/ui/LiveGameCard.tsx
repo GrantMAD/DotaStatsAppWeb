@@ -83,7 +83,7 @@ export function LiveGameCard({ game, onPress }: LiveGameCardProps) {
           ))}
         </div>
 
-        <div className="flex items-center justify-between text-gray-500">
+        <div className="flex items-center justify-between text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Users className="w-3.5 h-3.5" />
             <span className="text-[10px] font-bold">Watch Live</span>

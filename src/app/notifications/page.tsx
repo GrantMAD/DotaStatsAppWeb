@@ -31,7 +31,7 @@ export default function NotificationsPage() {
       case 'friend_accepted': return <Check className="w-5 h-5 text-green-400" />;
       case 'activity': return <Trophy className="w-5 h-5 text-amber-500" />;
       case 'mention': return <MessageSquare className="w-5 h-5 text-purple-400" />;
-      default: return <Bell className="w-5 h-5 text-gray-400" />;
+      default: return <Bell className="w-5 h-5 text-muted-foreground" />;
     }
   };
 
@@ -60,7 +60,7 @@ export default function NotificationsPage() {
             <h1 className="text-4xl font-black text-white italic uppercase tracking-wider">
               Notifications
             </h1>
-            <p className="text-gray-400">Stay updated with your friends and the community</p>
+            <p className="text-muted-foreground">Stay updated with your friends and the community</p>
           </div>
         </div>
 
@@ -111,7 +111,7 @@ export default function NotificationsPage() {
                   <div className="flex items-center justify-between gap-4">
                     <p className={cn(
                       "text-sm font-bold truncate",
-                      !n.is_read ? "text-white" : "text-gray-400"
+                      !n.is_read ? "text-white" : "text-muted-foreground"
                     )}>
                       {n.message}
                     </p>
@@ -155,7 +155,7 @@ export default function NotificationsPage() {
                           e.stopPropagation();
                           markAsRead(n.id);
                         }}
-                        className="text-[10px] uppercase font-black text-gray-500 hover:text-white transition-colors"
+                        className="text-[10px] uppercase font-black text-muted-foreground hover:text-white transition-colors"
                       >
                         Dismiss
                       </button>
@@ -172,7 +172,7 @@ export default function NotificationsPage() {
         ) : (
           <div className="py-20 flex flex-col items-center justify-center text-center space-y-6 opacity-40">
             <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-              <Bell className="w-12 h-12 text-gray-500" />
+              <Bell className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="max-w-xs space-y-2">
               <h3 className="text-2xl font-black uppercase italic">All Caught Up!</h3>

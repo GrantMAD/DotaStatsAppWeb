@@ -20,7 +20,7 @@ export function SectionHeader({ icon: Icon, title, description, color }: Section
         <h2 className="text-2xl font-black text-foreground tracking-tight">{title}</h2>
       </div>
       {description && (
-        <p className="mt-2 text-gray-500 text-sm font-medium max-w-2xl">{description}</p>
+        <p className="mt-2 text-muted-foreground text-sm font-medium max-w-2xl">{description}</p>
       )}
     </div>
   );

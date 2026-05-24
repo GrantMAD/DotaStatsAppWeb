@@ -81,6 +81,7 @@ export function Sidebar() {
       {/* Collapse Toggle Lip */}
       <button
         onClick={toggleSidebar}
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         className="absolute top-12 -right-4 w-8 h-8 bg-gaming-accent text-white rounded-full flex items-center justify-center shadow-lg shadow-gaming-accent/40 border-2 border-foreground/20 hover:scale-110 active:scale-95 transition-all z-50 group/toggle ring-4 ring-(--card-bg)"
       >
         {isCollapsed ? (
@@ -105,7 +106,7 @@ export function Sidebar() {
                 "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                 isActive
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
-                  : "text-gray-400 hover:bg-(--nav-hover) hover:text-foreground"
+                  : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
               )}
             >
               <div className={cn(
@@ -122,7 +123,7 @@ export function Sidebar() {
                     ? "text-white"
                     : resolvedTheme === 'light'
                       ? item.color
-                      : "text-gray-400 group-hover:text-gaming-accent"
+                      : "text-muted-foreground group-hover:text-gaming-accent"
                 )} />
               </div>
 
@@ -134,7 +135,7 @@ export function Sidebar() {
                     exit={{ opacity: 0, x: -10 }}
                     className={cn(
                       "font-medium whitespace-nowrap transition-colors",
-                      isActive ? "text-white" : resolvedTheme === 'light' ? "text-slate-900" : "text-gray-400"
+                      isActive ? "text-white" : "text-foreground"
                     )}
                   >
                     {item.label}
@@ -156,9 +157,9 @@ export function Sidebar() {
         {!user ? (
           <Link
             href="/sign-in"
-            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-(--nav-hover) text-gray-400 hover:bg-(--nav-hover) hover:text-foreground transition-all border border-(--card-border) group relative"
+            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-(--nav-hover) text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground transition-all border border-(--card-border) group relative"
           >
-            <LogIn className={cn("w-5 h-5 shrink-0 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-gray-400")} />
+            <LogIn className={cn("w-5 h-5 shrink-0 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-muted-foreground")} />
             <AnimatePresence>
               {!isCollapsed && (
                 <motion.span
@@ -209,7 +210,7 @@ export function Sidebar() {
                     <p className="text-sm font-bold text-foreground truncate">
                       {user.user_metadata?.full_name || user.email?.split('@')[0]}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">Online</p>
+                    <p className="text-xs text-muted-foreground truncate">Online</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -217,13 +218,13 @@ export function Sidebar() {
 
             <button
               onClick={() => signOut()}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-all group border border-transparent hover:border-red-500/20 relative"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:bg-red-500/10 hover:text-red-500 transition-all group border border-transparent hover:border-red-500/20 relative"
             >
               <div className={cn(
                 "p-2 rounded-xl transition-all duration-300",
                 resolvedTheme === 'light' ? "bg-red-500/10" : "bg-transparent group-hover:bg-red-500/10"
               )}>
-                <LogOut className={cn("w-5 h-5 group-hover:animate-pulse shrink-0 transition-colors", resolvedTheme === 'light' ? "text-red-500" : "text-gray-400")} />
+                <LogOut className={cn("w-5 h-5 group-hover:animate-pulse shrink-0 transition-colors", resolvedTheme === 'light' ? "text-red-500" : "text-muted-foreground")} />
               </div>
               <AnimatePresence>
                 {!isCollapsed && (

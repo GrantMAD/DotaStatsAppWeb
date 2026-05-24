@@ -173,7 +173,7 @@ export function PlayerOverviewContent({
           )}>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-black text-foreground truncate">{stat.label}</p>
-              <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase mt-0.5">
                 {stat.total} Matches <span className="mx-1 text-foreground/10">•</span> {stat.win}W - {stat.lose}L
               </p>
             </div>
@@ -253,7 +253,7 @@ export function PlayerOverviewContent({
             <h1 className="text-4xl font-black text-foreground mb-2 tracking-tight group-hover:text-gradient transition-all duration-500">
               {profile?.profile?.personaname || 'Loading...'}
             </h1>
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-gray-500 font-bold uppercase text-xs tracking-widest">
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-muted-foreground font-bold uppercase text-xs tracking-widest">
               <span className="flex items-center gap-1.5"><Gamepad2 size={14} /> ID: {accountId}</span>
               {profile?.profile?.loccountrycode && (
                 <span className="flex items-center gap-1.5">
@@ -270,23 +270,23 @@ export function PlayerOverviewContent({
             <div className="mt-6 flex flex-wrap items-center justify-center md:justify-start gap-3">
               {isCurrentUser ? (
                 <Link href="/friends" className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
-                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
+                  <p className="text-xs text-muted-foreground font-black uppercase mb-0.5">Friends</p>
                   <p className="text-foreground font-black">{friendsCount}</p>
                 </Link>
               ) : (
                 <div className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl">
-                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Friends</p>
+                  <p className="text-xs text-muted-foreground font-black uppercase mb-0.5">Friends</p>
                   <p className="text-foreground font-black">{friendsCount}</p>
                 </div>
               )}
               {isCurrentUser ? (
                 <Link href="/friends" className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl hover:border-gaming-accent transition-colors">
-                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
+                  <p className="text-xs text-muted-foreground font-black uppercase mb-0.5">Following</p>
                   <p className="text-foreground font-black">{followingCount}</p>
                 </Link>
               ) : (
                 <div className="bg-(--nav-hover) border border-(--card-border) px-4 py-2 rounded-xl">
-                  <p className="text-xs text-gray-500 font-black uppercase mb-0.5">Following</p>
+                  <p className="text-xs text-muted-foreground font-black uppercase mb-0.5">Following</p>
                   <p className="text-foreground font-black">{followingCount}</p>
                 </div>
               )}
@@ -295,7 +295,7 @@ export function PlayerOverviewContent({
                   size="sm"
                   className={cn(
                     "h-10 px-6",
-                    isFollowing(accountId) ? "bg-(--nav-hover) text-gray-400 hover:text-foreground" : ""
+                    isFollowing(accountId) ? "bg-(--nav-hover) text-muted-foreground hover:text-foreground" : ""
                   )}
                   onClick={() => isFollowing(accountId) ? unfollowUser(accountId) : followUser(accountId, profile?.profile?.personaname)}
                 >
@@ -324,7 +324,7 @@ export function PlayerOverviewContent({
           {wl && (
             <div className="flex gap-4 md:flex-col md:items-end lg:flex-row lg:items-center">
               <div className="text-center md:text-right">
-                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Win Rate</p>
+                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Win Rate</p>
                 <p className={cn(
                   "text-4xl font-black italic",
                   (wl.win + wl.lose) > 0 && (wl.win / (wl.win + wl.lose)) >= 0.5 ? "text-win" : "text-loss"
@@ -351,7 +351,7 @@ export function PlayerOverviewContent({
               </div>
               <div>
                 <h3 className="text-foreground font-black uppercase tracking-tight">Your History</h3>
-                <p className="text-gray-500 text-xs font-bold uppercase tracking-widest">Shared Matches: {peerHistory.games}</p>
+                <p className="text-muted-foreground text-xs font-bold uppercase tracking-widest">Shared Matches: {peerHistory.games}</p>
               </div>
             </div>
 
@@ -399,7 +399,7 @@ export function PlayerOverviewContent({
                 "flex-1 min-w-30 flex items-center justify-center gap-2 px-6 py-3 rounded-xl transition-all duration-300 font-black uppercase text-[10px] tracking-widest",
                 isActive
                   ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/30 scale-[1.02]"
-                  : "text-gray-500 hover:text-foreground hover:bg-(--nav-hover)"
+                  : "text-muted-foreground hover:text-foreground hover:bg-(--nav-hover)"
               )}
             >
               <Icon size={14} className={cn(isActive ? "text-white" : "text-gray-600")} />
@@ -423,7 +423,7 @@ export function PlayerOverviewContent({
                     onClick={() => setRecentView('matches')}
                     className={cn(
                       "px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all",
-                      recentView === 'matches' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
+                      recentView === 'matches' ? "bg-gaming-accent text-white" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     History
@@ -432,7 +432,7 @@ export function PlayerOverviewContent({
                     onClick={() => setRecentView('trends')}
                     className={cn(
                       "px-6 py-2 rounded-lg text-[10px] font-black uppercase transition-all",
-                      recentView === 'trends' ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
+                      recentView === 'trends' ? "bg-gaming-accent text-white" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
                     Analysis
@@ -480,7 +480,7 @@ export function PlayerOverviewContent({
                                     {isWin ? 'Victory' : 'Defeat'}
                                   </span>
                                   <span className="text-[10px] font-bold text-foreground/20">•</span>
-                                  <span className="text-[10px] font-bold text-gray-500">
+                                  <span className="text-[10px] font-bold text-muted-foreground">
                                     {formatDistanceToNow(new Date(match.start_time * 1000), { addSuffix: true })}
                                   </span>
                                 </div>
@@ -496,7 +496,7 @@ export function PlayerOverviewContent({
                                   <span className="text-foreground/20 text-xs mx-1">/</span>
                                   {match.assists}
                                 </p>
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-tighter mt-1">K / D / A</p>
+                                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-tighter mt-1">K / D / A</p>
                               </div>
 
                               <div className="hidden md:flex flex-col items-end shrink-0 w-24">
@@ -548,7 +548,7 @@ export function PlayerOverviewContent({
                   {/* lobby breakdown */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ranked vs. Unranked</span>
+                      <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Ranked vs. Unranked</span>
                     </div>
                     <div className="h-2 w-full bg-(--nav-hover) rounded-full overflow-hidden flex">
                       <div className="h-full bg-gaming-accent" style={{ width: '60%' }} />
@@ -566,7 +566,7 @@ export function PlayerOverviewContent({
                     const percent = stat.total > 0 ? (stat.win / stat.total) * 100 : 0;
                     return (
                       <div key={stat.label} className="space-y-2">
-                        <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest text-gray-500">
+                        <div className="flex items-center justify-between text-xs font-black uppercase tracking-widest text-muted-foreground">
                           <span>{stat.label}</span>
                           <span>{percent.toFixed(1)}%</span>
                         </div>
@@ -586,7 +586,7 @@ export function PlayerOverviewContent({
           <div className="space-y-6">
             <div className="flex items-center justify-between mb-2 px-4">
               <h2 className="text-xl font-black text-foreground uppercase tracking-tight">Most Played Heroes</h2>
-              <p className="text-xs font-bold text-gray-500">Showing top 50 by match count</p>
+              <p className="text-xs font-bold text-muted-foreground">Showing top 50 by match count</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {heroesLoading ? (
@@ -616,7 +616,7 @@ export function PlayerOverviewContent({
                           <h4 className="text-lg font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">
                             {info?.localized_name || 'Hero'}
                           </h4>
-                          <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{hero.games} Matches</p>
+                          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{hero.games} Matches</p>
                         </div>
                         <div className="text-right shrink-0">
                           <p className={cn(
@@ -631,20 +631,20 @@ export function PlayerOverviewContent({
 
                       <div className="grid grid-cols-4 gap-2 pt-4 border-t border-(--card-border)">
                         <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">KDA</p>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">KDA</p>
                           <p className="text-xs font-black text-foreground">{(hero.kda || 0).toFixed(2)}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Deaths</p>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Avg Deaths</p>
                           <p className="text-xs font-black text-loss">{(hero.avg_deaths || 0).toFixed(1)}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Avg Assists</p>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Avg Assists</p>
                           <p className="text-xs font-black text-foreground">{(hero.avg_assists || 0).toFixed(1)}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[8px] font-black text-gray-500 uppercase tracking-widest mb-0.5">Last Played</p>
-                          <p className="text-xs font-black text-gray-400">
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest mb-0.5">Last Played</p>
+                          <p className="text-xs font-black text-muted-foreground">
                             {hero.last_played ? formatDistanceToNow(fromUnixTime(hero.last_played), { addSuffix: true }) : 'N/A'}
                           </p>
                         </div>
@@ -686,7 +686,7 @@ export function PlayerOverviewContent({
                         />
                         <span className="text-lg font-black text-foreground truncate">{duo.personaname}</span>
                       </div>
-                      <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{duo.with_games} Games Shared</p>
+                      <p className="text-muted-foreground text-[10px] font-bold uppercase mt-1">{duo.with_games} Games Shared</p>
                     </div>
                   </div>
                 </GlassCard>
@@ -716,7 +716,7 @@ export function PlayerOverviewContent({
                         />
                         <span className="text-lg font-black text-foreground truncate">{nemesis.personaname}</span>
                       </div>
-                      <p className="text-gray-500 text-[10px] font-bold uppercase mt-1">{nemesis.against_games} Rivalries</p>
+                      <p className="text-muted-foreground text-[10px] font-bold uppercase mt-1">{nemesis.against_games} Rivalries</p>
                     </div>
                   </div>
                 </GlassCard>
@@ -731,7 +731,7 @@ export function PlayerOverviewContent({
                   onClick={() => setNetworkSubTab(tab)}
                   className={cn(
                     "px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                    networkSubTab === tab ? "bg-gaming-accent text-white" : "text-gray-500 hover:text-foreground"
+                    networkSubTab === tab ? "bg-gaming-accent text-white" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {tab}
@@ -759,7 +759,7 @@ export function PlayerOverviewContent({
                       />
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-black text-foreground truncate group-hover:text-gaming-accent transition-colors">{peer.personaname}</h4>
-                        <p className="text-[10px] font-bold text-gray-500 uppercase mt-0.5">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mt-0.5">
                           {games} {networkSubTab === 'Allies' ? 'Matches with' : 'Matches against'}
                         </p>
                       </div>
@@ -789,7 +789,7 @@ export function PlayerOverviewContent({
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
                 <h2 className="text-3xl font-black text-foreground tracking-tight uppercase">Record Book</h2>
-                <p className="text-gray-500 text-[10px] font-black uppercase tracking-widest mt-1">Deep analysis of your lifetime journey</p>
+                <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest mt-1">Deep analysis of your lifetime journey</p>
               </div>
 
               <div className="flex bg-(--nav-hover) p-1 rounded-2xl border border-(--card-border)">
@@ -807,7 +807,7 @@ export function PlayerOverviewContent({
                         "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
                         lifetimeSubTab === tab.id
                           ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
-                          : "text-gray-500 hover:text-foreground hover:bg-white/5"
+                          : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                       )}
                     >
                       <Icon size={14} />
@@ -825,7 +825,7 @@ export function PlayerOverviewContent({
                     [1, 2, 3, 4, 5, 6].map(i => <Skeleton key={i} className="h-48 w-full rounded-3xl" />)
                   ) : totals.map((total) => (
                     <GlassCard key={total.field} className="p-6 flex flex-col items-center text-center group">
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
+                      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">{total.field.replace(/_/g, ' ')}</p>
                       <h3 className="text-4xl font-black text-foreground mb-2 group-hover:scale-110 transition-transform duration-500">
                         {total.n > 0 ? Math.round(total.sum / total.n).toLocaleString() : '0'}
                       </h3>

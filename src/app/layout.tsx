@@ -33,7 +33,6 @@ export default function RootLayout({
                 {children}
               </AppLayout>
               <GlobalModalContainer />
-              <Toaster position="top-right" richColors theme="dark" />
             </Providers>
           </SteamAuthProvider>
         </SupabaseAuthProvider>

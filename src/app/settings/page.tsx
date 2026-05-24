@@ -68,7 +68,7 @@ function SettingsItem({
       
       <div className="flex-1 min-w-0">
         <h3 className={cn("font-bold", type === 'danger' ? "text-red-500" : "text-foreground")}>{label}</h3>
-        {sublabel && <p className="text-gray-500 text-xs mt-0.5">{sublabel}</p>}
+        {sublabel && <p className="text-muted-foreground text-xs mt-0.5">{sublabel}</p>}
       </div>
 
       <div className="flex items-center gap-3">
@@ -76,7 +76,7 @@ function SettingsItem({
           <Loader2 className="w-5 h-5 text-gaming-accent animate-spin" />
         ) : (
           <>
-            {type === 'text' && <span className="text-gray-500 text-sm font-medium">{value}</span>}
+            {type === 'text' && <span className="text-muted-foreground text-sm font-medium">{value}</span>}
             {type === 'toggle' && (
               <div className={cn(
                 "w-10 h-5 rounded-full relative transition-colors",
@@ -206,7 +206,7 @@ export default function SettingsPage() {
           <h1 className="text-4xl font-black text-foreground italic uppercase tracking-wider">
             App <span className="text-gaming-accent">Settings</span>
           </h1>
-          <p className="text-gray-400">Customize your experience and manage your account</p>
+          <p className="text-muted-foreground">Customize your experience and manage your account</p>
         </div>
       </div>
 
@@ -335,7 +335,7 @@ export default function SettingsPage() {
         title="App Theme"
       >
         <div className="space-y-3">
-          <p className="text-gray-400 text-sm mb-6">Choose how DotaApp looks on your device.</p>
+          <p className="text-muted-foreground text-sm mb-6">Choose how DotaApp looks on your device.</p>
           {(['light', 'dark', 'system'] as const).map((option) => (
             <button
               key={option}
@@ -347,7 +347,7 @@ export default function SettingsPage() {
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
                 theme === option 
                   ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
-                  : "bg-(--nav-hover) border-(--card-border) text-gray-500 hover:border-foreground/20 hover:text-foreground"
+                  : "bg-(--nav-hover) border-(--card-border) text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
             >
               <div className="flex items-center gap-3">
@@ -369,7 +369,7 @@ export default function SettingsPage() {
         title="Match History Limit"
       >
         <div className="space-y-3">
-          <p className="text-gray-400 text-sm mb-6">Select how many matches to load on your profile. Higher limits may increase loading times.</p>
+          <p className="text-muted-foreground text-sm mb-6">Select how many matches to load on your profile. Higher limits may increase loading times.</p>
           {[10, 20, 50].map((option) => (
             <button
               key={option}
@@ -389,7 +389,7 @@ export default function SettingsPage() {
                 "w-full flex items-center justify-between p-4 rounded-xl border transition-all",
                 matchLimit === option 
                   ? "bg-gaming-accent/10 border-gaming-accent text-foreground" 
-                  : "bg-(--nav-hover) border-(--card-border) text-gray-500 hover:border-foreground/20 hover:text-foreground"
+                  : "bg-(--nav-hover) border-(--card-border) text-muted-foreground hover:border-foreground/20 hover:text-foreground"
               )}
             >
               <span className="font-bold">{option} Matches</span>
@@ -410,7 +410,7 @@ export default function SettingsPage() {
             <Trophy className="w-10 h-10 text-green-500" />
           </div>
           <h3 className="text-2xl font-black text-foreground mb-2 italic">ACCOUNT CONNECTED</h3>
-          <p className="text-gray-400 mb-8 max-w-xs">Your Steam account (ID: {steamAccountId}) is successfully linked to your DotaApp profile.</p>
+          <p className="text-muted-foreground mb-8 max-w-xs">Your Steam account (ID: {steamAccountId}) is successfully linked to your DotaApp profile.</p>
           
           <div className="w-full space-y-3">
             <button
@@ -444,7 +444,7 @@ export default function SettingsPage() {
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
           <h3 className="text-xl font-black text-foreground mb-2 italic uppercase">ARE YOU SURE?</h3>
-          <p className="text-gray-400 mb-8 max-w-xs text-sm">
+          <p className="text-muted-foreground mb-8 max-w-xs text-sm">
             Unlinking your Steam account will prevent you from tracking your match history and personalized stats until you link it again.
           </p>
           

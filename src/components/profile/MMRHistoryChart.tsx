@@ -80,7 +80,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
     return (
       <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-(--card-border) rounded-3xl">
         <Activity className="w-12 h-12 text-gray-700 mb-4" />
-        <p className="text-gray-500 font-bold text-center px-10 max-w-sm">
+        <p className="text-muted-foreground font-bold text-center px-10 max-w-sm">
           No historical MMR data found for this player.
         </p>
       </div>
@@ -91,15 +91,15 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <GlassCard className="p-4">
-           <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Peak Rating</p>
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Peak Rating</p>
            <h4 className="text-2xl font-black text-foreground">{stats?.highest?.toLocaleString() || 'N/A'}</h4>
         </GlassCard>
         <GlassCard className="p-4">
-           <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Entry Rating</p>
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Entry Rating</p>
            <h4 className="text-2xl font-black text-foreground">{stats?.start?.toLocaleString() || 'N/A'}</h4>
         </GlassCard>
         <GlassCard className="p-4">
-           <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Total Gain/Loss</p>
+           <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Total Gain/Loss</p>
            <h4 className={`text-2xl font-black ${stats && (stats.gain ?? 0) >= 0 ? 'text-win' : 'text-loss'}`}>
               {stats && (stats.gain ?? 0) >= 0 ? '+' : ''}{stats?.gain?.toLocaleString() || '0'}
            </h4>
@@ -118,7 +118,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
         <div className="flex items-center justify-between mb-10 relative z-10">
            <div>
               <h3 className="text-sm font-black text-foreground uppercase tracking-widest">Rank Progression</h3>
-              <p className="text-gray-500 text-[10px] font-bold mt-1">Historical MMR adjustments over time</p>
+              <p className="text-muted-foreground text-[10px] font-bold mt-1">Historical MMR adjustments over time</p>
            </div>
         </div>
 
@@ -160,7 +160,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
                   if (active && payload && payload.length) {
                     return (
                       <div className="glass-card bg-(--card-bg) p-3 border-(--card-border) shadow-2xl backdrop-blur-xl">
-                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{payload[0].payload.date}</p>
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{payload[0].payload.date}</p>
                         <p className="text-2xl font-black text-foreground">{payload[0].value?.toLocaleString()} MMR</p>
                       </div>
                     );

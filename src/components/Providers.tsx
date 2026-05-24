@@ -5,8 +5,14 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 
 import { SidebarProvider } from '@/context/SidebarContext'
-import { ThemeProvider } from '@/context/ThemeContext'
+import { ThemeProvider, useTheme } from '@/context/ThemeContext'
 import { ModalProvider } from '@/context/ModalContext'
+import { Toaster } from 'sonner'
+
+function ToasterWithTheme() {
+  const { resolvedTheme } = useTheme();
+  return <Toaster position="top-right" richColors theme={resolvedTheme} />;
+}
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -26,6 +32,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         <SidebarProvider>
           <ThemeProvider>
             {children}
+            <ToasterWithTheme />
           </ThemeProvider>
         </SidebarProvider>
       </ModalProvider>

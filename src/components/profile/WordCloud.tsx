@@ -96,7 +96,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
     return (
       <div className="h-64 flex flex-col items-center justify-center border border-(--card-border) rounded-3xl bg-(--nav-hover)">
         <div className="w-8 h-8 border-2 border-gaming-accent border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Analyzing chat history...</p>
+        <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">Analyzing chat history...</p>
       </div>
     );
   }
@@ -108,7 +108,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
         <h3 className="text-foreground font-black text-xl mb-2 tracking-tight uppercase">
           {isPrivate ? 'Data Restricted' : 'Quiet Atmosphere'}
         </h3>
-        <p className="text-gray-500 text-sm max-w-xs font-medium">
+        <p className="text-muted-foreground text-sm max-w-xs font-medium">
           {isPrivate 
             ? "This profile is private, so we can't analyze their social persona or chat history."
             : "No significant all-chat history found for this player. They might be a silent warrior!"}
@@ -129,7 +129,7 @@ export function WordCloud({ accountId, isPrivate = false }: WordCloudProps) {
           <div className="flex-1">
             <h4 className="text-xs font-black text-gaming-accent uppercase tracking-[0.2em] mb-1">Social Persona</h4>
             <h3 className="text-2xl font-black text-foreground tracking-tight mb-2 uppercase">{persona.title}</h3>
-            <p className="text-gray-400 font-medium">{persona.description}</p>
+            <p className="text-muted-foreground font-medium">{persona.description}</p>
           </div>
         </GlassCard>
       )}

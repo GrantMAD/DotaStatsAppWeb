@@ -44,7 +44,7 @@ export function ProMatchCard({
           <div className="px-2 py-0.5 rounded bg-(--nav-hover) border border-(--card-border) text-[10px] text-muted-foreground font-bold uppercase tracking-wider truncate max-w-45">
             {leagueName}
           </div>
-          <div className="text-[10px] text-gray-500 font-medium">
+          <div className="text-[10px] text-muted-foreground font-medium">
             {formatDistanceToNow(new Date(startTime * 1000), { addSuffix: true })}
           </div>
         </div>
@@ -76,7 +76,7 @@ export function ProMatchCard({
           <div className="flex flex-col items-center gap-1">
             <div className="px-2 py-1 rounded-full bg-(--nav-hover) text-[10px] font-black text-muted-foreground uppercase">VS</div>
             <div className="h-10 w-px bg-linear-to-b from-transparent via-(--card-border) to-transparent" />
-            <p className="text-[10px] font-bold text-gray-500">{formatDuration(duration)}</p>
+            <p className="text-[10px] font-bold text-muted-foreground">{formatDuration(duration)}</p>
           </div>
 
           <div className="flex-1 flex flex-col items-center gap-2">
