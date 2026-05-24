@@ -110,7 +110,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
         </GlassCard>
       </div>
 
-      <GlassCard className="h-100 p-8 bg-(--tech-bg) border-(--overlay-border) relative overflow-hidden">
+      <GlassCard className="h-auto min-h-[400px] p-4 md:p-8 bg-(--tech-bg) border-(--overlay-border) relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5">
            <TrendingUp size={120} />
         </div>
@@ -122,9 +122,9 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
            </div>
         </div>
 
-        <div className="h-70 w-full relative z-10 min-h-70">
+        <div className="h-[300px] w-full relative z-10 min-h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="mmrGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="var(--color-gaming-accent)" stopOpacity={0.2}/>
@@ -156,6 +156,8 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
                 tickFormatter={(val) => val?.toLocaleString() || ''}
               />
               <Tooltip 
+                trigger="click"
+                allowEscapeViewBox={{ x: true, y: true }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
@@ -176,6 +178,7 @@ export default function MMRHistoryChart({ ratings, loading }: MMRHistoryChartPro
                 fillOpacity={1} 
                 fill="url(#mmrGradient)" 
                 animationDuration={2000}
+                activeDot={{ r: 6, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>

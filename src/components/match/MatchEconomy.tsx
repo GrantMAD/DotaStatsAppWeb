@@ -107,13 +107,23 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
       </div>
 
       {/* Chart */}
-      <GlassCard className="h-112.5 p-8 bg-(--tech-bg) border-(--overlay-border) relative overflow-hidden">
+      <GlassCard className="h-auto min-h-[450px] p-4 md:p-8 bg-(--tech-bg) border-(--overlay-border) relative overflow-hidden">
         <div className="absolute top-0 left-0 w-32 h-32 bg-win/5 blur-[80px] rounded-full" />
         <div className="absolute bottom-0 right-0 w-32 h-32 bg-loss/5 blur-[80px] rounded-full" />
 
-        <div className="h-75 relative z-10">
+        <div className="h-[350px] relative z-10">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="goldGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#eab308" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#eab308" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={
@@ -154,12 +164,36 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
                 }
               />
 
+              <Tooltip 
+                trigger="click"
+                allowEscapeViewBox={{ x: true, y: true }}
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="glass-card bg-(--card-bg) p-3 border-(--card-border) shadow-2xl backdrop-blur-md">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{payload[0].payload.time} Minutes</p>
+                        <div className="space-y-1">
+                          <p className="text-sm font-black text-amber-500">
+                            Gold: {payload[0].value > 0 ? '+' : ''}{payload[0].value?.toLocaleString()}
+                          </p>
+                          <p className="text-sm font-black text-indigo-500">
+                            XP: {payload[1].value > 0 ? '+' : ''}{payload[1].value?.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+
               <Area
                 type="monotone"
                 dataKey="gold"
                 stroke="#eab308"
                 strokeWidth={3}
                 fill="url(#goldGradient)"
+                activeDot={{ r: 6, strokeWidth: 0 }}
               />
 
               <Area
@@ -168,6 +202,7 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
                 stroke="#8b5cf6"
                 strokeWidth={3}
                 fill="url(#xpGradient)"
+                activeDot={{ r: 6, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>

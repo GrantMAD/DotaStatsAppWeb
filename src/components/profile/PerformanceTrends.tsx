@@ -243,9 +243,9 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
               </div>
             </div>
             
-            <div className="flex-1 w-full -ml-4">
+            <div className="flex-1 w-full -ml-4 min-h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trends.history}>
+                <AreaChart data={trends.history} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="metricGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor={activeMetric === 'kda' ? '#8b5cf6' : activeMetric === 'gpm' ? '#f59e0b' : '#3b82f6'} stopOpacity={0.3}/>
@@ -269,6 +269,7 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
                     fillOpacity={1} 
                     fill="url(#metricGradient)" 
                     animationDuration={1500}
+                    activeDot={{ r: 6, strokeWidth: 0 }}
                   />
                   {activeBenchmarkValue && (
                     <ReferenceLine 
@@ -288,10 +289,12 @@ export default function PerformanceTrends({ matches, totals, rankTier, loading }
                     </ReferenceLine>
                   )}
                   <Tooltip 
+                    trigger="click"
+                    allowEscapeViewBox={{ x: true, y: true }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="glass-card bg-(--card-bg) p-2 border-(--card-border) shadow-2xl">
+                          <div className="glass-card bg-(--card-bg) p-2 border-(--card-border) shadow-2xl backdrop-blur-md">
                             <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Match {payload[0].payload.index}</p>
                             <p className="text-xl font-black text-foreground">
                               {payload[0].value} {activeMetric.toUpperCase()}
