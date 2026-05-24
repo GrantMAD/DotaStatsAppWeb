@@ -5,6 +5,7 @@ import { X } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimationWrapper } from './AnimationWrapper';
 
 interface ModalProps {
   isOpen: boolean;
@@ -55,9 +56,8 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
             onClick={onClose}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+          <AnimationWrapper
+            animationType="slide-up"
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className={cn(
               "relative w-full max-h-[90vh] glass-card overflow-hidden flex flex-col p-0 border-(--card-border)",
@@ -77,7 +77,7 @@ export function Modal({ isOpen, onClose, title, children, className, size = 'md'
             <div className="flex-1 overflow-y-auto p-6">
               {children}
             </div>
-          </motion.div>
+          </AnimationWrapper>
         </div>
       )}
     </AnimatePresence>

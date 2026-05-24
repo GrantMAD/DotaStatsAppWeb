@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import { AnimationWrapper } from "./AnimationWrapper";
 
 interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
   hoverable?: boolean;
@@ -6,7 +7,8 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function GlassCard({ children, className, hoverable = false, ...props }: GlassCardProps) {
   return (
-    <div 
+    <AnimationWrapper 
+      animationType={hoverable ? "scale-hover" : "fade-in"}
       className={cn(
         "glass-card p-6",
         hoverable && "glass-card-hover",
@@ -15,6 +17,6 @@ export function GlassCard({ children, className, hoverable = false, ...props }: 
       {...props}
     >
       {children}
-    </div>
+    </AnimationWrapper>
   );
 }

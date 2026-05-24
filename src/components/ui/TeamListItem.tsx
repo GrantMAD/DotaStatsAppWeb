@@ -4,6 +4,7 @@ import React from 'react';
 import { Shield } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import Image from "next/image";
+import { AnimationWrapper } from './AnimationWrapper';
 
 import { ProTeam } from '@/services/opendota';
 
@@ -19,58 +20,60 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
     : '0.0';
 
   return (
-    <div
-      onClick={() => onClick(team.team_id)}
-      className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
-    >
-      <div className="w-8 flex justify-center">
-        <span className={cn(
-          "font-black text-xl",
-          rank <= 3 ? "text-gaming-accent italic" : "text-gray-600"
-        )}>
-          {rank}
-        </span>
-      </div>
+    <AnimationWrapper animationType="fade-in">
+      <div
+        onClick={() => onClick(team.team_id)}
+        className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
+      >
+        <div className="w-8 flex justify-center">
+          <span className={cn(
+            "font-black text-xl",
+            rank <= 3 ? "text-gaming-accent italic" : "text-gray-600"
+          )}>
+            {rank}
+          </span>
+        </div>
 
-      <div className="w-14 h-14 bg-(--nav-hover) rounded-xl border border-(--card-border) p-2 flex items-center justify-center overflow-hidden">
-        {team.logo_url ? (
-          <Image
-            src={team.logo_url}
-            alt={team.name}
-            fill
-            unoptimized
-            className="object-contain"
-          />
-        ) : (
-          <Shield className="w-6 h-6 text-foreground/10" />
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
-            {team.name}
-          </h3>
-          {team.tag && (
-            <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">
-              [{team.tag}]
-            </span>
+        <div className="w-14 h-14 bg-(--nav-hover) rounded-xl border border-(--card-border) p-2 flex items-center justify-center overflow-hidden">
+          {team.logo_url ? (
+            <Image
+              src={team.logo_url}
+              alt={team.name}
+              fill
+              unoptimized
+              className="object-contain"
+            />
+          ) : (
+            <Shield className="w-6 h-6 text-foreground/10" />
           )}
         </div>
-        <p className="text-gray-500 text-xs mt-1">
-          {winRate}% Win Rate • {team.wins + team.losses} Games
-        </p>
-      </div>
 
-      <div className="text-right">
-        <div className="text-xl font-black text-gaming-accent tracking-tighter italic">
-          {Math.round(team.rating)}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
+              {team.name}
+            </h3>
+            {team.tag && (
+              <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">
+                [{team.tag}]
+              </span>
+            )}
+          </div>
+          <p className="text-gray-500 text-xs mt-1">
+            {winRate}% Win Rate • {team.wins + team.losses} Games
+          </p>
         </div>
-        <div className="text-[10px] text-gray-600 font-black uppercase tracking-widest leading-none">
-          Rating
+
+        <div className="text-right">
+          <div className="text-xl font-black text-gaming-accent tracking-tighter italic">
+            {Math.round(team.rating)}
+          </div>
+          <div className="text-[10px] text-gray-600 font-black uppercase tracking-widest leading-none">
+            Rating
+          </div>
         </div>
       </div>
-    </div>
+    </AnimationWrapper>
   );
 }
 

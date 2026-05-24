@@ -7,10 +7,10 @@ import { HEROES, getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from 
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
 import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from '@/components/ui/Icons';
-import Link from 'next/link';
 import { usePlayerPeers } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { calculateLaningGrade } from '@/utils/matchAnalytics';
+import { useModal } from '@/context/ModalContext';
 
 interface DraftDisplayProps {
   picksBans: PickBan[];
@@ -171,6 +171,7 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
 }
 
 function ScoreboardRow({ player, userPeers }: { player: MatchDetails['players'][number]; userPeers: Array<{ account_id: number }> }) {
+  const { openModal } = useModal();
   const items = [player.item_0, player.item_1, player.item_2, player.item_3, player.item_4, player.item_5];
   const peer = player.account_id ? userPeers.find(up => up.account_id === player.account_id) : null;
   const heroData = HEROES[player.hero_id];
@@ -223,12 +224,12 @@ function ScoreboardRow({ player, userPeers }: { player: MatchDetails['players'][
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               {player.account_id ? (
-                <Link
-                  href={`/profile/${player.account_id}`}
-                  className="text-sm font-black text-foreground hover:text-gaming-accent transition-colors truncate block"
+                <button
+                  onClick={() => openModal('player', player.account_id!.toString())}
+                  className="text-sm font-black text-foreground hover:text-gaming-accent transition-colors truncate block text-left cursor-pointer"
                 >
                   {player.personaname}
-                </Link>
+                </button>
               ) : (
                 <span className="text-sm font-black text-gray-500 italic flex items-center gap-2">
                   <EyeOff size={12} className="text-gray-600" />

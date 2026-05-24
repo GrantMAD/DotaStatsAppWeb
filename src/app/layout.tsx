@@ -6,6 +6,7 @@ import { SupabaseAuthProvider } from "@/context/SupabaseAuthContext";
 import { SteamAuthProvider } from "@/context/SteamAuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Toaster } from "sonner";
+import { GlobalModalContainer } from "@/components/ui/GlobalModalContainer";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
               <AppLayout>
                 {children}
               </AppLayout>
+              <GlobalModalContainer />
               <Toaster position="top-right" richColors theme="dark" />
             </Providers>
           </SteamAuthProvider>

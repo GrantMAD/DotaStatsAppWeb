@@ -133,7 +133,7 @@ export default async function MatchPage({ params }: PageProps) {
   // 4. Render Server-Side Match Header
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-20">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4 mt-8">
         <Link href="/">
           <Button variant="secondary" size="sm" className="inline-flex items-center gap-2">
             <ChevronLeft className="w-4 h-4" />

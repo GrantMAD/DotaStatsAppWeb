@@ -22,8 +22,8 @@ import {
 import { cn } from "@/utils/cn";
 import { useHeroStats } from "@/hooks/useOpenDota";
 import { STEAM_CDN_BASE } from "@/services/constants";
-import { motion } from "framer-motion";
 import Image from 'next/image';
+import { AnimationWrapper } from "./AnimationWrapper";
 
 interface ActivityFeedItemProps {
   item: ActivityItem;
@@ -168,13 +168,7 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4 }}
-      whileHover={{ y: -4 }}
-      className="shrink-0"
-    >
+    <AnimationWrapper animationType="slide-up" style={{ transitionDelay: `${index * 50}ms` }}>
       <GlassCard
         hoverable
         className={cn(
@@ -258,8 +252,6 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
           </div>
         </div>
       </GlassCard>
-    </motion.div>
+    </AnimationWrapper>
   );
 }
-
-

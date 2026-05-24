@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { User, Plus, Check, UserPlus, ChevronRight } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
+import { AnimationWrapper } from './AnimationWrapper';
 
 interface PlayerListItemProps {
   player: {
@@ -37,87 +38,89 @@ export function PlayerListItem({
   onClick
 }: PlayerListItemProps) {
   return (
-    <div 
-      onClick={onClick}
-      className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
-    >
-      <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-(--card-border) bg-(--nav-hover)">
-        {player.avatarfull ? (
-          <Image
-            src={player.avatarfull}
-            alt={player.personaname}
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <User className="w-6 h-6 text-foreground/10" />
-          </div>
-        )}
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
-            {player.personaname}
-          </h3>
-          {player.isPro && (
-            <span className="bg-gaming-accent/20 text-gaming-accent border border-gaming-accent/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
-              {player.team_tag ? `PRO (${player.team_tag})` : 'PRO'}
-            </span>
-          )}
-          {(player.isAppUser || appUserId) && (
-            <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
-              App User
-            </span>
+    <AnimationWrapper animationType="fade-in">
+      <div 
+        onClick={onClick}
+        className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
+      >
+        <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-(--card-border) bg-(--nav-hover)">
+          {player.avatarfull ? (
+            <Image
+              src={player.avatarfull}
+              alt={player.personaname}
+              fill
+              sizes="56px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <User className="w-6 h-6 text-foreground/10" />
+            </div>
           )}
         </div>
-        <p className="text-gray-500 text-xs mt-1">
-          ID: {player.account_id}
-          {player.last_match_time && (
-            <> • Last match: {new Date(player.last_match_time).toLocaleDateString()}</>
-          )}
-        </p>
 
-        {!isCurrentUser && (
-          <div className="flex items-center gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={isFollowing ? onUnfollow : onFollow}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-                isFollowing 
-                  ? "bg-(--nav-hover) text-gray-400 hover:bg-(--glass-start) hover:text-foreground" 
-                  : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
-              )}
-            >
-              {isFollowing ? (
-                <>
-                  <Check className="w-3.5 h-3.5" />
-                  Following
-                </>
-              ) : (
-                <>
-                  <Plus className="w-3.5 h-3.5" />
-                  Follow
-                </>
-              )}
-            </button>
-
-            {appUserId && !isFriend && onAddFriend && (
-              <button
-                onClick={onAddFriend}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gaming-accent text-white hover:bg-gaming-accent-light shadow-lg shadow-gaming-accent/20 transition-all"
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                Add Friend
-              </button>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
+              {player.personaname}
+            </h3>
+            {player.isPro && (
+              <span className="bg-gaming-accent/20 text-gaming-accent border border-gaming-accent/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
+                {player.team_tag ? `PRO (${player.team_tag})` : 'PRO'}
+              </span>
+            )}
+            {(player.isAppUser || appUserId) && (
+              <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
+                App User
+              </span>
             )}
           </div>
-        )}
-      </div>
+          <p className="text-gray-500 text-xs mt-1">
+            ID: {player.account_id}
+            {player.last_match_time && (
+              <> • Last match: {new Date(player.last_match_time).toLocaleDateString()}</>
+            )}
+          </p>
 
-      <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-gaming-accent transition-colors" />
-    </div>
+          {!isCurrentUser && (
+            <div className="flex items-center gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
+              <button
+                onClick={isFollowing ? onUnfollow : onFollow}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                  isFollowing 
+                    ? "bg-(--nav-hover) text-gray-400 hover:bg-(--glass-start) hover:text-foreground" 
+                    : "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-600/20"
+                )}
+              >
+                {isFollowing ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    Following
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-3.5 h-3.5" />
+                    Follow
+                  </>
+                )}
+              </button>
+
+              {appUserId && !isFriend && onAddFriend && (
+                <button
+                  onClick={onAddFriend}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-gaming-accent text-white hover:bg-gaming-accent-light shadow-lg shadow-gaming-accent/20 transition-all"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  Add Friend
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        <ChevronRight className="w-5 h-5 text-gray-700 group-hover:text-gaming-accent transition-colors" />
+      </div>
+    </AnimationWrapper>
   );
 }
