@@ -22,11 +22,8 @@ async function TrendsWrapper() {
 }
 
 async function ProSceneWrapper() {
-  const [heroesData, proMatchesData] = await Promise.all([
-    getServerHeroStats(),
-    getServerProMatches(10),
-  ]);
-  return <ProSceneHubSection initialHeroesData={heroesData} initialProMatches={proMatchesData} />;
+  const proMatchesData = await getServerProMatches(10);
+  return <ProSceneHubSection initialProMatches={proMatchesData} />;
 }
 
 export default async function HomePage() {
