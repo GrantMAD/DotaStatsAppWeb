@@ -8,7 +8,7 @@ type AnimationWrapperProps = HTMLMotionProps<"div"> & {
   animationType?: 'fade-in' | 'scale-hover' | 'slide-up';
 };
 
-const animations = {
+const animations: Record<string, any> = {
   'fade-in': {
     initial: { opacity: 0 },
     animate: { opacity: 1 },

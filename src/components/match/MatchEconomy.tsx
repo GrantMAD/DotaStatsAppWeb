@@ -10,6 +10,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
   ReferenceLine,
+  Tooltip,
 } from 'recharts';
 import { GlassCard } from '../ui/GlassCard';
 import { TrendingUp, Zap, Activity } from '@/components/ui/Icons';
@@ -174,10 +175,12 @@ export function MatchEconomy({ match }: { match: MatchDetails }) {
                         <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{payload[0].payload.time} Minutes</p>
                         <div className="space-y-1">
                           <p className="text-sm font-black text-amber-500">
-                            Gold: {payload[0].value > 0 ? '+' : ''}{payload[0].value?.toLocaleString()}
+                            Gold: {(payload[0].value as number) > 0 ? '+' : ''}
+                            {payload[0].value?.toLocaleString()}
                           </p>
                           <p className="text-sm font-black text-indigo-500">
-                            XP: {payload[1].value > 0 ? '+' : ''}{payload[1].value?.toLocaleString()}
+                            XP: {(payload[1].value as number) > 0 ? '+' : ''}
+                            {payload[1].value?.toLocaleString()}
                           </p>
                         </div>
                       </div>

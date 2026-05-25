@@ -4,15 +4,12 @@ import React, { useState } from 'react';
 import { Radio } from '@/components/ui/Icons';
 import { LiveGameCard } from '@/components/ui/LiveGameCard';
 import { useLiveGames } from '@/hooks/useOpenDota';
-import dynamic from 'next/dynamic';
-
-const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailModal').then(mod => mod.MatchDetailModal), {
-  ssr: false
-});
+import { LiveMatchModal } from '@/components/match/LiveMatchModal';
+import { LiveGame } from '@/types';
 
 export function LiveGamesSection() {
   const { data: liveGames = [] } = useLiveGames();
-  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [selectedGame, setSelectedGame] = useState<LiveGame | null>(null);
 
   // Filter out matches that might return 404s (e.g. low MMR, invalid server, or unparsable)
   const validLiveGames = liveGames.filter(game => game.average_mmr > 2000);
@@ -21,10 +18,10 @@ export function LiveGamesSection() {
 
   return (
     <div className="lg:col-span-2 space-y-8 mt-12">
-      <MatchDetailModal
-        isOpen={selectedMatchId !== null}
-        onClose={() => setSelectedMatchId(null)}
-        matchId={selectedMatchId}
+      <LiveMatchModal
+        isOpen={selectedGame !== null}
+        onClose={() => setSelectedGame(null)}
+        game={selectedGame}
       />
 
       <div>
@@ -39,7 +36,7 @@ export function LiveGamesSection() {
             <LiveGameCard
               key={game.match_id}
               game={game}
-              onPress={(id) => setSelectedMatchId(id)}
+              onPress={() => setSelectedGame(game)}
             />
           ))}
         </div>

@@ -59,6 +59,7 @@ export {
   ArrowUpRight,
   Calendar,
   Shield,
+  ShieldCheck,
   Filter,
   Layers,
   MessageCircle,

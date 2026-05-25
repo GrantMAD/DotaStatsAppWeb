@@ -6,6 +6,9 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function GlassCard({ children, className, hoverable = false, ...props }: GlassCardProps) {
+  // Omit HTML animation events to avoid conflict with motion animation events
+  const { onAnimationStart, onAnimationIteration, onAnimationEnd, ...filteredProps } = props as any;
+
   return (
     <AnimationWrapper 
       animationType={hoverable ? "scale-hover" : "fade-in"}
@@ -14,7 +17,7 @@ export function GlassCard({ children, className, hoverable = false, ...props }: 
         hoverable && "glass-card-hover",
         className
       )} 
-      {...props}
+      {...filteredProps}
     >
       {children}
     </AnimationWrapper>
