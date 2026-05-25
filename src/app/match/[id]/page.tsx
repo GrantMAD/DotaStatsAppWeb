@@ -1,6 +1,7 @@
 import React from 'react';
 import { getServerMatchDetails, getLiveGames, GAME_MODES } from '@/services/opendota';
 import { MatchPageClient } from '@/components/match/MatchPageClient';
+import { LiveMatchClient } from '@/components/match/LiveMatchClient';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
@@ -25,89 +26,7 @@ export default async function MatchPage({ params }: PageProps) {
 
   // 2. Handle Live Match Case
   if (!match && liveGame) {
-    return (
-      <div className="max-w-6xl mx-auto space-y-8 pb-20">
-        <GlassCard className="p-12 border-red-500/20 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,var(--color-loss)_0%,transparent_70%)]" />
-          <div className="relative z-10 flex flex-col items-center text-center space-y-8">
-            <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-red-500/20 border border-red-500/30">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-sm font-black text-red-500 uppercase tracking-widest">Live Match in Progress</span>
-            </div>
-            
-            <div>
-              <h1 className="text-5xl font-black text-foreground italic uppercase tracking-tighter mb-4">
-                Match {matchId}
-              </h1>
-              <p className="text-muted-foreground font-bold max-w-lg mx-auto">
-                This match is currently being played at a high level. Detailed analytics will be available once the match is parsed by OpenDota.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
-              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Avg MMR</p>
-                <p className="text-2xl font-black text-amber-500 italic">{liveGame.average_mmr}</p>
-              </div>
-              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Duration</p>
-                <p className="text-2xl font-black text-foreground italic">{Math.floor(liveGame.game_time / 60)}m</p>
-              </div>
-              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Players</p>
-                <p className="text-2xl font-black text-foreground italic">{liveGame.players.length}</p>
-              </div>
-              <div className="bg-(--nav-hover) border border-(--card-border) p-6 rounded-3xl">
-                <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">Server</p>
-                <p className="text-2xl font-black text-foreground italic">#{liveGame.server_id.slice(-4)}</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-               <Button size="lg" className="px-10 h-16 bg-red-600 hover:bg-red-500 text-lg font-black italic uppercase tracking-wider gap-3">
-                 <Radio className="w-6 h-6 animate-pulse" />
-                 Watch Live in Game
-               </Button>
-               <Link href={`/match/${matchId}`}>
-                 <Button variant="secondary" size="lg" className="px-10 h-16 text-lg font-black italic uppercase tracking-wider">
-                   Refresh Data
-                 </Button>
-               </Link>
-            </div>
-          </div>
-        </GlassCard>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-           <GlassCard className="p-8">
-             <h3 className="text-foreground font-black uppercase italic tracking-tight mb-6 flex items-center gap-2">
-               <Users className="w-5 h-5 text-gaming-accent" /> Radiant Team
-             </h3>
-             <div className="space-y-4">
-                {liveGame.players.slice(0, 5).map((p, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-(--nav-hover) rounded-2xl border border-(--card-border)">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800" />
-                    <span className="font-bold text-foreground">{p.name || `Player ${i + 1}`}</span>
-                  </div>
-                ))}
-             </div>
-           </GlassCard>
-
-           <GlassCard className="p-8">
-             <h3 className="text-foreground font-black uppercase italic tracking-tight mb-6 flex items-center gap-2">
-               <Users className="w-5 h-5 text-loss" /> Dire Team
-             </h3>
-             <div className="space-y-4">
-                {liveGame.players.slice(5, 10).map((p, i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 bg-(--nav-hover) rounded-2xl border border-(--card-border)">
-                    <div className="w-10 h-10 rounded-full bg-zinc-800" />
-                    <span className="font-bold text-foreground">{p.name || `Player ${i + 6}`}</span>
-                  </div>
-                ))}
-             </div>
-           </GlassCard>
-        </div>
-      </div>
-    );
+    return <LiveMatchClient matchId={matchId} initialLiveGame={liveGame as any} />;
   }
 
   // 3. Handle Not Found Case

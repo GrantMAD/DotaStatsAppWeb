@@ -3,8 +3,10 @@
 import React from 'react';
 import { User, ChevronRight, EyeOff } from '@/components/ui/Icons';
 import { usePlayerProfile, isProfilePrivate } from '@/hooks/useOpenDota';
+import { usePresence } from '@/context/PresenceContext';
 import Image from "next/image";
 import { AnimationWrapper } from './AnimationWrapper';
+import { cn } from '@/utils/cn';
 
 interface UserListItemProps {
   user: {
@@ -19,8 +21,11 @@ interface UserListItemProps {
 
 export function UserListItem({ user: appUser, onClick, rightComponent, stackMetadata = false }: UserListItemProps) {
   const { data: profile, isLoading } = usePlayerProfile(appUser.steam_account_id);
+  const { isUserOnline, onlineUsers } = usePresence();
   const avatarUrl = profile?.profile?.avatarfull;
   const isPrivate = isProfilePrivate(profile ?? null);
+  const isOnline = isUserOnline(appUser.id);
+  const presenceInfo = isOnline ? onlineUsers[appUser.id][0] : null;
 
   return (
     <AnimationWrapper animationType="fade-in">
@@ -48,12 +53,24 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
               </div>
             )}
           </div>
+          {isOnline && (
+            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-background rounded-full flex items-center justify-center">
+              <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+            </div>
+          )}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
-            {appUser.steam_name || profile?.profile?.personaname || (isLoading ? 'Loading...' : 'Unknown Player')}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
+              {appUser.steam_name || profile?.profile?.personaname || (isLoading ? 'Loading...' : 'Unknown Player')}
+            </h3>
+            {isOnline && presenceInfo?.activity && (
+              <span className="text-[10px] font-medium text-green-500/80 italic truncate animate-in fade-in slide-in-from-left-1">
+                • {presenceInfo.activity}
+              </span>
+            )}
+          </div>
           {stackMetadata ? (
             <div className="mt-1 space-y-1">
               <p className="text-muted-foreground text-xs">ID: {appUser.steam_account_id}</p>

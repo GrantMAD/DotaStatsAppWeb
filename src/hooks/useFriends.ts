@@ -4,8 +4,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
 import { useSupabaseAuth } from '../context/SupabaseAuthContext';
 import { useEffect, useMemo, useRef } from 'react';
+import { toast } from 'sonner';
 
 export type FriendshipStatus = 'pending' | 'accepted' | 'declined';
+// ... (rest of imports and types)
 
 export interface Friendship {
   id: string;
@@ -240,13 +242,31 @@ export const useNotifications = () => {
       .on(
         'postgres_changes',
         {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const newNotification = payload.new as AppNotification;
+          toast(newNotification.message || 'New notification received', {
+            description: 'Check your notifications for details',
+          });
+          queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
           event: '*',
           schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
+        (payload) => {
+          if (payload.eventType !== 'INSERT') {
+            queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
+          }
         }
       )
       .subscribe();

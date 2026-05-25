@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { usePresence } from '@/context/PresenceContext';
 import { NotificationBell } from './NotificationBell';
 import { useSidebar } from '@/context/SidebarContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -40,8 +41,9 @@ export function Sidebar() {
   const { user, steamAccountId, signOut } = useSupabaseAuth();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { resolvedTheme } = useTheme();
+  const { getOnlineUserCount } = usePresence();
 
-
+  const onlineCount = getOnlineUserCount();
 
   return (
     <motion.aside
@@ -99,56 +101,67 @@ export function Sidebar() {
           const href = item.href === '/profile' && steamAccountId ? `/profile/${steamAccountId}` : item.href;
 
           return (
-            <Link
-              key={item.label}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
-                isActive
-                  ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
-                  : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
-              )}
-            >
-              <div className={cn(
-                "p-2 rounded-xl transition-all duration-300",
-                isActive
-                  ? "bg-white/20 shadow-inner"
-                  : resolvedTheme === 'light'
-                    ? item.bg
-                    : "bg-(--nav-hover) group-hover:bg-gaming-accent/10"
-              )}>
-                <item.icon className={cn(
-                  "w-5 h-5 shrink-0 transition-colors",
+            <div key={item.label} className="relative">
+              <Link
+                href={href}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
                   isActive
-                    ? "text-white"
-                    : resolvedTheme === 'light'
-                      ? item.color
-                      : "text-muted-foreground group-hover:text-gaming-accent"
-                )} />
-              </div>
-
-              <AnimatePresence>
-                {!isCollapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    className={cn(
-                      "font-medium whitespace-nowrap transition-colors",
-                      isActive ? "text-white" : "text-foreground"
-                    )}
-                  >
-                    {item.label}
-                  </motion.span>
+                    ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
+                    : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
                 )}
-              </AnimatePresence>
+              >
+                <div className={cn(
+                  "p-2 rounded-xl transition-all duration-300",
+                  isActive
+                    ? "bg-white/20 shadow-inner"
+                    : resolvedTheme === 'light'
+                      ? item.bg
+                      : "bg-(--nav-hover) group-hover:bg-gaming-accent/10"
+                )}>
+                  <item.icon className={cn(
+                    "w-5 h-5 shrink-0 transition-colors",
+                    isActive
+                      ? "text-white"
+                      : resolvedTheme === 'light'
+                        ? item.color
+                        : "text-muted-foreground group-hover:text-gaming-accent"
+                  )} />
+                </div>
 
-              {isCollapsed && (
-                <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
-                  {item.label}
+                <AnimatePresence>
+                  {!isCollapsed && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className={cn(
+                        "font-medium whitespace-nowrap transition-colors",
+                        isActive ? "text-white" : "text-foreground"
+                      )}
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+
+                {isCollapsed && (
+                  <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
+                    {item.label}
+                  </div>
+                )}
+              </Link>
+              
+              {/* Online indicator below Friends item */}
+              {!isCollapsed && item.label === 'Friends' && onlineCount > 0 && (
+                <div className="pl-14 py-1 animate-in fade-in slide-in-from-top-1">
+                  <span className="text-[10px] font-black text-green-500/80 uppercase tracking-widest flex items-center gap-1.5">
+                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                     {onlineCount} Friends Online
+                  </span>
                 </div>
               )}
-            </Link>
+            </div>
           );
         })}
       </nav>

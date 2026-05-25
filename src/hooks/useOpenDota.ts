@@ -187,7 +187,7 @@ export function useLiveGames() {
   return useQuery({
     queryKey: ['liveGames'],
     queryFn: openDotaApi.getLiveGames,
-    refetchInterval: 1000 * 60, // Refresh every minute
+    refetchInterval: 1000 * 20, // Refresh every 20 seconds
   });
 }
 

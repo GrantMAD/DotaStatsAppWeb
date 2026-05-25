@@ -3,6 +3,7 @@
 import { Sidebar } from './Sidebar';
 import { MobileHeader } from './MobileHeader';
 import { BottomNav } from './BottomNav';
+import { PresenceManager } from './PresenceManager';
 import { usePathname } from 'next/navigation';
 
 import { useSidebar } from '@/context/SidebarContext';
@@ -22,6 +23,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen">
+      <PresenceManager />
       <Sidebar />
       <MobileHeader />
       <motion.main 

@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { SidebarProvider } from '@/context/SidebarContext'
 import { ThemeProvider, useTheme } from '@/context/ThemeContext'
 import { ModalProvider } from '@/context/ModalContext'
+import { PresenceProvider } from '@/context/PresenceContext'
 import { Toaster } from 'sonner'
 
 function ToasterWithTheme() {
@@ -31,8 +32,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ModalProvider>
         <SidebarProvider>
           <ThemeProvider>
-            {children}
-            <ToasterWithTheme />
+            <PresenceProvider>
+              {children}
+              <ToasterWithTheme />
+            </PresenceProvider>
           </ThemeProvider>
         </SidebarProvider>
       </ModalProvider>
