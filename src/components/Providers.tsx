@@ -1,6 +1,6 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useState } from 'react'
 
@@ -8,7 +8,7 @@ import { SidebarProvider } from '@/context/SidebarContext'
 import { ThemeProvider, useTheme } from '@/context/ThemeContext'
 import { ModalProvider } from '@/context/ModalContext'
 import { PresenceProvider } from '@/context/PresenceContext'
-import { Toaster } from 'sonner'
+import { Toaster, toast } from 'sonner'
 
 function ToasterWithTheme() {
   const { resolvedTheme } = useTheme();
@@ -19,9 +19,20 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
+        queryCache: new QueryCache({
+          onError: (error: any) => {
+            toast.error(error.message || 'An error occurred while fetching data');
+          },
+        }),
+        mutationCache: new MutationCache({
+          onError: (error: any) => {
+            toast.error(error.message || 'An error occurred while performing this action');
+          },
+        }),
         defaultOptions: {
           queries: {
             staleTime: 60 * 1000,
+            retry: 1,
           },
         },
       })
