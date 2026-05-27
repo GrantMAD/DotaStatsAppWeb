@@ -28,29 +28,30 @@ const PresenceContext = createContext<PresenceContextType>({
 
 export const usePresence = () => useContext(PresenceContext);
 
+const EMPTY_ONLINE_USERS = {};
+const EMPTY_SOCIAL_IDS = new Set<string>();
+
 export function PresenceProvider({ children }: { children: ReactNode }) {
   const { user } = useSupabaseAuth();
   const { friends, following } = useFriends();
-  const [onlineUsers, setOnlineUsers] = useState<Record<string, PresenceUser[]>>({});
+  const [onlineUsers, setOnlineUsers] = useState<Record<string, PresenceUser[]>>(EMPTY_ONLINE_USERS);
   const supabase = useMemo(() => createClient(), []);
   const channelRef = useRef<any>(null);
 
   // Derived list of friend/followed user IDs for filtering
   const socialUserIds = useMemo(() => {
+    if (!user) return EMPTY_SOCIAL_IDS;
     const ids = new Set<string>();
     friends.forEach(f => {
       const friendId = f.requester_id === user?.id ? f.addressee_id : f.requester_id;
       ids.add(friendId);
     });
-    // Note: 'following' table tracks followed_steam_id, 
-    // which may not directly map to user.id in the 'users' table 
-    // unless you normalize. Assuming IDs match for this filter:
     return ids;
   }, [friends, user?.id]);
 
   useEffect(() => {
     if (!user) {
-      setOnlineUsers({});
+      setOnlineUsers(EMPTY_ONLINE_USERS);
       return;
     }
 

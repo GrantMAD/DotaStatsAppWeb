@@ -30,6 +30,8 @@ export interface ActivityItem {
   };
 }
 
+const EMPTY_ARRAY: any[] = [];
+
 export const useActivityFeed = () => {
   const { following, friends, loading: friendsLoading } = useFriends();
   const { user } = useSupabaseAuth();
@@ -37,6 +39,7 @@ export const useActivityFeed = () => {
   const instanceIdRef = useRef<string | null>(null);
 
   const playerIds = useMemo(() => {
+    if (following.length === 0 && friends.length === 0) return EMPTY_ARRAY;
     const ids = new Set<string>();
     
     following.forEach(f => ids.add(f.followed_steam_id.toString()));
@@ -50,10 +53,10 @@ export const useActivityFeed = () => {
     return Array.from(ids).slice(0, 15);
   }, [following, friends]);
 
-  const { data: activities = [], isLoading, refetch } = useQuery({
+  const { data: activities = EMPTY_ARRAY, isLoading, refetch } = useQuery({
     queryKey: ['activityFeed', playerIds],
     queryFn: async () => {
-      if (playerIds.length === 0) return [];
+      if (playerIds.length === 0) return EMPTY_ARRAY;
 
       const activityList: ActivityItem[] = [];
 

@@ -18,34 +18,44 @@ export function HeroSearchSection() {
   };
 
   return (
-    <div className="relative mb-12 pt-12 lg:pt-20">
+    <div className={`relative mb-12 ${!user ? 'pt-8 lg:pt-12 border-t border-white/5 mt-8' : 'pt-12 lg:pt-20'}`}>
       <div className="max-w-none">
-        <h1 className="text-5xl lg:text-8xl font-black text-foreground mb-6 tracking-tighter uppercase italic">
-          Dota <span className="text-gradient">Intelligence.</span>
-        </h1>
-        <p className="text-gray-400 text-lg lg:text-2xl font-medium leading-relaxed mb-10">
-          Real-time hero stats, pro match analytics, and performance insights for the modern Dota 2 player.
-        </p>
+        {user ? (
+          <>
+            <h1 className="text-5xl lg:text-8xl font-black text-foreground mb-6 tracking-tighter uppercase italic">
+              Dota <span className="text-gradient">Intelligence.</span>
+            </h1>
+            <p className="text-gray-400 text-lg lg:text-2xl font-medium leading-relaxed mb-10">
+              Real-time hero stats, pro match analytics, and performance insights for the modern Dota 2 player.
+            </p>
+          </>
+        ) : (
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-foreground mb-2 tracking-tighter uppercase italic">
+              Quick <span className="text-gaming-accent">Search.</span>
+            </h2>
+            <p className="text-gray-500 text-sm font-medium">
+              Find any player or hero instantly.
+            </p>
+          </div>
+        )}
 
         <div className="space-y-6">
-          <div className="space-y-4">
-            {!user ? (
-              <Button onClick={() => router.push('/sign-in')} className="w-full h-16 text-xl font-black uppercase italic tracking-wider">
-                <LogIn className="w-6 h-6" />
-                Get Started
-              </Button>
-            ) : !steamAccountId ? (
-              <Button variant="secondary" onClick={() => router.push('/profile')} className="w-full h-16 border-dashed border-amber-500/50 text-amber-500 text-xl font-black uppercase italic tracking-wider">
-                <LinkIcon className="w-6 h-6" />
-                Link Steam Account
-              </Button>
-            ) : (
-              <Button variant="secondary" onClick={() => router.push(`/profile/${steamAccountId}`)} className="w-full h-16 border-dashed border-win/50 text-win text-xl font-black uppercase italic tracking-wider">
-                <UserIcon className="w-6 h-6" />
-                View My Profile
-              </Button>
-            )}
-          </div>
+          {user && (
+            <div className="space-y-4">
+              {!steamAccountId ? (
+                <Button variant="secondary" onClick={() => router.push('/profile')} className="w-full h-16 border-dashed border-amber-500/50 text-amber-500 text-xl font-black uppercase italic tracking-wider">
+                  <LinkIcon className="w-6 h-6" />
+                  Link Steam Account
+                </Button>
+              ) : (
+                <Button variant="secondary" onClick={() => router.push(`/profile/${steamAccountId}`)} className="w-full h-16 border-dashed border-win/50 text-win text-xl font-black uppercase italic tracking-wider">
+                  <UserIcon className="w-6 h-6" />
+                  View My Profile
+                </Button>
+              )}
+            </div>
+          )}
 
           <form onSubmit={handleSearch} className="relative group">
             <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">

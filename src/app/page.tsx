@@ -7,6 +7,7 @@ import { MetaTierListSection } from '@/components/home/MetaTierListSection';
 import { TrendsSection } from '@/components/home/TrendsSection';
 import { ProSceneHubSection } from '@/components/home/ProSceneHubSection';
 import { LiveGamesSection } from '@/components/home/LiveGamesSection';
+import { WelcomeHero } from '@/components/home/WelcomeHero';
 import { MetaTierSkeleton, ProMatchSkeleton, HeroTrendsSkeleton } from '@/components/ui/HomeSkeletons';
 
 export const revalidate = 300;
@@ -45,23 +46,27 @@ export default async function HomePage() {
 
   return (
     <div className="pb-20">
-      <HeroSearchSection />
+      {!user && <WelcomeHero />}
 
-      <FriendsActivitySection />
+      <div id="main-content">
+        <HeroSearchSection />
 
-      <Suspense fallback={<MetaTierSkeleton />}>
-        <MetaTierListWrapper userBracket={userBracket} />
-      </Suspense>
+        <FriendsActivitySection />
 
-      <Suspense fallback={<HeroTrendsSkeleton />}>
-        <TrendsWrapper />
-      </Suspense>
+        <Suspense fallback={<MetaTierSkeleton />}>
+          <MetaTierListWrapper userBracket={userBracket} />
+        </Suspense>
 
-      <Suspense fallback={<ProMatchSkeleton />}>
-        <ProSceneWrapper />
-      </Suspense>
+        <Suspense fallback={<HeroTrendsSkeleton />}>
+          <TrendsWrapper />
+        </Suspense>
 
-      <LiveGamesSection />
+        <Suspense fallback={<ProMatchSkeleton />}>
+          <ProSceneWrapper />
+        </Suspense>
+
+        <LiveGamesSection />
+      </div>
     </div>
   );
 }

@@ -58,6 +58,8 @@ type SupabaseFriendRow = {
   addressee: SupabaseUser;
 };
 
+const EMPTY_ARRAY: any[] = [];
+
 export const useFriends = () => {
   const { user } = useSupabaseAuth();
   const userId = user?.id;
@@ -65,10 +67,10 @@ export const useFriends = () => {
   const supabase = useMemo(() => createClient(), []);
   const instanceIdRef = useRef<string | null>(null);
 
-  const { data: friends = [], isLoading: friendsLoading } = useQuery({
+  const { data: friends = EMPTY_ARRAY, isLoading: friendsLoading } = useQuery({
     queryKey: ['friends', userId],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return EMPTY_ARRAY;
       const { data, error } = await supabase
         .from('friendships')
         .select('*, requester:requester_id(*), addressee:addressee_id(*)')
@@ -84,17 +86,17 @@ export const useFriends = () => {
     enabled: !!user,
   });
 
-  const { data: following = [], isLoading: followingLoading } = useQuery({
+  const { data: following = EMPTY_ARRAY, isLoading: followingLoading } = useQuery({
     queryKey: ['following', userId],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return EMPTY_ARRAY;
       const { data, error } = await supabase
         .from('follows')
         .select('*')
         .eq('follower_id', user.id);
 
       if (error) throw error;
-      return data || [];
+      return data || EMPTY_ARRAY;
     },
     enabled: !!user,
   });
@@ -212,17 +214,17 @@ export const useNotifications = () => {
   const supabase = useMemo(() => createClient(), []);
   const instanceIdRef = useRef<string | null>(null);
 
-  const { data: notifications = [], isLoading } = useQuery({
+  const { data: notifications = EMPTY_ARRAY, isLoading } = useQuery({
     queryKey: ['notifications', userId],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return EMPTY_ARRAY;
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return data || EMPTY_ARRAY;
     },
     enabled: !!user,
   });

@@ -33,7 +33,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
   const [matchLimit, setMatchLimit] = useState(20);
   const [isLoading, setIsLoading] = useState(true);
 
-  const supabase = createClient();
+  const supabase = React.useMemo(() => createClient(), []);
   const userRef = React.useRef<User | null>(null);
 
   // Sync ref with state
