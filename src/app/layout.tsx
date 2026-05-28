@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit } from "next/font/google";
+import { outfit } from "./fonts";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import { SupabaseAuthProvider } from "@/context/SupabaseAuthContext";
@@ -7,11 +7,6 @@ import { SteamAuthProvider } from "@/context/SteamAuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Toaster } from "sonner";
 import { GlobalModalContainer } from "@/components/ui/GlobalModalContainer";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
 
 export const metadata: Metadata = {
   title: "DotaApp | Pro Stats & Analytics",
@@ -25,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} antialiased font-sans`}>
+      <body className={`${outfit.variable} antialiased`}>
         <SupabaseAuthProvider>
           <SteamAuthProvider>
             <Providers>
