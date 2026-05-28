@@ -8,6 +8,7 @@ import { TrendsSection } from '@/components/home/TrendsSection';
 import { ProSceneHubSection } from '@/components/home/ProSceneHubSection';
 import { LiveGamesSection } from '@/components/home/LiveGamesSection';
 import { WelcomeHero } from '@/components/home/WelcomeHero';
+import { SteamLinkCTA } from '@/components/home/SteamLinkCTA';
 import { MetaTierSkeleton, ProMatchSkeleton, HeroTrendsSkeleton } from '@/components/ui/HomeSkeletons';
 
 export const revalidate = 300;
@@ -49,6 +50,7 @@ export default async function HomePage() {
       {!user && <WelcomeHero />}
 
       <div id="main-content">
+        <SteamLinkCTA />
         <HeroSearchSection />
 
         <FriendsActivitySection />

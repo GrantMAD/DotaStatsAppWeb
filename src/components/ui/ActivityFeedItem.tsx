@@ -30,9 +30,10 @@ interface ActivityFeedItemProps {
   onPressPlayer: (id: number) => void;
   onPressMatch: (id: number) => void;
   index?: number;
+  className?: string;
 }
 
-export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 }: ActivityFeedItemProps) {
+export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0, className }: ActivityFeedItemProps) {
   const { data: heroes = [] } = useHeroStats();
   const hero = heroes.find(h => h.id === item.details.heroId);
   const heroImg = hero ? `${STEAM_CDN_BASE}${hero.img}` : null;
@@ -174,7 +175,8 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0 
         className={cn(
           "relative w-[320px] h-30 p-4 flex items-center gap-4 cursor-pointer overflow-hidden group transition-all duration-300",
           theme.glow,
-          theme.border
+          theme.border,
+          className
         )}
         onClick={() => item.details.matchId ? onPressMatch(item.details.matchId) : onPressPlayer(item.player.account_id)}
       >

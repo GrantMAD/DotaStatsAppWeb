@@ -118,7 +118,9 @@ export function SteamAuthProvider({ children }: { children: ReactNode }) {
       'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
     });
 
-    window.location.href = `${STEAM_OPENID_URL}?${params.toString()}`;
+    const url = `${STEAM_OPENID_URL}?${params.toString()}`;
+    window.open(url, '_blank');
+    setInternalLoading(false);
   }, []);
 
   const logout = useCallback(async () => {

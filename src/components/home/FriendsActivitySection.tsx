@@ -2,13 +2,14 @@
 
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Users } from '@/components/ui/Icons';
+import { Users, ArrowRight } from '@/components/ui/Icons';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { ActivityFeedItem } from '@/components/ui/ActivityFeedItem';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { useActivityFeed } from '@/hooks/useActivityFeed';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { Button } from '@/components/ui/Button';
 
 export function FriendsActivitySection() {
   const router = useRouter();
@@ -24,12 +25,23 @@ export function FriendsActivitySection() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <SectionHeader
-        icon={Users}
-        title="Friends Activity"
-        description="Recent achievements and matches from your network."
-        color="text-win"
-      />
+      <div className="flex items-center justify-between pr-4">
+        <SectionHeader
+          icon={Users}
+          title="Friends Activity"
+          description="Recent achievements and matches from your network."
+          color="text-win"
+        />
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-win hover:text-win hover:bg-win/10 font-bold uppercase tracking-tighter"
+          onClick={() => router.push('/activity')}
+        >
+          View All Feed
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
       <div className="px-4 mb-4">
         <p className="text-xs font-black uppercase tracking-widest text-win bg-win/10 px-3 py-1.5 rounded-lg inline-block border border-win/20 shadow-lg shadow-win/5">
           {newHighlightsCount} New Highlights in the last 24h

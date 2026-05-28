@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  Zap
+  Zap,
+  Activity
 } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -27,6 +28,7 @@ import Image from 'next/image';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
+  { label: 'Feed', href: '/activity', icon: Activity, authRequired: true, color: 'text-win', bg: 'bg-win/10' },
   { label: 'Search', href: '/search', icon: Search, color: 'text-amber-600', bg: 'bg-amber-600/10' },
   { label: 'Meta', href: '/meta', icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
   { label: 'Pro Scene', href: '/pro', icon: Trophy, color: 'text-emerald-600', bg: 'bg-emerald-600/10' },

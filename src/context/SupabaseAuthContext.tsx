@@ -98,10 +98,34 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    // Real-time listener for user profile changes (e.g. Steam linking in another tab)
+    let profileSubscription: any = null;
+    
+    if (user) {
+      profileSubscription = supabase
+        .channel('public:users:id=eq.' + user.id)
+        .on('postgres_changes', { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'users',
+          filter: `id=eq.${user.id}`
+        }, (payload) => {
+          console.log('Profile change detected via real-time:', payload.new);
+          if (payload.new.steam_account_id !== undefined) {
+            setSteamAccountId(payload.new.steam_account_id);
+          }
+          if (payload.new.match_limit !== undefined) {
+            setMatchLimit(payload.new.match_limit);
+          }
+        })
+        .subscribe();
+    }
+
     return () => {
       subscription.unsubscribe();
+      if (profileSubscription) profileSubscription.unsubscribe();
     };
-  }, [refreshProfile, supabase]);
+  }, [refreshProfile, supabase, user?.id]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
