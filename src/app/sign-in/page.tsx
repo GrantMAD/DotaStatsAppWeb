@@ -121,6 +121,14 @@ export default function SignInPage() {
               Sign Up
             </Link>
           </p>
+          <p className="mt-6">
+            <Link 
+              href="/forgot-password" 
+              className="text-purple-400 hover:text-purple-300 text-xs font-black uppercase tracking-widest transition-colors cursor-pointer"
+            >
+              Forgot Password?
+            </Link>
+          </p>
         </div>
       </GlassCard>
     </div>

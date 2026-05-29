@@ -1,0 +1,35 @@
+import * as Icons from '../components/ui/Icons';
+
+export const ICON_MAP = {
+  HOME: Icons.Home,
+  SEARCH: Icons.Search,
+  FRIENDS: Icons.Users,
+  META: Icons.BarChart2,
+  PRO: Icons.Trophy,
+  PROFILE: Icons.User,
+  SETTINGS: Icons.Settings,
+  NOTIFICATIONS: Icons.Bell,
+  MATCH: Icons.Gamepad2,
+  HERO: Icons.User,
+  WIN: Icons.Trophy,
+  LOSS: Icons.Skull,
+  TREND_UP: Icons.TrendingUp,
+  TREND_DOWN: Icons.TrendingDown,
+  BAN: Icons.Ban,
+  FLAME: Icons.Flame,
+  GLOBE: Icons.Globe,
+  LOCK: Icons.Lock,
+  MAIL: Icons.Mail,
+  EYE: Icons.Eye,
+  EYE_OFF: Icons.EyeOff,
+  ARROW_BACK: Icons.ArrowLeft,
+  CHEVRON_FORWARD: Icons.ChevronRight,
+  CHEVRON_BACK: Icons.ChevronLeft,
+  CHECKMARK: Icons.Check,
+  ADD: Icons.Plus,
+  CLOSE: Icons.X,
+  ALERT: Icons.AlertCircle,
+  INFO: Icons.Info,
+} as const;
+
+export type IconName = keyof typeof ICON_MAP;
