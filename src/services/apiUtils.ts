@@ -13,8 +13,18 @@ export class ApiError extends Error {
 export async function fetchFromOpenDota<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const url = endpoint.startsWith('http') ? endpoint : `${OPENDOTA_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
   
+  // Create safe options with Accept-Encoding: identity for server-side calls
+  // This avoids a known Node.js 22 + Windows bug with TransformStream/Compression
+  const safeOptions: RequestInit = {
+    ...options,
+    headers: {
+      ...options?.headers,
+      ...(typeof window === 'undefined' ? { 'Accept-Encoding': 'identity' } : {}),
+    },
+  };
+
   try {
-    const response = await fetch(url, options);
+    const response = await fetch(url, safeOptions);
     
     if (!response.ok) {
       if (response.status === 429) {
