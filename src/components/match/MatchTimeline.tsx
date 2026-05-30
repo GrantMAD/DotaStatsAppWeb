@@ -22,6 +22,23 @@ import { calculateLaningGrade } from '@/utils/matchAnalytics';
 export function MatchTimeline({ match }: { match: MatchDetails }) {
   const durationMins = Math.ceil(match.duration / 60);
 
+  // Phase Definitions
+  const phases = useMemo(() => {
+    const laningEnd = 12; // 0-12m
+    const midEnd = 30;    // 12-30m
+    
+    const list = [
+      { id: 'laning', label: 'Laning', start: 0, end: laningEnd, color: 'bg-emerald-500/5', border: 'border-emerald-500/20', textColor: 'text-emerald-500/60' },
+      { id: 'mid', label: 'Mid-Game', start: laningEnd, end: Math.min(midEnd, durationMins), color: 'bg-amber-500/5', border: 'border-amber-500/20', textColor: 'text-amber-500/60' },
+    ];
+
+    if (durationMins > midEnd) {
+      list.push({ id: 'late', label: 'Late-Game', start: midEnd, end: durationMins, color: 'bg-purple-500/5', border: 'border-purple-500/20', textColor: 'text-purple-500/60' });
+    }
+
+    return list;
+  }, [durationMins]);
+
   // Prepare advantage data for the background waveform
   const advantageData = useMemo(() => {
     if (!match.radiant_gold_adv) return [];
@@ -118,6 +135,40 @@ export function MatchTimeline({ match }: { match: MatchDetails }) {
 
       <GlassCard className="p-0 overflow-x-auto no-scrollbar bg-(--tech-bg) border-(--overlay-border) relative">
         <div className="min-w-300 p-6 relative">
+          {/* Phase Background Overlays */}
+          <div className="absolute inset-0 left-54 right-6 pointer-events-none flex">
+            {phases.map((phase) => {
+              const width = ((phase.end - phase.start) / durationMins) * 95;
+              return (
+                <div 
+                  key={phase.id} 
+                  className={cn("h-full border-l first:border-l-0 transition-colors", phase.color, phase.border)}
+                  style={{ width: `${width}%` }}
+                />
+              );
+            })}
+          </div>
+
+          {/* Phase Markers / Labels */}
+          <div className="relative h-6 mb-2">
+            <div className="absolute left-48 right-0 h-full flex">
+              {phases.map((phase) => {
+                const width = ((phase.end - phase.start) / durationMins) * 95;
+                return (
+                  <div 
+                    key={phase.id} 
+                    className="h-full flex items-center justify-center"
+                    style={{ width: `${width}%` }}
+                  >
+                    <span className={cn("text-[10px] font-black uppercase tracking-[0.2em] italic", phase.textColor)}>
+                      {phase.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Background Momentum Waveform */}
           <div className="absolute top-24 left-61.5 right-6 bottom-6 opacity-[0.07] pointer-events-none">
             <ResponsiveContainer width="100%" height="100%">
