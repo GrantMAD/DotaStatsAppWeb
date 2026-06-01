@@ -59,6 +59,7 @@ import {
 } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useFriends } from '@/hooks/useFriends';
+import { trackOpenDotaPlayerView } from '@/services/analytics';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
 import { motion } from 'framer-motion';
 import { DataPrivacyIndicator } from '../ui/DataPrivacyIndicator';
@@ -111,6 +112,16 @@ export function PlayerOverviewContent({
   const { data: wardMap, isLoading: wardMapLoading } = usePlayerWardMap(accountId);
   const { data: ratings, isLoading: ratingsLoading } = usePlayerRatings(accountId);
   const { isFollowing, followUser, unfollowUser } = useFriends();
+
+  React.useEffect(() => {
+    let section = activeTab.toLowerCase();
+    if (activeTab === 'Network') {
+      section = `network_${networkSubTab.toLowerCase()}`;
+    } else if (activeTab === 'Lifetime') {
+      section = `lifetime_${lifetimeSubTab.toLowerCase()}`;
+    }
+    trackOpenDotaPlayerView(accountId, section);
+  }, [accountId, activeTab, networkSubTab, lifetimeSubTab]);
 
   const isPrivateAccount = useMemo(() => isProfilePrivate(profile), [profile]);
   const isDataRestrictedAccount = useMemo(() => isDataRestricted(profile, filteredMatches.length), [profile, filteredMatches]);

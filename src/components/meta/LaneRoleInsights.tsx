@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { openDotaApi } from '@/services/opendota';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 import { HEROES, getHeroImageUrl } from '@/services/constants';
 import { ChevronRight, Award, Users } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
@@ -57,6 +58,7 @@ export function LaneRoleInsights({ onHeroClick }: LaneRoleInsightsProps) {
           .slice(0, 10);
 
         setData(formatted);
+        trackOpenDotaMetaInteraction('meta_lane_roles', selectedLane.toString());
       } catch (error) {
         console.error('Error fetching lane scenarios:', error);
       } finally {

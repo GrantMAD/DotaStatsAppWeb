@@ -58,6 +58,7 @@ export function CommunityDistribution() {
         const distribution = await openDotaApi.getDistributions();
 
         if (distribution && distribution.ranks) {
+          trackOpenDotaMetaInteraction('meta_distribution');
           const total = distribution.ranks.sum.count;
           setTotalPlayers(total);
 

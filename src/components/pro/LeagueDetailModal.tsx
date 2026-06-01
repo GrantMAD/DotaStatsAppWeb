@@ -39,6 +39,12 @@ export function LeagueDetailModal({ isOpen, onClose, league, isActive }: LeagueD
     };
   }, [matches]);
 
+  React.useEffect(() => {
+    if (isOpen && league) {
+      trackOpenDotaMetaInteraction('pro_league_view', league.leagueid.toString());
+    }
+  }, [isOpen, league]);
+
   if (!league) return null;
 
   const bannerUrl = getLeagueImageUrl(league.banner);

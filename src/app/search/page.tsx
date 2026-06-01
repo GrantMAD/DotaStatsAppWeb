@@ -13,6 +13,7 @@ import { createClient } from '@/utils/supabase/client';
 import { cn } from '@/utils/cn';
 import { useRouter } from 'next/navigation';
 import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
+import { trackOpenDotaPlayerSearch } from '@/services/analytics';
 
 export default function SearchPage() {
   const router = useRouter();
@@ -57,6 +58,12 @@ export default function SearchPage() {
 
   const results = searchMode === 'global' ? globalResults : steamFriendsResults;
   const searching = searchMode === 'global' ? searchingGlobal : loadingPeers;
+
+  useEffect(() => {
+    if (activeQuery && !searchingGlobal && globalResults) {
+      trackOpenDotaPlayerSearch(activeQuery, globalResults.length);
+    }
+  }, [globalResults, searchingGlobal, activeQuery]);
 
   useEffect(() => {
     async function checkAppUsers() {

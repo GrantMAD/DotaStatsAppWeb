@@ -8,6 +8,7 @@ import { Modal } from '../ui/Modal';
 import { ProPlayerItem } from '../ui/ProPlayerItem';
 import { ProMatchCard } from '../ui/ProMatchCard';
 import { MatchDetailModal } from '../match/MatchDetailModal';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 import { Skeleton } from '../ui/Skeleton';
 import { Shield, Trophy, TrendingUp } from '@/components/ui/Icons';
 
@@ -40,6 +41,12 @@ export function TeamDetailModal({ isOpen, onClose, team }: TeamDetailModalProps)
   }, [roster, proPlayers, team]);
 
   const loading = loadingRoster || loadingMatches;
+
+  React.useEffect(() => {
+    if (isOpen && teamId) {
+      trackOpenDotaMetaInteraction('pro_team_view', teamId.toString());
+    }
+  }, [isOpen, teamId]);
 
   if (!team) return null;
 
