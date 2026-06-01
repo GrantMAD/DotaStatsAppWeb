@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import Link from 'next/link';
+import { ShieldAlert, Search, ArrowLeft } from '@/components/ui/Icons';
+import { cn } from '@/utils/cn';
 
 interface AuditLog {
   id: string;
@@ -41,7 +44,6 @@ export default function AuditLogs() {
 
         if (fetchError) throw fetchError;
 
-        // Enrich with admin email
         if (data) {
           const adminIds = [...new Set(data.map((log) => log.admin_user_id))];
           const { data: adminData } = await supabase
@@ -70,23 +72,34 @@ export default function AuditLogs() {
   }, [filterAction, filterDays]);
 
   if (loading) {
-    return <div className="text-center py-12">Loading audit logs...</div>;
+    return <div className="text-center py-12 text-muted-foreground">Loading audit logs...</div>;
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Audit Logs</h1>
+      <div className="flex items-center gap-4 mt-8 mb-8">
+        <Link 
+          href="/admin" 
+          className="p-3 bg-(--nav-hover) rounded-2xl border border-(--card-border) hover:bg-gaming-accent/10 hover:border-gaming-accent/20 transition-all text-muted-foreground hover:text-gaming-accent"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </Link>
+        <div className="p-3 bg-gaming-accent/10 rounded-2xl border border-gaming-accent/20">
+          <ShieldAlert className="w-8 h-8 text-gaming-accent" />
+        </div>
+        <h1 className="text-4xl font-black text-foreground">Audit Logs</h1>
+      </div>
 
-      <div className="bg-white p-6 rounded-lg shadow mb-6">
+      <div className="glass-card p-6 mb-6">
         <div className="flex gap-4 flex-col md:flex-row">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Filter by Action Type
+            <label className="block text-sm font-bold text-muted-foreground mb-2 uppercase tracking-wider">
+              Action Type
             </label>
             <select
               value={filterAction}
               onChange={(e) => setFilterAction(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 bg-(--nav-hover) border border-(--card-border) rounded-xl text-foreground focus:outline-none focus:border-gaming-accent transition-all"
             >
               <option value="all">All Actions</option>
               <option value="role_change">Role Change</option>
@@ -96,13 +109,13 @@ export default function AuditLogs() {
             </select>
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-bold text-muted-foreground mb-2 uppercase tracking-wider">
               Time Range (Days)
             </label>
             <select
               value={filterDays}
               onChange={(e) => setFilterDays(Number(e.target.value))}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+              className="w-full px-4 py-2 bg-(--nav-hover) border border-(--card-border) rounded-xl text-foreground focus:outline-none focus:border-gaming-accent transition-all"
             >
               <option value={1}>Last 24 hours</option>
               <option value={7}>Last 7 days</option>
@@ -113,35 +126,35 @@ export default function AuditLogs() {
         </div>
       </div>
 
-      {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}
+      {error && <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500">{error}</div>}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+      <div className="glass-card overflow-hidden">
+        <table className="w-full text-left">
+          <thead className="bg-(--nav-hover) border-b border-(--card-border)">
             <tr>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">Admin</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">Action</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">Target</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">Details</th>
-              <th className="px-6 py-3 text-left text-sm font-medium text-gray-900">Date</th>
+              <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Admin</th>
+              <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Action</th>
+              <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Target</th>
+              <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Details</th>
+              <th className="px-6 py-3 text-xs font-bold text-muted-foreground uppercase tracking-wider">Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="divide-y divide-(--card-border)">
             {logs.map((log) => (
-              <tr key={log.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-900">{log.admin_email || 'Unknown'}</td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+              <tr key={log.id} className="hover:bg-(--nav-hover) transition-colors">
+                <td className="px-6 py-4 text-sm text-foreground">{log.admin_email || 'Unknown'}</td>
+                <td className="px-6 py-4 text-sm">
+                  <span className="px-2 py-1 bg-gaming-accent/10 text-gaming-accent rounded-lg text-xs font-bold uppercase tracking-wider">
                     {log.action_type}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
-                  {log.target_table} {log.target_id && `(${log.target_id.slice(0, 8)}...)`}
+                <td className="px-6 py-4 text-sm text-foreground">
+                  {log.target_table} <span className="text-muted-foreground">{log.target_id && `(${log.target_id.slice(0, 8)}...)`}</span>
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                <td className="px-6 py-4 text-sm text-muted-foreground max-w-xs truncate">
                   {JSON.stringify(log.details)}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                <td className="px-6 py-4 text-sm text-foreground">
                   {new Date(log.created_at).toLocaleString()}
                 </td>
               </tr>
@@ -150,7 +163,7 @@ export default function AuditLogs() {
         </table>
 
         {logs.length === 0 && (
-          <div className="text-center py-12 text-gray-500">No audit logs found</div>
+          <div className="text-center py-12 text-muted-foreground">No audit logs found</div>
         )}
       </div>
     </div>

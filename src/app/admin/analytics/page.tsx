@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import Link from 'next/link';
+import { BarChart2, Shield, ArrowLeft } from '@/components/ui/Icons';
+import { cn } from '@/utils/cn';
 
 interface EventStats {
   eventType: string;
@@ -35,14 +38,12 @@ export default function AnalyticsDashboard() {
         const hours = timeRanges[timeRange];
         const since = new Date(Date.now() - hours * 60 * 60 * 1000).toISOString();
 
-        // Fetch events by platform
         const { data: events } = await supabase
           .from('analytics_events')
           .select('platform, event_type')
           .gte('created_at', since);
 
         if (events) {
-          // Count by platform
           const platformCounts: Record<string, number> = {};
           const eventCounts: Record<string, number> = {};
 
@@ -82,70 +83,81 @@ export default function AnalyticsDashboard() {
   }, [timeRange]);
 
   if (loading) {
-    return <div className="text-center py-12">Loading analytics...</div>;
+    return <div className="text-center py-12 text-muted-foreground">Loading analytics...</div>;
   }
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Analytics Dashboard</h1>
-        <div className="flex gap-2">
-          {(['24h', '7d', '30d'] as const).map((range) => (
-            <button
-              key={range}
-              onClick={() => setTimeRange(range)}
-              className={`px-4 py-2 rounded-lg font-medium ${
-                timeRange === range
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-              }`}
-            >
-              {range}
-            </button>
-          ))}
+      <div className="flex items-center gap-4 mt-8 mb-8">
+        <Link 
+          href="/admin" 
+          className="p-3 bg-(--nav-hover) rounded-2xl border border-(--card-border) hover:bg-gaming-accent/10 hover:border-gaming-accent/20 transition-all text-muted-foreground hover:text-gaming-accent"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </Link>
+        <div className="p-3 bg-gaming-accent/10 rounded-2xl border border-gaming-accent/20">
+          <BarChart2 className="w-8 h-8 text-gaming-accent" />
         </div>
+        <h1 className="text-4xl font-black text-foreground">Analytics</h1>
       </div>
 
-      {error && <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">{error}</div>}
+      <div className="flex justify-end gap-2 mb-6">
+        {(['24h', '7d', '30d'] as const).map((range) => (
+          <button
+            key={range}
+            onClick={() => setTimeRange(range)}
+            className={cn(
+              "px-4 py-2 rounded-xl font-bold text-sm uppercase tracking-widest transition-all",
+              timeRange === range
+                ? 'bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20'
+                : 'bg-(--nav-hover) text-muted-foreground hover:text-foreground'
+            )}
+          >
+            {range}
+          </button>
+        ))}
+      </div>
+
+      {error && <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/10 text-red-500">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Events by Platform</h2>
+        <div className="glass-card p-6">
+          <h2 className="text-lg font-bold text-foreground mb-4 uppercase tracking-wider">Events by Platform</h2>
           <div className="space-y-3">
             {platformStats.length > 0 ? (
               platformStats.map((stat) => (
                 <div key={stat.platform} className="flex justify-between items-center">
-                  <span className="text-gray-700 capitalize">{stat.platform}</span>
-                  <span className="text-2xl font-bold text-gray-900">{stat.count}</span>
+                  <span className="text-muted-foreground capitalize">{stat.platform}</span>
+                  <span className="text-xl font-bold text-foreground">{stat.count}</span>
                 </div>
               ))
             ) : (
-              <p className="text-gray-500">No data available</p>
+              <p className="text-muted-foreground">No data available</p>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Total Events</h2>
-          <p className="text-4xl font-bold text-gray-900">
+        <div className="glass-card p-6">
+          <h2 className="text-lg font-bold text-foreground mb-4 uppercase tracking-wider">Total Events</h2>
+          <p className="text-4xl font-black text-foreground">
             {platformStats.reduce((sum, stat) => sum + stat.count, 0)}
           </p>
-          <p className="text-sm text-gray-600 mt-2">Last {timeRange}</p>
+          <p className="text-sm text-muted-foreground mt-2">Last {timeRange}</p>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Top Events</h2>
+      <div className="glass-card p-6">
+        <h2 className="text-lg font-bold text-foreground mb-4 uppercase tracking-wider">Top Events</h2>
         <div className="space-y-2">
           {topEvents.length > 0 ? (
             topEvents.map((event, index) => (
-              <div key={index} className="flex justify-between items-center pb-3 border-b last:border-b-0">
-                <span className="text-gray-700">{event.eventType}</span>
-                <span className="text-gray-900 font-medium">{event.count} events</span>
+              <div key={index} className="flex justify-between items-center pb-3 border-b border-(--card-border) last:border-0 last:pb-0">
+                <span className="text-foreground">{event.eventType}</span>
+                <span className="text-muted-foreground font-medium">{event.count} events</span>
               </div>
             ))
           ) : (
-            <p className="text-gray-500">No event data available</p>
+            <p className="text-muted-foreground">No event data available</p>
           )}
         </div>
       </div>
