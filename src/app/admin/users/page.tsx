@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import { Users, Search, ArrowLeft } from '@/components/ui/Icons';
+import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
 import { cn } from '@/utils/cn';
 
 interface User {
@@ -79,7 +80,7 @@ export default function UserManagement() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-muted-foreground">Loading users...</div>;
+    return <AdminSkeleton />;
   }
 
   return (

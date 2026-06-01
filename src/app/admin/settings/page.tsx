@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Settings, ArrowLeft } from '@/components/ui/Icons';
+import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
 import { cn } from '@/utils/cn';
 
 export default function AdminSettings() {
+  const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState({
     enableEventTracking: true,
     enableAuditLogs: true,
@@ -14,6 +16,13 @@ export default function AdminSettings() {
   });
 
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) return <AdminSkeleton />;
 
   const handleSave = () => {
     localStorage.setItem('adminSettings', JSON.stringify(settings));

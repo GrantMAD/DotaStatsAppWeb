@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import { Shield, Users, BarChart2, ShieldAlert, Settings } from '@/components/ui/Icons';
+import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
 
 interface AdminStats {
   totalUsers: number;
@@ -18,6 +19,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // ... (logic remains same)
     const fetchStats = async () => {
       try {
         const supabase = createClient();
@@ -60,7 +62,7 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-12">Loading dashboard...</div>;
+    return <AdminSkeleton />;
   }
 
   if (error) {

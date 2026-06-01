@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import { BarChart2, Shield, ArrowLeft } from '@/components/ui/Icons';
+import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
 import { cn } from '@/utils/cn';
 
 interface EventStats {
@@ -83,7 +84,7 @@ export default function AnalyticsDashboard() {
   }, [timeRange]);
 
   if (loading) {
-    return <div className="text-center py-12 text-muted-foreground">Loading analytics...</div>;
+    return <AdminSkeleton />;
   }
 
   return (
