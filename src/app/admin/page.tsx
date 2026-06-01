@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
+import { Shield, Users, BarChart2, ShieldAlert, Settings } from '@/components/ui/Icons';
 
 interface AdminStats {
   totalUsers: number;
@@ -68,55 +69,72 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+      <div className="flex items-center gap-4 mt-8 mb-8">
+        <div className="p-3 bg-red-600/10 rounded-2xl border border-red-600/20">
+          <Shield className="w-8 h-8 text-red-600" />
+        </div>
+        <h1 className="text-4xl font-black text-foreground">Admin Dashboard</h1>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600 text-sm font-medium">Total Users</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.totalUsers || 0}</p>
+        <div className="glass-card p-6">
+          <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">Total Users</p>
+          <p className="text-3xl font-bold text-foreground mt-2">{stats?.totalUsers || 0}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600 text-sm font-medium">Active Users (7d)</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.activeUsers || 0}</p>
+        <div className="glass-card p-6">
+          <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">Active Users (7d)</p>
+          <p className="text-3xl font-bold text-foreground mt-2">{stats?.activeUsers || 0}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600 text-sm font-medium">Total Events</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.totalEvents || 0}</p>
+        <div className="glass-card p-6">
+          <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">Total Events</p>
+          <p className="text-3xl font-bold text-foreground mt-2">{stats?.totalEvents || 0}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow">
-          <p className="text-gray-600 text-sm font-medium">Recent Audit Logs (30d)</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{stats?.recentAuditLogs || 0}</p>
+        <div className="glass-card p-6">
+          <p className="text-muted-foreground text-sm font-medium uppercase tracking-wider">Recent Audit Logs (30d)</p>
+          <p className="text-3xl font-bold text-foreground mt-2">{stats?.recentAuditLogs || 0}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link
           href="/admin/users"
-          className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
+          className="glass-card p-6 block hover:scale-[1.02] transition-all"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-2">User Management</h2>
-          <p className="text-gray-600">Manage users, roles, and account status</p>
+          <div className="flex items-center gap-3 mb-2">
+            <Users className="w-6 h-6 text-gaming-accent" />
+            <h2 className="text-xl font-bold text-foreground">User Management</h2>
+          </div>
+          <p className="text-muted-foreground">Manage users, roles, and account status</p>
         </Link>
         <Link
           href="/admin/analytics"
-          className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
+          className="glass-card p-6 block hover:scale-[1.02] transition-all"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Analytics</h2>
-          <p className="text-gray-600">View event data and user engagement metrics</p>
+          <div className="flex items-center gap-3 mb-2">
+            <BarChart2 className="w-6 h-6 text-gaming-accent" />
+            <h2 className="text-xl font-bold text-foreground">Analytics</h2>
+          </div>
+          <p className="text-muted-foreground">View event data and user engagement metrics</p>
         </Link>
         <Link
           href="/admin/audit"
-          className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
+          className="glass-card p-6 block hover:scale-[1.02] transition-all"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Audit Logs</h2>
-          <p className="text-gray-600">Review admin actions and system changes</p>
+          <div className="flex items-center gap-3 mb-2">
+            <ShieldAlert className="w-6 h-6 text-gaming-accent" />
+            <h2 className="text-xl font-bold text-foreground">Audit Logs</h2>
+          </div>
+          <p className="text-muted-foreground">Review admin actions and system changes</p>
         </Link>
         <Link
           href="/admin/settings"
-          className="block bg-white p-6 rounded-lg shadow hover:shadow-lg transition"
+          className="glass-card p-6 block hover:scale-[1.02] transition-all"
         >
-          <h2 className="text-xl font-bold text-gray-900 mb-2">Settings</h2>
-          <p className="text-gray-600">Configure admin preferences and system settings</p>
+          <div className="flex items-center gap-3 mb-2">
+            <Settings className="w-6 h-6 text-gaming-accent" />
+            <h2 className="text-xl font-bold text-foreground">Settings</h2>
+          </div>
+          <p className="text-muted-foreground">Configure admin preferences and system settings</p>
         </Link>
       </div>
     </div>
