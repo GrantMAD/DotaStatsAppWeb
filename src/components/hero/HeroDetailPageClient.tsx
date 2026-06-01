@@ -1,9 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from '@/components/ui/Icons';
 import { HeroDetailContent } from '@/components/hero/HeroDetailContent';
+import { HEROES } from '@/services/constants';
+import { trackHeroView } from '@/services/analytics';
 
 interface HeroDetailPageClientProps {
   heroId: number;
@@ -11,6 +13,11 @@ interface HeroDetailPageClientProps {
 
 export function HeroDetailPageClient({ heroId }: HeroDetailPageClientProps) {
   const router = useRouter();
+
+  useEffect(() => {
+    const heroName = HEROES[heroId]?.name || 'Unknown';
+    trackHeroView(heroId, heroName);
+  }, [heroId]);
 
   return (
     <div className="pb-20">

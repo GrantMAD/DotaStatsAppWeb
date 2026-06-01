@@ -15,7 +15,8 @@ import {
   ChevronRight,
   LogOut,
   Zap,
-  Activity
+  Activity,
+  Shield
 } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
@@ -25,6 +26,8 @@ import { useSidebar } from '@/context/SidebarContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
@@ -44,8 +47,30 @@ export function Sidebar() {
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { resolvedTheme } = useTheme();
   const { getOnlineUserCount } = usePresence();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const onlineCount = getOnlineUserCount();
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      setIsAdmin(data?.role === 'admin');
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   return (
     <motion.aside
@@ -166,6 +191,57 @@ export function Sidebar() {
             </div>
           );
         })}
+
+        {/* Admin Link */}
+        {isAdmin && user && (
+          <div className="relative border-t border-(--card-border) pt-2 mt-2">
+            <Link
+              href="/admin"
+              className={cn(
+                "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
+                pathname.startsWith('/admin')
+                  ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
+                  : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
+              )}
+            >
+              <div className={cn(
+                "p-2 rounded-xl transition-all duration-300",
+                pathname.startsWith('/admin')
+                  ? "bg-white/20 shadow-inner"
+                  : "bg-(--nav-hover) group-hover:bg-red-600/10"
+              )}>
+                <Shield className={cn(
+                  "w-5 h-5 shrink-0 transition-colors",
+                  pathname.startsWith('/admin')
+                    ? "text-white"
+                    : "text-red-600 group-hover:text-red-600"
+                )} />
+              </div>
+
+              <AnimatePresence>
+                {!isCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -10 }}
+                    className={cn(
+                      "font-medium whitespace-nowrap transition-colors",
+                      pathname.startsWith('/admin') ? "text-white" : "text-foreground"
+                    )}
+                  >
+                    Admin
+                  </motion.span>
+                )}
+              </AnimatePresence>
+
+              {isCollapsed && (
+                <div className="absolute left-full ml-4 px-2 py-1 bg-(--card-bg) border border-(--card-border) rounded text-xs text-foreground opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-100 shadow-xl">
+                  Admin
+                </div>
+              )}
+            </Link>
+          </div>
+        )}
       </nav>
 
       <div className="mt-auto space-y-4">

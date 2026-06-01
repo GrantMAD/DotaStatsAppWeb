@@ -6,6 +6,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Mail, Lock, Loader2, Eye, EyeOff } from '@/components/ui/Icons';
 import Link from 'next/link';
+import { trackSignUp } from '@/services/analytics';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -38,6 +39,7 @@ export default function SignUpPage() {
       setError(error.message);
       setLoading(false);
     } else {
+      await trackSignUp();
       setSuccess(true);
       setLoading(false);
     }

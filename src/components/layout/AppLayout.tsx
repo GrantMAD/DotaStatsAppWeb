@@ -5,17 +5,31 @@ import { MobileHeader } from './MobileHeader';
 import { BottomNav } from './BottomNav';
 import { PresenceManager } from './PresenceManager';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 import { useSidebar } from '@/context/SidebarContext';
 import { motion } from 'framer-motion';
 import { PageTransition } from './PageTransition';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { initializeAnalytics, trackPageView } from '@/services/analytics';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { isCollapsed } = useSidebar();
   const isLargeScreen = useMediaQuery('(min-width: 1024px)');
   const isAuthPage = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
+
+  // Initialize analytics on mount
+  useEffect(() => {
+    initializeAnalytics();
+  }, []);
+
+  // Track page views when pathname changes
+  useEffect(() => {
+    if (!isAuthPage) {
+      trackPageView(pathname);
+    }
+  }, [pathname, isAuthPage]);
 
   if (isAuthPage) {
     return <main className="min-h-screen">{children}</main>;

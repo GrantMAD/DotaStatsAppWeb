@@ -7,6 +7,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { ArrowLeft, Mail, Lock, Loader2, Eye, EyeOff } from '@/components/ui/Icons';
 import Link from 'next/link';
+import { trackSignIn } from '@/services/analytics';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -36,6 +37,7 @@ export default function SignInPage() {
       setError(error.message);
       setLoading(false);
     } else {
+      await trackSignIn();
       router.push('/');
       router.refresh();
     }
