@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb, GitCompare } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 
 // Dynamic imports for tab components
 const ItemTimingAnalyzer = dynamic(() => import('@/components/meta/ItemTimingAnalyzer').then(mod => mod.ItemTimingAnalyzer), {
@@ -41,6 +42,10 @@ export function MetaPageClient() {
   const handleHeroClick = (id: number) => {
     setSelectedHeroId(id);
   };
+
+  React.useEffect(() => {
+    trackOpenDotaMetaInteraction(activeTab);
+  }, [activeTab]);
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">

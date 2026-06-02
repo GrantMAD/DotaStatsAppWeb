@@ -7,6 +7,7 @@ import { TeamListItem } from '@/components/ui/TeamListItem';
 import { ProPlayerItem } from '@/components/ui/ProPlayerItem';
 import { cn } from '@/utils/cn';
 import { ProTeam, LiveGame, ProMatch, League, ProPlayer } from '@/types';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 import dynamic from 'next/dynamic';
 
 const TeamDetailModal = dynamic(() => import('@/components/pro/TeamDetailModal').then(mod => mod.TeamDetailModal), { ssr: false });
@@ -47,6 +48,10 @@ export function ProPageClient({
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
 
   const [fortyEightHoursAgo] = useState<number>(() => Math.floor(Date.now() / 1000) - (48 * 60 * 60));
+
+  React.useEffect(() => {
+    trackOpenDotaMetaInteraction(`pro_${activeTab.toLowerCase()}`, subTab.toLowerCase());
+  }, [activeTab, subTab]);
 
   const activeLeagueIds = useMemo(() => {
     const ids = new Set<number>();

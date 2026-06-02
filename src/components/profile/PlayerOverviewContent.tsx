@@ -59,7 +59,7 @@ import {
 } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useFriends } from '@/hooks/useFriends';
-import { trackOpenDotaPlayerView } from '@/services/analytics';
+import { trackOpenDotaPlayerView, trackPlayerSnapshot } from '@/services/analytics';
 import { formatDistanceToNow, fromUnixTime } from 'date-fns';
 import { motion } from 'framer-motion';
 import { DataPrivacyIndicator } from '../ui/DataPrivacyIndicator';
@@ -121,7 +121,10 @@ export function PlayerOverviewContent({
       section = `lifetime_${lifetimeSubTab.toLowerCase()}`;
     }
     trackOpenDotaPlayerView(accountId, section);
-  }, [accountId, activeTab, networkSubTab, lifetimeSubTab]);
+    if (profile) {
+      trackPlayerSnapshot(profile);
+    }
+  }, [accountId, activeTab, networkSubTab, lifetimeSubTab, profile]);
 
   const isPrivateAccount = useMemo(() => isProfilePrivate(profile), [profile]);
   const isDataRestrictedAccount = useMemo(() => isDataRestricted(profile, filteredMatches.length), [profile, filteredMatches]);

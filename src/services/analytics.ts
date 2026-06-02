@@ -228,6 +228,54 @@ export async function trackOpenDotaMetaInteraction(tool: string, action?: string
 }
 
 /**
+ * Track OpenDota Data Snapshots (Rich Metadata)
+ */
+export async function trackHeroSnapshot(heroData: any): Promise<void> {
+  await trackEvent({
+    eventType: 'opendota_hero_snapshot',
+    metadata: {
+      hero_id: heroData.id,
+      name: heroData.localized_name || heroData.name,
+      win_rate_pub: heroData.pub_win_rate,
+      win_rate_pro: heroData.pro_win_rate,
+      pick_rate: heroData.pick_rate,
+      ban_rate: heroData.ban_rate,
+      primary_attribute: heroData.primary_attr,
+      roles: heroData.roles,
+    },
+  });
+}
+
+export async function trackMatchSnapshot(matchData: any): Promise<void> {
+  await trackEvent({
+    eventType: 'opendota_match_snapshot',
+    metadata: {
+      match_id: matchData.match_id,
+      duration: matchData.duration,
+      outcome: matchData.radiant_win ? 'radiant_win' : 'dire_win',
+      final_score: {
+        radiant: matchData.radiant_score,
+        dire: matchData.dire_score,
+      },
+      game_mode: matchData.game_mode,
+      lobby_type: matchData.lobby_type,
+    },
+  });
+}
+
+export async function trackPlayerSnapshot(playerData: any): Promise<void> {
+  await trackEvent({
+    eventType: 'opendota_player_snapshot',
+    metadata: {
+      account_id: playerData.profile?.account_id,
+      rank_tier: playerData.rank_tier,
+      is_pro: !!playerData.profile?.name,
+      plus_subscriber: playerData.profile?.plus,
+    },
+  });
+}
+
+/**
  * Track error
  */
 export async function trackError(errorType: string, message: string): Promise<void> {

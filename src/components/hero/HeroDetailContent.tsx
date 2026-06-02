@@ -26,7 +26,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/utils/cn';
-import { trackOpenDotaHeroView } from '@/services/analytics';
+import { trackOpenDotaHeroView, trackHeroSnapshot } from '@/services/analytics';
 import { BRACKET_NAMES } from '@/services/tierList';
 import { motion } from 'framer-motion';
 import { HeroMatchups } from '@/components/hero/HeroMatchups';
@@ -137,6 +137,7 @@ export function HeroDetailContent({ heroId }: HeroDetailContentProps) {
   React.useEffect(() => {
     if (hero) {
       trackOpenDotaHeroView(hero.id, hero.localized_name);
+      trackHeroSnapshot(hero);
     }
   }, [hero]);
 

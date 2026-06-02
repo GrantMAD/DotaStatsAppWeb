@@ -96,6 +96,12 @@ function CompareContent() {
 
   const [isAddingMe, setIsAddingMe] = useState(false);
 
+  React.useEffect(() => {
+    if (p1 && p2) {
+      trackOpenDotaMetaInteraction('comparison_view', `${p1}_vs_${p2}`);
+    }
+  }, [p1, p2]);
+
   const handleOpenSelect = (target: 'p1' | 'p2') => {
     setSelectingFor(target);
     setIsSelectModalOpen(true);

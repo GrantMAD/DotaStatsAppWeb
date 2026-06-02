@@ -6,7 +6,7 @@ import { cn } from '@/utils/cn';
 import { requestMatchParse } from '@/services/opendota';
 import { LayoutGrid, BarChart2, Timer, MessageSquare, Trophy, AlertCircle, Lock, type LucideIcon } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
-import { trackOpenDotaMatchView, trackEvent } from '@/services/analytics';
+import { trackOpenDotaMatchView, trackEvent, trackMatchSnapshot } from '@/services/analytics';
 import { MatchDetails } from '@/types';
 import dynamic from 'next/dynamic';
 
@@ -39,6 +39,12 @@ export function MatchPageClient({ initialMatch }: MatchPageClientProps) {
   });
 
   const activeMatch = match || initialMatch;
+
+  React.useEffect(() => {
+    if (activeMatch) {
+      trackMatchSnapshot(activeMatch);
+    }
+  }, [activeMatch]);
 
   React.useEffect(() => {
     if (matchId) {
