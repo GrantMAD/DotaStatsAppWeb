@@ -14,6 +14,15 @@ import { cn } from '@/utils/cn';
 import { useRouter } from 'next/navigation';
 import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
 import { trackOpenDotaPlayerSearch } from '@/services/analytics';
+import dynamic from 'next/dynamic';
+
+const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal').then(mod => mod.HeroDetailModal), {
+  ssr: false
+});
+
+const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailModal').then(mod => mod.MatchDetailModal), {
+  ssr: false
+});
 
 export default function SearchPage() {
   const router = useRouter();
@@ -25,6 +34,12 @@ export default function SearchPage() {
   
   const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
   const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
+
+  const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
+  const [isHeroModalOpen, setIsHeroModalOpen] = useState(false);
+
+  const [selectedMatchId, setSelectedMatchId] = useState<number | null>(null);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
 
   const { data: globalResults = [], isLoading: searchingGlobal, error } = useSearchPlayers(activeQuery);
   const { data: peers = [], isLoading: loadingPeers } = usePlayerPeers(searchMode === 'steam' ? steamAccountId : null);
@@ -98,6 +113,16 @@ export default function SearchPage() {
     setIsPlayerModalOpen(true);
   };
 
+  const handleHeroClick = (heroId: number) => {
+    setSelectedHeroId(heroId);
+    setIsHeroModalOpen(true);
+  };
+
+  const handleMatchClick = (matchId: number) => {
+    setSelectedMatchId(matchId);
+    setIsMatchModalOpen(true);
+  };
+
   return (
     <div className="container-custom py-8">
       <PlayerDetailModal 
@@ -105,6 +130,18 @@ export default function SearchPage() {
         onClose={() => setIsPlayerModalOpen(false)}
         accountId={selectedPlayerId}
         isCurrentUser={selectedPlayerId === steamAccountId}
+      />
+
+      <HeroDetailModal
+        isOpen={isHeroModalOpen}
+        onClose={() => setIsHeroModalOpen(false)}
+        heroId={selectedHeroId}
+      />
+
+      <MatchDetailModal
+        isOpen={isMatchModalOpen}
+        onClose={() => setIsMatchModalOpen(false)}
+        matchId={selectedMatchId}
       />
 
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
@@ -229,7 +266,7 @@ export default function SearchPage() {
                     <div 
                       key={hero.id}
                       className="glass-card p-3 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
-                      onClick={() => router.push(`/hero/${hero.id}`)}
+                      onClick={() => handleHeroClick(hero.id)}
                     >
                       <div className="relative h-7 w-12 rounded overflow-hidden shadow-lg">
                         <Image
@@ -255,7 +292,7 @@ export default function SearchPage() {
                 <h2 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4">Match ID</h2>
                 <div 
                   className="glass-card p-4 flex items-center gap-4 border-blue-600/30 hover:border-blue-500 transition-all cursor-pointer group"
-                  onClick={() => router.push(`/match/${matchingMatchId}`)}
+                  onClick={() => handleMatchClick(matchingMatchId)}
                 >
                   <div className="w-10 h-10 bg-blue-600/20 rounded-xl flex items-center justify-center border border-blue-600/30">
                     <Gamepad2 className="w-5 h-5 text-blue-400" />
