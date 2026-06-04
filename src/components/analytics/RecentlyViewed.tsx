@@ -20,7 +20,7 @@ const PlayerDetailModal = dynamic(() => import('@/components/profile/PlayerDetai
   ssr: false
 });
 
-export function RecentlyViewed() {
+export function RecentlyViewed({ compact = false }: { compact?: boolean }) {
   const [items, setItems] = useState<RecentlyViewedItem[]>([]);
   const [loading, setLoading] = useState(true);
   
@@ -48,6 +48,69 @@ export function RecentlyViewed() {
       setSelectedPlayerId(String(item.entityId));
     }
   };
+
+  if (compact) {
+    return (
+      <div className="flex gap-2 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
+        <HeroDetailModal
+          isOpen={selectedHeroId !== null}
+          onClose={() => setSelectedHeroId(null)}
+          heroId={selectedHeroId}
+        />
+        <MatchDetailModal
+          isOpen={selectedMatchId !== null}
+          onClose={() => setSelectedMatchId(null)}
+          matchId={selectedMatchId ? Number(selectedMatchId) : null}
+        />
+        <PlayerDetailModal
+          isOpen={selectedPlayerId !== null}
+          onClose={() => setSelectedPlayerId(null)}
+          accountId={selectedPlayerId}
+        />
+        {loading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="min-w-[160px] h-12 bg-foreground/5 rounded-xl animate-pulse" />
+          ))
+        ) : (
+          items.map((item) => (
+            <div 
+              key={item.id} 
+              onClick={() => handlePressItem(item)}
+              className="cursor-pointer shrink-0"
+            >
+              <GlassCard
+                hoverable
+                className="w-[180px] p-2 flex items-center gap-2.5 border-white/5 bg-white/5 backdrop-blur-sm"
+              >
+                <div className="relative shrink-0 w-8 h-8 rounded-lg overflow-hidden bg-background/50 border border-white/5 flex items-center justify-center">
+                  {item.type === 'hero' ? (
+                    <Image
+                      src={getHeroImageUrl(Number(item.entityId))}
+                      alt={item.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : item.type === 'match' ? (
+                    <Swords className="text-gaming-accent w-3.5 h-3.5" />
+                  ) : (
+                    <User className="text-emerald-500 w-3.5 h-3.5" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] font-bold text-foreground truncate leading-tight">
+                    {item.title}
+                  </p>
+                  <p className="text-[8px] font-medium text-muted-foreground uppercase tracking-wider">
+                    {formatDistanceToNow(new Date(item.timestamp), { addSuffix: false })}
+                  </p>
+                </div>
+              </GlassCard>
+            </div>
+          ))
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">

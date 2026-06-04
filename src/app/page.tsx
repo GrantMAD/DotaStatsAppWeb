@@ -2,8 +2,7 @@ import React, { Suspense } from 'react';
 import { getServerHeroStats, getServerProMatches } from '@/services/opendota';
 import { createClient } from '@/utils/supabase/server';
 import { HeroSearchSection } from '@/components/home/HeroSearchSection';
-import { RecentlyViewed } from '@/components/analytics/RecentlyViewed';
-import { FriendsActivitySection } from '@/components/home/FriendsActivitySection';
+import { SocialHubSection } from '@/components/home/SocialHubSection';
 import { MetaTierListSection } from '@/components/home/MetaTierListSection';
 import { TrendsSection } from '@/components/home/TrendsSection';
 import { ProSceneHubSection } from '@/components/home/ProSceneHubSection';
@@ -54,9 +53,7 @@ export default async function HomePage() {
         <SteamLinkCTA />
         <HeroSearchSection />
 
-        <RecentlyViewed />
-
-        <FriendsActivitySection />
+        <SocialHubSection />
 
         <Suspense fallback={<MetaTierSkeleton />}>
           <MetaTierListWrapper userBracket={userBracket} />
