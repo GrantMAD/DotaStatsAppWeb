@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 import { Zap, TrendingUp, Map, LayoutGrid, Award, Users, Lightbulb, GitCompare } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { trackOpenDotaMetaInteraction } from '@/services/analytics';
+import { HeroStats } from '@/types';
+import { CommunityTrendsSection } from '@/components/home/CommunityTrendsSection';
 
 // Dynamic imports for tab components
 const ItemTimingAnalyzer = dynamic(() => import('@/components/meta/ItemTimingAnalyzer').then(mod => mod.ItemTimingAnalyzer), {
@@ -35,7 +37,11 @@ const HeroDetailModal = dynamic(() => import('@/components/hero/HeroDetailModal'
   ssr: false
 });
 
-export function MetaPageClient() {
+interface MetaPageClientProps {
+  initialHeroesData: HeroStats[];
+}
+
+export function MetaPageClient({ initialHeroesData }: MetaPageClientProps) {
   const [activeTab, setActiveTab] = useState<'items' | 'lanes' | 'ranks' | 'pro' | 'community' | 'insights'>('items');
   const [selectedHeroId, setSelectedHeroId] = useState<number | null>(null);
 
@@ -190,12 +196,18 @@ export function MetaPageClient() {
         )}
 
         {activeTab === 'community' && (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <Users className="text-gaming-accent w-5 h-5" />
-              <h2 className="text-xl font-bold">Global Community Distribution</h2>
+          <div className="space-y-12">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <Users className="text-gaming-accent w-5 h-5" />
+                <h2 className="text-xl font-bold">Global Community Distribution</h2>
+              </div>
+              <CommunityDistribution />
             </div>
-            <CommunityDistribution />
+
+            <div className="pt-8 border-t border-white/5">
+              <CommunityTrendsSection initialHeroesData={initialHeroesData} />
+            </div>
           </div>
         )}
 

@@ -13,6 +13,7 @@ import {
   Cell
 } from 'recharts';
 import { Info, Users, BarChart3, TrendingUp } from '@/components/ui/Icons';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 
 const RANK_NAMES: Record<number, string> = {
   1: 'Herald',

@@ -9,9 +9,15 @@ import { ProSceneHubSection } from '@/components/home/ProSceneHubSection';
 import { LiveGamesSection } from '@/components/home/LiveGamesSection';
 import { WelcomeHero } from '@/components/home/WelcomeHero';
 import { SteamLinkCTA } from '@/components/home/SteamLinkCTA';
+import { CommunityTrendsSection } from '@/components/home/CommunityTrendsSection';
 import { MetaTierSkeleton, ProMatchSkeleton, HeroTrendsSkeleton } from '@/components/ui/HomeSkeletons';
 
 export const revalidate = 300;
+
+async function CommunityTrendsWrapper() {
+  const heroesData = await getServerHeroStats();
+  return <CommunityTrendsSection initialHeroesData={heroesData} />;
+}
 
 async function MetaTierListWrapper({ userBracket }: { userBracket: number | null }) {
   const heroesData = await getServerHeroStats();
@@ -54,6 +60,10 @@ export default async function HomePage() {
         <HeroSearchSection />
 
         <SocialHubSection />
+
+        <Suspense fallback={<HeroTrendsSkeleton />}>
+          <CommunityTrendsWrapper />
+        </Suspense>
 
         <Suspense fallback={<MetaTierSkeleton />}>
           <MetaTierListWrapper userBracket={userBracket} />

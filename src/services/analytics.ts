@@ -239,6 +239,25 @@ export async function getRecentSearches(limit: number = 5): Promise<string[]> {
 }
 
 /**
+ * Fetch community trending data (heroes and searches)
+ */
+export async function getCommunityTrending(): Promise<{ 
+  heroes: Array<{ id: number, name: string, count: number }>, 
+  searches: string[] 
+}> {
+  try {
+    const response = await fetch('/api/analytics/community-trending');
+    if (!response.ok) throw new Error('Failed to fetch community trending');
+    
+    const result = await response.json();
+    return result.data || { heroes: [], searches: [] };
+  } catch (err) {
+    console.warn('Error fetching community trending:', err);
+    return { heroes: [], searches: [] };
+  }
+}
+
+/**
  * Track page view
  */
 export async function trackPageView(pathname: string): Promise<void> {
