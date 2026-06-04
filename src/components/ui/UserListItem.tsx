@@ -39,6 +39,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
                 src={avatarUrl}
                 alt={appUser.steam_name}
                 fill
+                sizes="48px"
                 unoptimized
                 className="object-cover"
               />

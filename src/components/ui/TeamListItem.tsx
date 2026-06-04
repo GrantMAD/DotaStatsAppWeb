@@ -40,6 +40,7 @@ export function TeamListItem({ team, rank, onClick }: TeamListItemProps) {
               src={team.logo_url}
               alt={team.name}
               fill
+              sizes="56px"
               unoptimized
               className="object-contain"
             />

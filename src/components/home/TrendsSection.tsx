@@ -111,8 +111,10 @@ export function TrendsSection({ initialHeroesData }: TrendsSectionProps) {
                       src={`${STEAM_CDN_BASE}${item.img}`}
                       alt={item.name}
                       fill
+                      sizes="(max-width: 768px) 100vw, 160px"
                       className="object-cover"
                     />
+
                     <div className="absolute top-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[10px] font-black text-white">
                       #{idx + 1}
                     </div>

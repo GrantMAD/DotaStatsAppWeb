@@ -35,6 +35,7 @@ export default function RankBadge({
           src={badgeUrl}
           alt={rankName}
           fill
+          sizes={`${size}px`}
           unoptimized
           className="object-contain"
         />
@@ -44,6 +45,7 @@ export default function RankBadge({
             src={starsUrl}
             alt="stars"
             fill
+            sizes={`${size}px`}
             unoptimized
             className="object-contain"
           />

@@ -57,9 +57,11 @@ export function ProMatchCard({
                   src={radiantLogo}
                   alt={radiantName || "R"}
                   fill
+                  sizes="40px"
                   unoptimized
-                  className="object-contain p-1"
+                  className="object-contain"
                 />
+
               ) : (
                 radiantName?.[0] || 'R'
               )}
@@ -86,9 +88,11 @@ export function ProMatchCard({
                   src={direLogo}
                   alt={direName || "D"}
                   fill
+                  sizes="40px"
                   unoptimized
-                  className="object-contain p-1"
+                  className="object-contain"
                 />
+
               ) : (
                 direName?.[0] || 'D'
               )}

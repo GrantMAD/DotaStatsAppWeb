@@ -95,8 +95,10 @@ export function CommunityTrendsSection({ initialHeroesData }: CommunityTrendsSec
                           src={`${STEAM_CDN_BASE}${heroInfo.img}`}
                           alt={heroInfo.localized_name}
                           fill
+                          sizes="(max-width: 768px) 100vw, 160px"
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
+
                         <div className="absolute top-1 left-1 bg-black/60 px-1.5 py-0.5 rounded text-[10px] font-black text-white">
                           #{idx + 1}
                         </div>
