@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import { Search, Globe, Users, X, Info, Gamepad2, ChevronRight, AlertCircle, Loader2 } from '@/components/ui/Icons';
 import { useSearchPlayers, usePlayerPeers, useHeroStats } from '@/hooks/useOpenDota';
@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 import { getHeroImageUrl } from '@/services/constants';
 import { createClient } from '@/utils/supabase/client';
 import { cn } from '@/utils/cn';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { PlayerDetailModal } from '@/components/profile/PlayerDetailModal';
 import { trackOpenDotaPlayerSearch } from '@/services/analytics';
 import dynamic from 'next/dynamic';
@@ -24,8 +24,8 @@ const MatchDetailModal = dynamic(() => import('@/components/match/MatchDetailMod
   ssr: false
 });
 
-export default function SearchPage() {
-  const router = useRouter();
+function SearchPageContent() {
+  const searchParams = useSearchParams();
   const { steamAccountId } = useSupabaseAuth();
   const [query, setQuery] = useState('');
   const [activeQuery, setActiveQuery] = useState('');
@@ -47,6 +47,7 @@ export default function SearchPage() {
   const { followUser, unfollowUser, isFollowing, isFriend } = useFriends();
 
   const supabase = useMemo(() => createClient(), []);
+  const syncedQuery = useRef<string | null>(null);
 
   const matchingHeroes = useMemo(() => {
     if (!activeQuery || searchMode === 'steam') return [];
@@ -73,6 +74,16 @@ export default function SearchPage() {
 
   const results = searchMode === 'global' ? globalResults : steamFriendsResults;
   const searching = searchMode === 'global' ? searchingGlobal : loadingPeers;
+
+  // Sync search query from URL
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q && q !== syncedQuery.current) {
+      syncedQuery.current = q;
+      setQuery(q);
+      setActiveQuery(q);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (activeQuery && !searchingGlobal && globalResults) {
@@ -363,5 +374,18 @@ export default function SearchPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="container-custom py-20 flex flex-col items-center justify-center">
+        <Loader2 className="w-10 h-10 text-gaming-accent animate-spin mb-4" />
+        <p className="text-muted-foreground animate-pulse">Initializing search...</p>
+      </div>
+    }>
+      <SearchPageContent />
+    </Suspense>
   );
 }

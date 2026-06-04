@@ -37,7 +37,7 @@ export function HeroSearchSection() {
   }, []);
 
   return (
-    <div className={`relative mb-12 ${!user ? 'pt-8 lg:pt-12 border-t border-white/5 mt-8' : 'pt-12 lg:pt-20'}`}>
+    <div className={`relative z-50 mb-12 ${!user ? 'pt-8 lg:pt-12 border-t border-white/5 mt-8' : 'pt-12 lg:pt-20'}`}>
       <div className="max-w-none">
         {user ? (
           <>
@@ -76,7 +76,7 @@ export function HeroSearchSection() {
             </div>
           )}
 
-          <div className="relative group" ref={dropdownRef}>
+          <div className="relative group z-50" ref={dropdownRef}>
             <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }} className="relative">
               <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
                 <Search className="w-6 h-6 text-gray-500 group-focus-within:text-gaming-accent transition-colors" />
@@ -98,8 +98,8 @@ export function HeroSearchSection() {
             </form>
 
             {isDropdownVisible && recentSearches.length > 0 && (
-              <div className="absolute z-10 w-full mt-2 bg-(--nav-hover) border border-(--card-border) rounded-2xl overflow-hidden shadow-xl">
-                <div className="p-2 text-xs text-gray-500 uppercase tracking-widest font-bold">Recent Searches</div>
+              <div className="absolute z-50 w-full mt-2 bg-[#161625] border border-(--card-border) rounded-2xl overflow-hidden shadow-2xl">
+                <div className="p-2 text-xs text-gray-500 uppercase tracking-widest font-bold bg-white/5">Recent Searches</div>
                 {recentSearches.map((query, index) => (
                   <button
                     key={index}
