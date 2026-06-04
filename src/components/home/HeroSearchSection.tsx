@@ -1,21 +1,40 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, LogIn, Link as LinkIcon, User as UserIcon } from '@/components/ui/Icons';
+import { Search, LogIn, Link as LinkIcon, User as UserIcon, Clock } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
+import { getRecentSearches } from '@/services/analytics';
 
 export function HeroSearchSection() {
   const router = useRouter();
   const { user, steamAccountId } = useSupabaseAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  const fetchRecent = async () => {
+    const searches = await getRecentSearches(5);
+    setRecentSearches(searches);
   };
+
+  const handleSearch = (query: string) => {
+    if (!query.trim()) return;
+    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+    setIsDropdownVisible(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className={`relative mb-12 ${!user ? 'pt-8 lg:pt-12 border-t border-white/5 mt-8' : 'pt-12 lg:pt-20'}`}>
@@ -57,21 +76,46 @@ export function HeroSearchSection() {
             </div>
           )}
 
-          <form onSubmit={handleSearch} className="relative group">
-            <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-              <Search className="w-6 h-6 text-gray-500 group-focus-within:text-gaming-accent transition-colors" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search players, heroes..."
-              className="w-full h-16 bg-(--nav-hover) border border-(--card-border) rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-(--glass-start) transition-all"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className="absolute right-3 top-3 bottom-3 px-6 bg-gaming-accent text-white rounded-xl font-black uppercase italic tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">
-              Search
-            </button>
-          </form>
+          <div className="relative group" ref={dropdownRef}>
+            <form onSubmit={(e) => { e.preventDefault(); handleSearch(searchQuery); }} className="relative">
+              <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                <Search className="w-6 h-6 text-gray-500 group-focus-within:text-gaming-accent transition-colors" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search players, heroes..."
+                className="w-full h-16 bg-(--nav-hover) border border-(--card-border) rounded-2xl pl-16 pr-6 text-foreground text-lg placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-gaming-accent/50 focus:bg-(--glass-start) transition-all"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={async () => {
+                  await fetchRecent();
+                  setIsDropdownVisible(true);
+                }}
+              />
+              <button type="submit" className="absolute right-3 top-3 bottom-3 px-6 bg-gaming-accent text-white rounded-xl font-black uppercase italic tracking-widest opacity-0 group-focus-within:opacity-100 transition-opacity">
+                Search
+              </button>
+            </form>
+
+            {isDropdownVisible && recentSearches.length > 0 && (
+              <div className="absolute z-10 w-full mt-2 bg-(--nav-hover) border border-(--card-border) rounded-2xl overflow-hidden shadow-xl">
+                <div className="p-2 text-xs text-gray-500 uppercase tracking-widest font-bold">Recent Searches</div>
+                {recentSearches.map((query, index) => (
+                  <button
+                    key={index}
+                    className="w-full flex items-center gap-3 px-6 py-3 text-left hover:bg-white/5 transition-colors text-foreground"
+                    onClick={() => {
+                      setSearchQuery(query);
+                      handleSearch(query);
+                    }}
+                  >
+                    <Clock className="w-4 h-4 text-gray-500" />
+                    {query}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
