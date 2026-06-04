@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, LogIn, Link as LinkIcon, User as UserIcon, Clock } from '@/components/ui/Icons';
+import { Search, Link as LinkIcon, User as UserIcon, Clock } from '@/components/ui/Icons';
 import { Button } from '@/components/ui/Button';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { getRecentSearches } from '@/services/analytics';

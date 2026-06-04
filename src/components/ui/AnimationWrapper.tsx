@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, HTMLMotionProps } from 'framer-motion';
+import { motion, HTMLMotionProps, TargetAndTransition, VariantLabels, Transition } from 'framer-motion';
 import React from 'react';
 
 type AnimationWrapperProps = HTMLMotionProps<"div"> & {
@@ -8,7 +8,15 @@ type AnimationWrapperProps = HTMLMotionProps<"div"> & {
   animationType?: 'fade-in' | 'scale-hover' | 'slide-up';
 };
 
-const animations: Record<string, any> = {
+interface AnimationConfig {
+  initial?: TargetAndTransition | VariantLabels | boolean;
+  animate?: TargetAndTransition | VariantLabels | boolean;
+  whileHover?: TargetAndTransition | VariantLabels;
+  whileTap?: TargetAndTransition | VariantLabels;
+  transition?: Transition;
+}
+
+const animations: Record<string, AnimationConfig> = {
   'fade-in': {
     initial: { opacity: 0 },
     animate: { opacity: 1 },

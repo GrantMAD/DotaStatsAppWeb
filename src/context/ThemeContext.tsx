@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useSupabaseAuth } from './SupabaseAuthContext';
 import { createClient } from '@/utils/supabase/client';
+import { useUser } from '@/hooks/useUser';
 
 type Theme = 'light' | 'dark' | 'system';
 
@@ -14,16 +15,14 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// ✅ Stable supabase instance (prevents dependency warnings)
 const supabase = createClient();
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useSupabaseAuth();
+  const { data: profile } = useUser();
 
-  // ✅ FIX: initialize from localStorage safely (no useEffect needed)
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'dark';
-
     const savedTheme = localStorage.getItem('theme-preference') as Theme | null;
     return savedTheme || 'dark';
   });
@@ -32,22 +31,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   // Fetch theme from Supabase when user logs in
   useEffect(() => {
-    async function fetchUserTheme() {
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('theme')
-        .eq('id', user.id)
-        .single();
-
-      if (data && !error && data.theme) {
-        setThemeState(data.theme as Theme);
-      }
+    if (profile?.theme) {
+      setThemeState(profile.theme);
     }
-
-    fetchUserTheme();
-  }, [user]);
+  }, [profile]);
 
   // Handle theme changes
   useEffect(() => {

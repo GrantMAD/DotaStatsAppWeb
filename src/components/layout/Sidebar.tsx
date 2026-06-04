@@ -26,6 +26,7 @@ import { useSidebar } from '@/context/SidebarContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useUser } from '@/hooks/useUser';
 import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 
@@ -47,30 +48,10 @@ export function Sidebar() {
   const { isCollapsed, toggleSidebar } = useSidebar();
   const { resolvedTheme } = useTheme();
   const { getOnlineUserCount } = usePresence();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { data: profile } = useUser();
+  const isAdmin = profile?.role === 'admin';
 
   const onlineCount = getOnlineUserCount();
-
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('users')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-      setIsAdmin(data?.role === 'admin');
-    };
-
-    checkAdminStatus();
-  }, [user]);
 
   return (
     <motion.aside

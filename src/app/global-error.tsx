@@ -5,7 +5,6 @@ import "@/app/globals.css"
 import { ErrorCard } from "@/components/ui/ErrorCard"
 
 export default function GlobalError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string }

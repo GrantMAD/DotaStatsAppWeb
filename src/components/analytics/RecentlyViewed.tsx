@@ -20,6 +20,30 @@ const PlayerDetailModal = dynamic(() => import('@/components/profile/PlayerDetai
   ssr: false
 });
 
+const TabButton = ({ 
+  label, 
+  active, 
+  count, 
+  onClick 
+}: { 
+  type: 'all' | 'hero' | 'match' | 'player', 
+  label: string, 
+  active: boolean, 
+  count: number, 
+  onClick: () => void 
+}) => (
+  <button
+    onClick={onClick}
+    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
+      active 
+        ? 'bg-gaming-accent text-white' 
+        : 'bg-white/5 text-muted-foreground hover:bg-white/10'
+    }`}
+  >
+    {label} ({count})
+  </button>
+);
+
 // Recently Viewed component - updated
 export function RecentlyViewed({ compact = false }: { compact?: boolean }) {
   const [items, setItems] = useState<RecentlyViewedItem[]>([]);
@@ -63,27 +87,14 @@ export function RecentlyViewed({ compact = false }: { compact?: boolean }) {
     }
   };
 
-  const TabButton = ({ type, label }: { type: 'all' | 'hero' | 'match' | 'player', label: string }) => (
-    <button
-      onClick={() => setFilter(type)}
-      className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
-        filter === type 
-          ? 'bg-gaming-accent text-white' 
-          : 'bg-white/5 text-muted-foreground hover:bg-white/10'
-      }`}
-    >
-      {label} ({counts[type]})
-    </button>
-  );
-
   if (compact) {
     return (
       <div className="space-y-3">
         <div className="px-4 flex gap-2">
-          <TabButton type="all" label="All" />
-          <TabButton type="hero" label="Heroes" />
-          <TabButton type="match" label="Matches" />
-          <TabButton type="player" label="Players" />
+          <TabButton type="all" label="All" active={filter === 'all'} count={counts.all} onClick={() => setFilter('all')} />
+          <TabButton type="hero" label="Heroes" active={filter === 'hero'} count={counts.hero} onClick={() => setFilter('hero')} />
+          <TabButton type="match" label="Matches" active={filter === 'match'} count={counts.match} onClick={() => setFilter('match')} />
+          <TabButton type="player" label="Players" active={filter === 'player'} count={counts.player} onClick={() => setFilter('player')} />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-4 -mx-4 px-4 no-scrollbar">
           <HeroDetailModal

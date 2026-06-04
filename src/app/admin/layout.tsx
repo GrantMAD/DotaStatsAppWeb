@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/utils/supabase/client';
 import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
+import { useUser } from '@/hooks/useUser';
 
 export default function AdminLayout({
   children,
@@ -11,46 +11,15 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { data: profile, isLoading } = useUser();
 
   useEffect(() => {
-    const checkAdminAccess = async () => {
-      try {
-        const supabase = createClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+    if (!isLoading && profile?.role !== 'admin') {
+      router.push('/');
+    }
+  }, [profile, isLoading, router]);
 
-        if (!user) {
-          router.push('/sign-in');
-          return;
-        }
-
-        const { data: profile } = await supabase
-          .from('users')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-
-        if (profile?.role !== 'admin') {
-          router.push('/');
-          return;
-        }
-
-        setIsAdmin(true);
-      } catch (error) {
-        console.error('Admin access check failed:', error);
-        router.push('/');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAdminAccess();
-  }, [router]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AdminSkeleton />
@@ -58,7 +27,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!isAdmin) {
+  if (profile?.role !== 'admin') {
     return null;
   }
 

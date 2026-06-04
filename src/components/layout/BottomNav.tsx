@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
-import { useTheme } from '@/context/ThemeContext';
 
 const BOTTOM_NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home },
@@ -25,7 +24,6 @@ const BOTTOM_NAV_ITEMS = [
 export function BottomNav() {
   const pathname = usePathname();
   const { user, steamAccountId } = useSupabaseAuth();
-  const { resolvedTheme } = useTheme();
 
   return (
     <nav 

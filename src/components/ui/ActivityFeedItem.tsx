@@ -7,7 +7,6 @@ import {
   Zap,
   TrendingUp,
   CheckCircle2,
-  X,
   ArrowRight,
   Flame,
   Skull,

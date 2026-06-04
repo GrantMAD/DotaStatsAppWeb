@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Settings, ArrowLeft } from '@/components/ui/Icons';
 import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
-import { cn } from '@/utils/cn';
 
 export default function AdminSettings() {
   const [loading, setLoading] = useState(true);

@@ -20,12 +20,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     () =>
       new QueryClient({
         queryCache: new QueryCache({
-          onError: (error: any) => {
+          onError: (error: Error) => {
             toast.error(error.message || 'An error occurred while fetching data');
           },
         }),
         mutationCache: new MutationCache({
-          onError: (error: any) => {
+          onError: (error: Error) => {
             toast.error(error.message || 'An error occurred while performing this action');
           },
         }),

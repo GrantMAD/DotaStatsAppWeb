@@ -2,8 +2,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Activity, Users, Zap, Trophy, History } from '@/components/ui/Icons';
-import { SectionHeader } from '@/components/ui/SectionHeader';
+import { Activity, Users } from '@/components/ui/Icons';
 import { ActivityFeedItem } from '@/components/ui/ActivityFeedItem';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -36,7 +35,7 @@ export default function ActivityPage() {
           <Activity className="w-16 h-16 text-gaming-accent mx-auto mb-6" />
           <h2 className="text-3xl font-black text-white mb-4 tracking-tight uppercase">Activity Feed</h2>
           <p className="text-muted-foreground font-medium mb-8">
-            Sign in to follow your friends' achievements, rank ups, and match highlights.
+            Sign in to follow your friends&apos; achievements, rank ups, and match highlights.
           </p>
           <Button onClick={() => router.push('/sign-in')} className="w-full h-14 text-lg">
             Sign In to View Feed
@@ -55,7 +54,7 @@ export default function ActivityPage() {
             Social Hub
           </h1>
           <p className="text-muted-foreground font-medium text-lg">
-            Stay updated with your network's latest Dota 2 triumphs.
+            Stay updated with your network&apos;s latest Dota 2 triumphs.
           </p>
         </div>
         

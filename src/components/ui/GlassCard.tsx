@@ -7,7 +7,8 @@ interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function GlassCard({ children, className, hoverable = false, ...props }: GlassCardProps) {
   // Omit HTML animation events to avoid conflict with motion animation events
-  const { onAnimationStart, onAnimationIteration, onAnimationEnd, ...filteredProps } = props as any;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { onAnimationStart, onAnimationIteration, onAnimationEnd, ...filteredProps } = props;
 
   return (
     <AnimationWrapper 

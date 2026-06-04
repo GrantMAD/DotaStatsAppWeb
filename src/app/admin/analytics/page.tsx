@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
-import { BarChart2, Shield, ArrowLeft, Clock, Navigation, Monitor } from '@/components/ui/Icons';
+import { BarChart2, ArrowLeft, Clock, Navigation, Monitor } from '@/components/ui/Icons';
 import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
 import { cn } from '@/utils/cn';
 import { formatDistanceToNow } from 'date-fns';
@@ -14,7 +14,7 @@ interface RawEvent {
   event_type: string;
   platform: string;
   route: string | null;
-  metadata: any;
+  metadata: Record<string, unknown>;
   created_at: string;
 }
 

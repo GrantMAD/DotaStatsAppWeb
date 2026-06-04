@@ -5,7 +5,6 @@ import Providers from "@/components/Providers";
 import { SupabaseAuthProvider } from "@/context/SupabaseAuthContext";
 import { SteamAuthProvider } from "@/context/SteamAuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Toaster } from "sonner";
 import { GlobalModalContainer } from "@/components/ui/GlobalModalContainer";
 
 export const metadata: Metadata = {

@@ -5,7 +5,7 @@ import { LiveMatchClient } from '@/components/match/LiveMatchClient';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
-import { Timer, Radio, Users, AlertCircle, ChevronLeft } from '@/components/ui/Icons';
+import { Timer, AlertCircle, ChevronLeft } from '@/components/ui/Icons';
 import Link from 'next/link';
 
 interface PageProps {
@@ -26,7 +26,7 @@ export default async function MatchPage({ params }: PageProps) {
 
   // 2. Handle Live Match Case
   if (!match && liveGame) {
-    return <LiveMatchClient matchId={matchId} initialLiveGame={liveGame as any} />;
+    return <LiveMatchClient matchId={matchId} initialLiveGame={liveGame} />;
   }
 
   // 3. Handle Not Found Case

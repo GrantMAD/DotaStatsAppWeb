@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
-import { ShieldAlert, Search, ArrowLeft } from '@/components/ui/Icons';
+import { ShieldAlert, ArrowLeft } from '@/components/ui/Icons';
 import { AdminSkeleton } from '@/components/ui/AdminSkeleton';
-import { cn } from '@/utils/cn';
 
 interface AuditLog {
   id: string;
@@ -13,7 +12,7 @@ interface AuditLog {
   action_type: string;
   target_table: string;
   target_id: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
   created_at: string;
   admin_email?: string;
 }

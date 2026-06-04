@@ -30,7 +30,7 @@ export interface ActivityItem {
   };
 }
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: ActivityItem[] = [];
 
 export const useActivityFeed = () => {
   const { following, friends, loading: friendsLoading } = useFriends();

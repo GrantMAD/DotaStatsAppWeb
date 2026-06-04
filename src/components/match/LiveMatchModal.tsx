@@ -12,7 +12,6 @@ import {
   ShieldCheck,
 } from '@/components/ui/Icons';
 import { cn } from '@/utils/cn';
-import { trackOpenDotaMatchView } from '@/services/analytics';
 import Image from 'next/image';
 import { Button } from '../ui/Button';
 

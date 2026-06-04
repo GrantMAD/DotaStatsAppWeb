@@ -1,14 +1,10 @@
 'use client';
 
-import { Menu } from '@/components/ui/Icons';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { NotificationBell } from './NotificationBell';
-import { useTheme } from '@/context/ThemeContext';
-import { cn } from '@/utils/cn';
 import Image from 'next/image';
 
 export function MobileHeader() {
-  const { resolvedTheme } = useTheme();
   const { user } = useSupabaseAuth();
 
   return (

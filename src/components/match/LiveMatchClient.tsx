@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useLiveGames, useMatchDetails } from '@/hooks/useOpenDota';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { Button } from '@/components/ui/Button';
-import { Timer, Radio, Users, RefreshCw } from '@/components/ui/Icons';
+import { Radio, Users, RefreshCw } from '@/components/ui/Icons';
 import { LiveGame } from '@/types';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/utils/cn';
@@ -17,22 +17,21 @@ interface LiveMatchClientProps {
 export function LiveMatchClient({ matchId, initialLiveGame }: LiveMatchClientProps) {
   const router = useRouter();
   const { data: liveGames, isLoading } = useLiveGames();
-  const [liveGame, setLiveGame] = useState<LiveGame>(initialLiveGame);
   
+  const liveGame = useMemo(() => {
+    if (!liveGames) return initialLiveGame;
+    return liveGames.find(g => g.match_id === matchId) || initialLiveGame;
+  }, [liveGames, matchId, initialLiveGame]);
+
   // Also check if the match finished while we were looking
   const { data: fullMatch } = useMatchDetails(matchId, {
     enabled: !liveGames?.find(g => g.match_id === matchId) && !isLoading,
   });
 
   useEffect(() => {
-    if (liveGames) {
-      const current = liveGames.find(g => g.match_id === matchId);
-      if (current) {
-        setLiveGame(current);
-      } else if (fullMatch) {
-        // Match finished and is now available as a full match
-        router.refresh();
-      }
+    if (liveGames && !liveGames.find(g => g.match_id === matchId) && fullMatch) {
+      // Match finished and is now available as a full match
+      router.refresh();
     }
   }, [liveGames, matchId, fullMatch, router]);
 

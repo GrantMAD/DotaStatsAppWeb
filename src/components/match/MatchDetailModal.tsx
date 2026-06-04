@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { useMatchDetails } from '@/hooks/useOpenDota';
 import { MatchScoreboard } from './MatchScoreboard';

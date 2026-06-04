@@ -6,7 +6,6 @@ import { usePlayerProfile, isProfilePrivate } from '@/hooks/useOpenDota';
 import { usePresence } from '@/context/PresenceContext';
 import Image from "next/image";
 import { AnimationWrapper } from './AnimationWrapper';
-import { cn } from '@/utils/cn';
 
 interface UserListItemProps {
   user: {

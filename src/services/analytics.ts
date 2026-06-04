@@ -149,22 +149,22 @@ export async function getRecentlyViewed(limit: number = 10): Promise<RecentlyVie
       let title = '';
       let subtitle = '';
 
-      const metadata = (event.metadata as Record<string, any>) || {};
+      const metadata = (event.metadata as Record<string, unknown>) || {};
 
       if (event.event_type.includes('hero')) {
         type = 'hero';
-        entityId = metadata.heroId || metadata.hero_id;
-        title = metadata.heroName || metadata.name || 'Unknown Hero';
+        entityId = (metadata.heroId as number) || (metadata.hero_id as number);
+        title = (metadata.heroName as string) || (metadata.name as string) || 'Unknown Hero';
         subtitle = 'Hero Profile';
       } else if (event.event_type.includes('match')) {
         type = 'match';
-        entityId = metadata.matchId || metadata.match_id;
+        entityId = (metadata.matchId as string) || (metadata.match_id as string);
         title = `Match ${entityId}`;
         subtitle = metadata.isLive ? 'Live Match' : 'Match Details';
       } else if (event.event_type.includes('player') || event.event_type === 'profile_view') {
         type = 'player';
-        entityId = metadata.accountId || metadata.account_id || metadata.profileId;
-        title = metadata.name || metadata.personaname || `Player ${entityId}`;
+        entityId = (metadata.accountId as string) || (metadata.account_id as string) || (metadata.profileId as string);
+        title = (metadata.name as string) || (metadata.personaname as string) || `Player ${entityId}`;
         subtitle = metadata.section ? `Player ${metadata.section}` : 'Player Profile';
       }
 
@@ -222,8 +222,8 @@ export async function getRecentSearches(limit: number = 5): Promise<string[]> {
     for (const event of data) {
       if (results.length >= limit) break;
 
-      const metadata = (event.metadata as Record<string, any>) || {};
-      const queryStr = metadata.query;
+      const metadata = (event.metadata as Record<string, unknown>) || {};
+      const queryStr = metadata.query as string;
 
       if (queryStr && typeof queryStr === 'string' && !uniqueSearches.has(queryStr)) {
         uniqueSearches.add(queryStr);
@@ -393,9 +393,19 @@ export async function trackOpenDotaMetaInteraction(tool: string, action?: string
 /**
  * Track OpenDota Data Snapshots (Rich Metadata)
  */
-export async function trackHeroSnapshot(heroData: any): Promise<void> {
+export async function trackHeroSnapshot(heroData: {
+  id: number;
+  localized_name?: string;
+  name?: string;
+  pub_win_rate?: number;
+  pro_win_rate?: number;
+  pick_rate?: number;
+  ban_rate?: number;
+  primary_attr?: string;
+  roles?: string[];
+}): Promise<void> {
   await trackEvent({
-    eventType: 'opendota_hero_snapshot',
+    eventType: 'opendota_hero_view',
     metadata: {
       hero_id: heroData.id,
       name: heroData.localized_name || heroData.name,
@@ -409,9 +419,17 @@ export async function trackHeroSnapshot(heroData: any): Promise<void> {
   });
 }
 
-export async function trackMatchSnapshot(matchData: any): Promise<void> {
+export async function trackMatchSnapshot(matchData: {
+  match_id: number;
+  duration: number;
+  radiant_win: boolean;
+  radiant_score: number;
+  dire_score: number;
+  game_mode: number;
+  lobby_type: number;
+}): Promise<void> {
   await trackEvent({
-    eventType: 'opendota_match_snapshot',
+    eventType: 'opendota_match_view',
     metadata: {
       match_id: matchData.match_id,
       duration: matchData.duration,
@@ -426,9 +444,16 @@ export async function trackMatchSnapshot(matchData: any): Promise<void> {
   });
 }
 
-export async function trackPlayerSnapshot(playerData: any): Promise<void> {
+export async function trackPlayerSnapshot(playerData: {
+  profile?: {
+    account_id: number;
+    name?: string;
+    plus?: boolean;
+  };
+  rank_tier?: number;
+}): Promise<void> {
   await trackEvent({
-    eventType: 'opendota_player_snapshot',
+    eventType: 'opendota_player_view',
     metadata: {
       account_id: playerData.profile?.account_id,
       rank_tier: playerData.rank_tier,

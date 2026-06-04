@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { useSteamAuth } from '@/hooks/useSteamAuth';
 import { Button } from '@/components/ui/Button';
@@ -11,7 +10,6 @@ import { Link as LinkIcon, LogIn, ChevronRight, Zap, Trophy, BarChart2 } from '@
 export function SteamLinkCTA() {
   const { user, steamAccountId, isLoading } = useSupabaseAuth();
   const { login: signInWithSteam, isLoading: steamLoading } = useSteamAuth();
-  const router = useRouter();
 
   if (isLoading || !user || steamAccountId) return null;
 

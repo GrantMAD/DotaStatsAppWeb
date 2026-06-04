@@ -58,7 +58,7 @@ type SupabaseFriendRow = {
   addressee: SupabaseUser;
 };
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: never[] = [];
 
 export const useFriends = () => {
   const { user } = useSupabaseAuth();

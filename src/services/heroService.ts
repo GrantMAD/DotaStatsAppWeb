@@ -36,7 +36,7 @@ export async function getScenariosItemTimings(params: { item?: string; hero_id?:
   const query = new URLSearchParams();
   if (params.item) query.append('item', params.item);
   if (params.hero_id) query.append('hero_id', params.hero_id.toString());
-  const data = await fetchFromOpenDota<any>(`/scenarios/itemTimings?${query.toString()}`);
+  const data = await fetchFromOpenDota<{ value: ItemTimingScenario[] } | ItemTimingScenario[]>(`/scenarios/itemTimings?${query.toString()}`);
   return Array.isArray(data) ? data : (data.value || []);
 }
 
@@ -44,7 +44,7 @@ export async function getScenariosLaneRoles(params: { lane_role?: number; hero_i
   const query = new URLSearchParams();
   if (params.lane_role) query.append('lane_role', params.lane_role.toString());
   if (params.hero_id) query.append('hero_id', params.hero_id.toString());
-  const data = await fetchFromOpenDota<any>(`/scenarios/laneRoles?${query.toString()}`);
+  const data = await fetchFromOpenDota<{ value: LaneRoleScenario[] } | LaneRoleScenario[]>(`/scenarios/laneRoles?${query.toString()}`);
   return Array.isArray(data) ? data : (data.value || []);
 }
 
@@ -55,6 +55,6 @@ export async function getDistributions(): Promise<DistributionData> {
 export async function getScenariosMisc(params: { scenario?: string }): Promise<MiscScenario[]> {
   const query = new URLSearchParams();
   if (params.scenario) query.append('scenario', params.scenario);
-  const data = await fetchFromOpenDota<any>(`/scenarios/misc?${query.toString()}`);
+  const data = await fetchFromOpenDota<MiscScenario[]>(`/scenarios/misc?${query.toString()}`);
   return Array.isArray(data) ? data : [];
 }

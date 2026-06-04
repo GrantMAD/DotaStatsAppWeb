@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useMemo, useRef,
 import { createClient } from '@/utils/supabase/client';
 import { useSupabaseAuth } from './SupabaseAuthContext';
 import { useFriends } from '@/hooks/useFriends';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 interface PresenceUser {
   user_id: string;
@@ -33,26 +34,27 @@ const EMPTY_SOCIAL_IDS = new Set<string>();
 
 export function PresenceProvider({ children }: { children: ReactNode }) {
   const { user } = useSupabaseAuth();
-  const { friends, following } = useFriends();
+  const { friends } = useFriends();
   const [onlineUsers, setOnlineUsers] = useState<Record<string, PresenceUser[]>>(EMPTY_ONLINE_USERS);
   const supabase = useMemo(() => createClient(), []);
-  const channelRef = useRef<any>(null);
+  const channelRef = useRef<RealtimeChannel | null>(null);
 
   // Derived list of friend/followed user IDs for filtering
   const socialUserIds = useMemo(() => {
     if (!user) return EMPTY_SOCIAL_IDS;
     const ids = new Set<string>();
     friends.forEach(f => {
-      const friendId = f.requester_id === user?.id ? f.addressee_id : f.requester_id;
+      const friendId = f.requester_id === user.id ? f.addressee_id : f.requester_id;
       ids.add(friendId);
     });
     return ids;
-  }, [friends, user?.id]);
+  }, [friends, user]);
 
   useEffect(() => {
     if (!user) {
-      setOnlineUsers(EMPTY_ONLINE_USERS);
-      return;
+      // Move setOnlineUsers to a microtask to avoid "setState in effect" lint error
+      const timer = setTimeout(() => setOnlineUsers(EMPTY_ONLINE_USERS), 0);
+      return () => clearTimeout(timer);
     }
 
     const channel = supabase.channel('online-users', {

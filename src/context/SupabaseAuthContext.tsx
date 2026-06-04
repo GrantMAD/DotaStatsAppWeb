@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
+import { Session, User, RealtimeChannel } from '@supabase/supabase-js';
 
 interface SupabaseAuthContextType {
   session: Session | null;
@@ -99,7 +99,7 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     });
 
     // Real-time listener for user profile changes (e.g. Steam linking in another tab)
-    let profileSubscription: any = null;
+    let profileSubscription: RealtimeChannel | null = null;
     
     if (user) {
       profileSubscription = supabase
@@ -125,22 +125,24 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
       if (profileSubscription) profileSubscription.unsubscribe();
     };
-  }, [refreshProfile, supabase, user?.id]);
+  }, [refreshProfile, supabase, user]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
   };
 
+  const value = React.useMemo(() => ({
+    session,
+    user,
+    steamAccountId,
+    matchLimit,
+    isLoading,
+    signOut,
+    refreshProfile,
+  }), [session, user, steamAccountId, matchLimit, isLoading, signOut, refreshProfile]);
+
   return (
-    <SupabaseAuthContext.Provider value={{
-      session,
-      user,
-      steamAccountId,
-      matchLimit,
-      isLoading,
-      signOut,
-      refreshProfile,
-    }}>
+    <SupabaseAuthContext.Provider value={value}>
       {children}
     </SupabaseAuthContext.Provider>
   );
