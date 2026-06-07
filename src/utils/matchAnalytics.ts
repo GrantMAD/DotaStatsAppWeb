@@ -27,18 +27,52 @@ export function calculateLaningGrade(efficiency: number | null, percentile: numb
   return { grade: 'F', color: 'text-red-700', label: 'Herald' };
 }
 
+export interface HeroMatchup {
+  hero_id: number;
+  wins: number;
+  games_played: number;
+}
+
+export interface MatchupResult {
+  hero_id: number;
+  matchups: HeroMatchup[];
+}
+
 /**
  * Normalizes a draft advantage score into a percentage for Radiant.
- * @param matchups Array of matchup winrate differences
+ * @param matchups Array of matchup objects for all Radiant heroes against Dire heroes
  * @param radiantPicks Array of Radiant hero IDs
  * @param direPicks Array of Dire hero IDs
  */
-export function calculateDraftAdvantage(matchups: unknown[], radiantPicks: number[], direPicks: number[]) {
+export function calculateDraftAdvantage(matchups: MatchupResult[], radiantPicks: number[], direPicks: number[]) {
   if (!matchups || matchups.length === 0 || radiantPicks.length === 0 || direPicks.length === 0) {
     return 50;
   }
 
-  // Placeholder for the logic that will be used inside the component
-  // where the data is actually available.
-  return 50; 
+  let totalWinRateDiff = 0;
+  let count = 0;
+
+  // Each Radiant hero vs every Dire hero
+  radiantPicks.forEach(rId => {
+    direPicks.forEach(dId => {
+      // Find the winrate of Radiant hero (rId) against Dire hero (dId)
+      const heroMatchups = matchups.find(m => m.hero_id === rId)?.matchups;
+      if (heroMatchups) {
+        const vsDire = heroMatchups.find((m: HeroMatchup) => m.hero_id === dId);
+        if (vsDire && vsDire.games_played > 0) {
+          const winRate = vsDire.wins / vsDire.games_played;
+          totalWinRateDiff += (winRate - 0.5);
+          count++;
+        }
+      }
+    });
+  });
+
+  if (count === 0) return 50;
+
+  const avgDiff = totalWinRateDiff / count;
+  const advantage = 50 + (avgDiff * 200);
+
+  return Math.min(Math.max(advantage, 20), 80);
 }
+

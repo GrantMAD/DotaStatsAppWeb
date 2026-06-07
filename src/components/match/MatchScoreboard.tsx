@@ -7,7 +7,7 @@ import { HEROES, getHeroImageUrl, getItemImageUrl, getItemImageUrlByName } from 
 import { cn } from '@/utils/cn';
 import { GlassCard } from '../ui/GlassCard';
 import { Users, Info, Swords, TrendingUp, TrendingDown, EyeOff } from '@/components/ui/Icons';
-import { usePlayerPeers } from '@/hooks/useOpenDota';
+import { usePlayerPeers, useDraftAnalysis } from '@/hooks/useOpenDota';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { calculateLaningGrade } from '@/utils/matchAnalytics';
 import { useModal } from '@/context/ModalContext';
@@ -15,9 +15,14 @@ import { useModal } from '@/context/ModalContext';
 interface DraftDisplayProps {
   picksBans: PickBan[];
   gameMode: number;
+  radiantHeroIds: number[];
+  direHeroIds: number[];
 }
 
-function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
+function DraftDisplay({ picksBans, gameMode, radiantHeroIds, direHeroIds }: DraftDisplayProps) {
+  const { data: draftAdvantageResult } = useDraftAnalysis(radiantHeroIds, direHeroIds);
+  const draftAdvantage = draftAdvantageResult || 50;
+
   const radiantPicks = useMemo(
     () => picksBans.filter(pb => pb.team === 0 && pb.is_pick).sort((a, b) => a.order - b.order),
     [picksBans]
@@ -26,16 +31,6 @@ function DraftDisplay({ picksBans, gameMode }: DraftDisplayProps) {
     () => picksBans.filter(pb => pb.team === 1 && pb.is_pick).sort((a, b) => a.order - b.order),
     [picksBans]
   );
-
-  const radiantHeroIds = useMemo(() => radiantPicks.map(p => p.hero_id), [radiantPicks]);
-  const direHeroIds = useMemo(() => direPicks.map(p => p.hero_id), [direPicks]);
-
-  const draftAdvantage = useMemo(() => {
-    if (radiantHeroIds.length === 0 || direHeroIds.length === 0) return 50;
-    const seed = radiantHeroIds.reduce((a, b) => a + b, 0) - direHeroIds.reduce((a, b) => a + b, 0);
-    const mockAdvantage = 50 + (seed % 15);
-    return Math.min(Math.max(mockAdvantage, 30), 70);
-  }, [radiantHeroIds, direHeroIds]);
 
   const allBans = picksBans.filter(pb => !pb.is_pick).sort((a, b) => a.order - b.order);
   const radiantBans = allBans.filter(pb => pb.team === 0);
@@ -408,10 +403,24 @@ export function MatchScoreboard({ match }: { match: MatchDetails }) {
   const radiantPlayers = match.players.filter(p => p.player_slot < 128);
   const direPlayers = match.players.filter(p => p.player_slot >= 128);
 
+  const radiantHeroIds = useMemo(() => 
+    match.picks_bans?.filter(pb => pb.team === 0 && pb.is_pick).map(p => p.hero_id) || [], 
+    [match.picks_bans]
+  );
+  const direHeroIds = useMemo(() => 
+    match.picks_bans?.filter(pb => pb.team === 1 && pb.is_pick).map(p => p.hero_id) || [], 
+    [match.picks_bans]
+  );
+
   return (
     <div className="space-y-8">
       {match.picks_bans && (
-        <DraftDisplay picksBans={match.picks_bans} gameMode={match.game_mode} />
+        <DraftDisplay 
+          picksBans={match.picks_bans} 
+          gameMode={match.game_mode} 
+          radiantHeroIds={radiantHeroIds}
+          direHeroIds={direHeroIds}
+        />
       )}
 
       <div className="space-y-6">

@@ -2,6 +2,7 @@
 
 import { useQuery, useQueryClient, keepPreviousData, UseQueryOptions } from '@tanstack/react-query';
 import { createClient } from '@/utils/supabase/client';
+import { calculateDraftAdvantage } from '../utils/matchAnalytics';
 import { 
   openDotaApi, 
   OPENDOTA_BASE_URL,
@@ -514,6 +515,33 @@ export function useHeroItemPopularity(heroId: number | null) {
     queryKey: ['heroItemPopularity', heroId],
     queryFn: () => (heroId ? openDotaApi.getHeroItemPopularity(heroId) : null),
     enabled: !!heroId,
+    staleTime: 1000 * 60 * 60 * 24,
+  });
+}
+
+/**
+ * Hook to fetch multiple hero matchups and calculate draft advantage.
+ */
+export function useDraftAnalysis(radiantPicks: number[], direPicks: number[]) {
+  return useQuery({
+    queryKey: ['draftAnalysis', radiantPicks, direPicks],
+    queryFn: async () => {
+      if (radiantPicks.length === 0 || direPicks.length === 0) return 50;
+      
+      const matchupResults = await Promise.all(
+        radiantPicks.map(async (heroId) => {
+          try {
+            const matchups = await openDotaApi.getHeroMatchups(heroId);
+            return { hero_id: heroId, matchups };
+          } catch {
+            return { hero_id: heroId, matchups: [] };
+          }
+        })
+      );
+      
+      return calculateDraftAdvantage(matchupResults, radiantPicks, direPicks);
+    },
+    enabled: radiantPicks.length > 0 && direPicks.length > 0,
     staleTime: 1000 * 60 * 60 * 24,
   });
 }
