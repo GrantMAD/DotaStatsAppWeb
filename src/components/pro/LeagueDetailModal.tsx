@@ -10,6 +10,7 @@ import { MatchDetailModal } from '../match/MatchDetailModal';
 import { Skeleton } from '../ui/Skeleton';
 import { Trophy, Calendar, Info, Map, Timer, AlertCircle } from '@/components/ui/Icons';
 import { getLeagueImageUrl } from '@/services/constants';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 
 interface LeagueDetailModalProps {
   isOpen: boolean;

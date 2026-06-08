@@ -33,7 +33,7 @@ export function UserListItem({ user: appUser, onClick, rightComponent, stackMeta
         className="glass-card p-4 flex items-center gap-4 hover:border-gaming-accent/50 transition-all cursor-pointer group"
       >
         <div className="relative">
-          <div className="w-12 h-12 rounded-full overflow-hidden border border-(--card-border) bg-(--nav-hover)">
+          <div className="w-12 h-12 rounded-full overflow-hidden border border-(--card-border) bg-(--nav-hover) relative">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}

@@ -450,7 +450,7 @@ export async function trackPlayerSnapshot(playerData: {
     name?: string;
     plus?: boolean;
   };
-  rank_tier?: number;
+  rank_tier?: number | null;
 }): Promise<void> {
   await trackEvent({
     eventType: 'opendota_player_view',

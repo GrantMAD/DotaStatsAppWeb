@@ -67,7 +67,9 @@ export default async function ProfilePage({ params }: PageProps) {
     // Fetch following/friends counts from DB if logged in
     const [{ count: following }, { count: friends }] = await Promise.all([
       supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
-      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id)
+      supabase.from('friendships').select('*', { count: 'exact', head: true })
+        .eq('status', 'accepted')
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
     ]);
     
     followingCount = following || 0;

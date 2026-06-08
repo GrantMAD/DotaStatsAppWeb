@@ -39,7 +39,7 @@ export const useActivityFeed = () => {
   const instanceIdRef = useRef<string | null>(null);
 
   const playerIds = useMemo(() => {
-    if (following.length === 0 && friends.length === 0) return EMPTY_ARRAY;
+    if (following.length === 0 && friends.length === 0) return [] as string[];
     const ids = new Set<string>();
     
     following.forEach(f => ids.add(f.followed_steam_id.toString()));

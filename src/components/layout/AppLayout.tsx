@@ -44,7 +44,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         animate={{ 
           marginLeft: !isLargeScreen ? '0px' : isCollapsed ? '80px' : '256px',
         }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
         className="pt-20 lg:pt-0 pb-20 lg:pb-0 min-h-screen p-4 lg:p-10"
       >
         <div className="max-w-7xl mx-auto">

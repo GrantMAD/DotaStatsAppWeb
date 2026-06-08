@@ -127,9 +127,9 @@ export function SupabaseAuthProvider({ children }: { children: ReactNode }) {
     };
   }, [refreshProfile, supabase, user]);
 
-  const signOut = async () => {
+  const signOut = useCallback(async () => {
     await supabase.auth.signOut();
-  };
+  }, [supabase]);
 
   const value = React.useMemo(() => ({
     session,

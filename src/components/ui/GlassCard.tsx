@@ -1,15 +1,11 @@
 import { cn } from "@/utils/cn";
 import { AnimationWrapper } from "./AnimationWrapper";
 
-interface GlassCardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface GlassCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onDrag' | 'onDragStart' | 'onDragEnd' | 'onAnimationStart' | 'onAnimationIteration' | 'onAnimationEnd'> {
   hoverable?: boolean;
 }
 
 export function GlassCard({ children, className, hoverable = false, ...props }: GlassCardProps) {
-  // Omit HTML animation events to avoid conflict with motion animation events
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { onAnimationStart, onAnimationIteration, onAnimationEnd, ...filteredProps } = props;
-
   return (
     <AnimationWrapper 
       animationType={hoverable ? "scale-hover" : "fade-in"}
@@ -18,7 +14,7 @@ export function GlassCard({ children, className, hoverable = false, ...props }: 
         hoverable && "glass-card-hover",
         className
       )} 
-      {...filteredProps}
+      {...props}
     >
       {children}
     </AnimationWrapper>

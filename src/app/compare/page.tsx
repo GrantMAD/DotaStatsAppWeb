@@ -29,6 +29,7 @@ import { Plus, BarChart2, User, EyeOff } from '@/components/ui/Icons';
 import { PlayerSelectModal } from '@/components/compare/PlayerSelectModal';
 import { SteamAuthContext } from '@/context/SteamAuthContext';
 import { DataPrivacyIndicator } from '@/components/ui/DataPrivacyIndicator';
+import { trackOpenDotaMetaInteraction } from '@/services/analytics';
 
 interface RecentMatch {
   player_slot: number;

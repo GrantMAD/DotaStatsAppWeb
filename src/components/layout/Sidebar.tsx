@@ -27,8 +27,6 @@ import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useUser } from '@/hooks/useUser';
-import { useState, useEffect } from 'react';
-import { createClient } from '@/utils/supabase/client';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/', icon: Home, color: 'text-indigo-600', bg: 'bg-indigo-600/10' },
@@ -57,7 +55,7 @@ export function Sidebar() {
     <motion.aside
       initial={false}
       animate={{ width: isCollapsed ? 80 : 256 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
       className="fixed left-0 top-0 h-screen rounded-none border-y-0 border-l-0 z-50 hidden lg:flex flex-col p-4 border-r border-(--card-border)"
       style={{ background: 'var(--sidebar-bg)' }}
     >
@@ -75,6 +73,7 @@ export function Sidebar() {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                 className="text-xl font-bold text-gradient whitespace-nowrap"
               >
                 DotaApp
@@ -114,6 +113,7 @@ export function Sidebar() {
                 href={href}
                 className={cn(
                   "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
+                  isCollapsed && "justify-center px-0",
                   isActive
                     ? "bg-gaming-accent text-white shadow-lg shadow-gaming-accent/20"
                     : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
@@ -143,6 +143,7 @@ export function Sidebar() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                       className={cn(
                         "font-medium whitespace-nowrap transition-colors",
                         isActive ? "text-white" : "text-foreground"
@@ -180,6 +181,7 @@ export function Sidebar() {
               href="/admin"
               className={cn(
                 "flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative",
+                isCollapsed && "justify-center px-0",
                 pathname.startsWith('/admin')
                   ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
                   : "text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground"
@@ -205,6 +207,7 @@ export function Sidebar() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                     className={cn(
                       "font-medium whitespace-nowrap transition-colors",
                       pathname.startsWith('/admin') ? "text-white" : "text-foreground"
@@ -229,7 +232,10 @@ export function Sidebar() {
         {!user ? (
           <Link
             href="/sign-in"
-            className="flex items-center gap-3 px-3 py-3 rounded-xl bg-(--nav-hover) text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground transition-all border border-(--card-border) group relative"
+            className={cn(
+              "flex items-center gap-3 px-3 py-3 rounded-xl bg-(--nav-hover) text-muted-foreground hover:bg-(--nav-hover) hover:text-foreground transition-all border border-(--card-border) group relative",
+              isCollapsed && "justify-center px-0"
+            )}
           >
             <LogIn className={cn("w-5 h-5 shrink-0 transition-colors", resolvedTheme === 'light' ? "text-gaming-accent" : "text-muted-foreground")} />
             <AnimatePresence>
@@ -238,6 +244,7 @@ export function Sidebar() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                   className="font-medium whitespace-nowrap"
                 >
                   Sign In
@@ -277,6 +284,7 @@ export function Sidebar() {
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                     className="flex-1 min-w-0"
                   >
                     <p className="text-sm font-bold text-foreground truncate">
@@ -290,7 +298,10 @@ export function Sidebar() {
 
             <button
               onClick={() => signOut()}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:bg-red-500/10 hover:text-red-500 transition-all group border border-transparent hover:border-red-500/20 relative"
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-muted-foreground hover:bg-red-500/10 hover:text-red-500 transition-all group border border-transparent hover:border-red-500/20 relative",
+                isCollapsed && "justify-center px-0"
+              )}
             >
               <div className={cn(
                 "p-2 rounded-xl transition-all duration-300",
@@ -304,6 +315,7 @@ export function Sidebar() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -10 }}
+                    transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
                     className="font-medium whitespace-nowrap"
                   >
                     Log Out

@@ -21,24 +21,32 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { user } = useSupabaseAuth();
   const { data: profile } = useUser();
 
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'dark';
+  const [theme, setThemeState] = useState<Theme>('dark');
+  const [mounted, setMounted] = useState(false);
+
+  // Load from localStorage only on client after mount
+  useEffect(() => {
     const savedTheme = localStorage.getItem('theme-preference') as Theme | null;
-    return savedTheme || 'dark';
-  });
+    if (savedTheme) {
+      setTimeout(() => setThemeState(savedTheme), 0);
+    }
+    setTimeout(() => setMounted(true), 0);
+  }, []);
 
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
 
   // Fetch theme from Supabase when user logs in
   useEffect(() => {
-    if (profile?.theme) {
-      setThemeState(profile.theme);
+    if (profile?.theme && profile.theme !== theme && mounted) {
+      setTimeout(() => setThemeState(profile.theme!), 0);
     }
-  }, [profile]);
+  }, [profile?.theme, theme, mounted]);
 
   // Handle theme changes
   useEffect(() => {
-    localStorage.setItem('theme-preference', theme);
+    if (mounted) {
+      localStorage.setItem('theme-preference', theme);
+    }
 
     const updateResolvedTheme = () => {
       if (theme === 'system') {
@@ -65,7 +73,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     return () => {
       mediaQuery.removeEventListener('change', handleChange);
     };
-  }, [theme, user]);
+  }, [theme, user, mounted]);
 
   // Apply theme to document
   useEffect(() => {
