@@ -32,6 +32,10 @@ export async function requestMatchParse(matchId: number): Promise<{ job: { jobId
   });
 }
 
+export async function getParseStatus(jobId: string): Promise<any> {
+  return fetchFromOpenDota<any>(`/request/${jobId}`);
+}
+
 export async function getLiveGames(): Promise<LiveGame[]> {
   const data = await fetchFromOpenDota<LiveGame[]>('/live');
   return data
