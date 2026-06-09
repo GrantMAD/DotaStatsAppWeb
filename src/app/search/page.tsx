@@ -8,6 +8,7 @@ import { useFriends } from '@/hooks/useFriends';
 import { useSupabaseAuth } from '@/context/SupabaseAuthContext';
 import { PlayerListItem } from '@/components/ui/PlayerListItem';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { IntelligenceBadge } from '@/components/ui/IntelligenceBadge';
 import { getHeroImageUrl } from '@/services/constants';
 import { createClient } from '@/utils/supabase/client';
 import { cn } from '@/utils/cn';
@@ -290,6 +291,7 @@ function SearchPageContent() {
                       <span className="text-foreground font-bold group-hover:text-gaming-accent transition-colors">
                         {hero.localized_name}
                       </span>
+                      <IntelligenceBadge type="hero" className="ml-2 scale-75 origin-left" />
                       <ChevronRight className="w-4 h-4 text-gray-700 ml-auto group-hover:text-gaming-accent" />
                     </div>
                   ))}
@@ -310,7 +312,10 @@ function SearchPageContent() {
                   </div>
                   <div>
                     <h3 className="text-foreground font-bold">Match {matchingMatchId}</h3>
-                    <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">View Details</p>
+                    <div className="flex items-center gap-2">
+                      <IntelligenceBadge type="match" className="scale-75 origin-left" />
+                      <p className="text-blue-400 text-[10px] font-black uppercase tracking-widest">View Details</p>
+                    </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-blue-600 ml-auto group-hover:translate-x-1 transition-transform" />
                 </div>

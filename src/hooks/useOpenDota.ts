@@ -204,6 +204,10 @@ export function useSearchPlayers(query: string) {
       const trimmedQuery = query.trim();
       if (!trimmedQuery || trimmedQuery.length < 3) return [];
 
+      // Avoid searching for players if the query is a long numeric string (likely a Match ID)
+      const isLikelyMatchId = /^\d{10,}$/.test(trimmedQuery);
+      if (isLikelyMatchId) return [];
+
       // 1. Search Registered App Users in Supabase
       let appUsers: SearchPlayerResult[] = [];
       try {

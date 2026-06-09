@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { User, Plus, Check, UserPlus, ChevronRight } from '@/components/ui/Icons';
+import { IntelligenceBadge } from './IntelligenceBadge';
 import { cn } from '@/utils/cn';
 import { AnimationWrapper } from './AnimationWrapper';
 
@@ -64,6 +65,7 @@ export function PlayerListItem({
             <h3 className="text-foreground font-bold truncate group-hover:text-gaming-accent transition-colors">
               {player.personaname}
             </h3>
+            <IntelligenceBadge type="player" className="scale-75 origin-left" />
             {player.isPro && (
               <span className="bg-gaming-accent/20 text-gaming-accent border border-gaming-accent/30 text-[9px] uppercase font-black px-1.5 py-0.5 rounded tracking-wider leading-none">
                 {player.team_tag ? `PRO (${player.team_tag})` : 'PRO'}

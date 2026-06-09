@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/Icons";
 import { cn } from "@/utils/cn";
 import { useHeroStats } from "@/hooks/useOpenDota";
+import { IntelligenceBadge } from "./IntelligenceBadge";
 import { STEAM_CDN_BASE } from "@/services/constants";
 import Image from 'next/image';
 import { AnimationWrapper } from "./AnimationWrapper";
@@ -226,10 +227,17 @@ export function ActivityFeedItem({ item, onPressPlayer, onPressMatch, index = 0,
         <div className="flex-1 min-w-0 z-10 h-full flex flex-col justify-between py-1">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <div className={cn("flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider", theme.bg, theme.color)}>
-                {theme.icon}
-                {theme.label}
-              </div>
+              <IntelligenceBadge 
+                type="event" 
+                label={theme.label} 
+                icon={theme.icon} 
+                customColors={{
+                  color: theme.color,
+                  bg: theme.bg,
+                  border: theme.border,
+                  glow: theme.glow
+                }}
+              />
               {getBadge() && (
                 <span className="text-[9px] font-black text-muted-foreground opacity-50 tracking-tighter uppercase">
                   {getBadge()}

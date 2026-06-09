@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Clock, Zap as HeroIcon, Swords, User, Sword, ChevronRight } from '@/components/ui/Icons';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { SectionHeader } from '@/components/ui/SectionHeader';
+import { IntelligenceBadge, BadgeType } from '@/components/ui/IntelligenceBadge';
 import { getRecentlyViewed, RecentlyViewedItem } from '@/services/analytics';
 import { getHeroImageUrl } from '@/services/constants';
 import { formatDistanceToNow } from 'date-fns';
@@ -154,9 +155,12 @@ export function RecentlyViewed({ compact = false }: { compact?: boolean }) {
                       <p className="text-[11px] font-bold text-foreground truncate leading-tight">
                         {item.title}
                       </p>
-                      <p className="text-[8px] font-medium text-muted-foreground uppercase tracking-wider">
-                        {formatDistanceToNow(new Date(item.timestamp), { addSuffix: false })}
-                      </p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <IntelligenceBadge type={item.type as BadgeType} showIcon={false} className="px-1 py-0 h-3 text-[7px]" />
+                        <p className="text-[8px] font-medium text-muted-foreground uppercase tracking-wider">
+                          {formatDistanceToNow(new Date(item.timestamp), { addSuffix: false })}
+                        </p>
+                      </div>
                     </div>
                   </GlassCard>
                 </div>
@@ -242,9 +246,12 @@ export function RecentlyViewed({ compact = false }: { compact?: boolean }) {
                   <p className="text-[13px] font-black text-foreground truncate leading-tight">
                     {item.title}
                   </p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight mt-0.5">
-                    {formatDistanceToNow(new Date(item.timestamp), { addSuffix: false })} ago
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <IntelligenceBadge type={item.type as BadgeType} showIcon={false} className="px-1 py-0 h-3.5 text-[8px]" />
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">
+                      {formatDistanceToNow(new Date(item.timestamp), { addSuffix: false })} ago
+                    </p>
+                  </div>
                 </div>
 
                 <ChevronRight className="w-4 h-4 text-white/10" />
